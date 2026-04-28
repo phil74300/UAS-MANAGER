@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0050)file:///Users/contephilippe/Downloads/index_1.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,12 +9,9 @@
   <meta name="theme-color" content="#0C447C">
   <meta name="description" content="Gestionnaire opérationnel UAS — CONTE Philippe">
   <title>UAS Manager</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="file:///Users/contephilippe/Downloads/manifest.json">
 
   <style>
-    /* ══════════════════════════════════════════════════════
-       VARIABLES & RESET
-    ══════════════════════════════════════════════════════ */
     :root {
       --navy:        #0C447C;
       --blue:        #185FA5;
@@ -78,9 +75,6 @@
       overscroll-behavior: none;
     }
 
-    /* ══════════════════════════════════════════════════════
-       APP SHELL
-    ══════════════════════════════════════════════════════ */
     #app {
       display: flex;
       flex-direction: column;
@@ -91,7 +85,6 @@
       background: var(--gray-1);
     }
 
-    /* ── Header ────────────────────────────────────────── */
     #header {
       position: sticky;
       top: 0;
@@ -143,7 +136,6 @@
     }
     .header-icon-btn:active { background: rgba(255,255,255,.22); }
 
-    /* ── Offline banner ────────────────────────────────── */
     #offline-banner {
       display: none;
       background: var(--amber);
@@ -156,7 +148,6 @@
     }
     body.offline #offline-banner { display: block; }
 
-    /* ── Main content ──────────────────────────────────── */
     #main {
       flex: 1;
       overflow: hidden;
@@ -170,7 +161,6 @@
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
     }
-    /* ── Screens ───────────────────────────────────────── */
     .screen {
       display: none;
       flex-direction: column;
@@ -184,7 +174,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Bottom tab bar ────────────────────────────────── */
     #tab-bar {
       position: sticky;
       bottom: 0;
@@ -244,9 +233,6 @@
     }
     .tab-btn.active .tab-indicator { opacity: 1; }
 
-    /* ══════════════════════════════════════════════════════
-       ÉCRAN ACCUEIL
-    ══════════════════════════════════════════════════════ */
     #screen-accueil {
       padding: 0 0 24px;
     }
@@ -256,7 +242,7 @@
       background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
       padding: 20px 20px 24px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .exploitant-banner::before {
@@ -313,6 +299,7 @@
       align-items: center;
       gap: 6px;
       margin-top: 4px;
+      flex-wrap: wrap;
     }
     .exp-uas-badge {
       background: rgba(255,255,255,.14);
@@ -325,7 +312,6 @@
       letter-spacing: .3px;
     }
 
-    /* ── Badges validité ───────────────────────────────── */
     .validity-section {
       padding: 16px 16px 0;
       display: grid;
@@ -354,10 +340,7 @@
       border: 1.5px solid #E8A0A0;
     }
 
-    .validity-icon {
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
+    .validity-icon { font-size: 20px; margin-bottom: 6px; }
     .validity-label {
       font-size: 11px;
       font-weight: 700;
@@ -399,7 +382,6 @@
       50% { opacity: .6; transform: scale(1.3); }
     }
 
-    /* ── Section KPI ───────────────────────────────────── */
     .section-header {
       display: flex;
       align-items: center;
@@ -461,7 +443,6 @@
     .kpi-card.incidents .kpi-value { color: var(--red); }
     .kpi-card.incidents[data-zero="true"] .kpi-value { color: var(--green); }
 
-    /* ── Navigation rapide ─────────────────────────────── */
     .nav-rapide-grid {
       padding: 0 16px;
       display: grid;
@@ -487,9 +468,7 @@
       background: var(--light-blue);
       border-color: var(--blue);
     }
-    .nav-btn.wide {
-      grid-column: 1 / -1;
-    }
+    .nav-btn.wide { grid-column: 1 / -1; }
 
     .nav-btn-icon {
       width: 42px; height: 42px;
@@ -511,21 +490,14 @@
       color: var(--text-light);
       margin-top: 2px;
     }
+    .nav-btn-arrow { color: var(--gray-3); font-size: 14px; flex-shrink: 0; }
 
-    .nav-btn-arrow {
-      color: var(--gray-3);
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    /* couleurs des icônes nav */
     .nb-blue  .nav-btn-icon { background: var(--light-blue); }
     .nb-green .nav-btn-icon { background: var(--light-green); }
     .nb-amber .nav-btn-icon { background: var(--light-amber); }
     .nb-red   .nav-btn-icon { background: var(--light-red); }
     .nb-teal  .nav-btn-icon { background: #E0F2F1; }
 
-    /* ── Footer ────────────────────────────────────────── */
     .app-footer {
       margin: 20px 16px 0;
       padding: 14px 16px;
@@ -536,26 +508,10 @@
       align-items: center;
       justify-content: space-between;
     }
+    .footer-version { font-size: 11px; color: var(--text-light); font-weight: 600; }
+    .footer-sync { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
+    .footer-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
-    .footer-version {
-      font-size: 11px;
-      color: var(--text-light);
-      font-weight: 600;
-    }
-    .footer-sync {
-      font-size: 11px;
-      color: var(--text-light);
-      display: flex; align-items: center; gap: 4px;
-    }
-    .footer-sync-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-    }
-
-    /* ══════════════════════════════════════════════════════
-       ÉCRANS PLACEHOLDER
-    ══════════════════════════════════════════════════════ */
     .placeholder-screen {
       flex: 1;
       display: flex;
@@ -567,16 +523,8 @@
       text-align: center;
     }
     .placeholder-icon { font-size: 56px; opacity: .4; }
-    .placeholder-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .placeholder-text {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.5;
-    }
+    .placeholder-title { font-size: 20px; font-weight: 700; color: var(--text); }
+    .placeholder-text { font-size: 14px; color: var(--text-light); line-height: 1.5; }
     .placeholder-badge {
       background: var(--light-blue);
       color: var(--blue);
@@ -587,9 +535,6 @@
       letter-spacing: .5px;
     }
 
-    /* ══════════════════════════════════════════════════════
-       TOAST NOTIFICATION
-    ══════════════════════════════════════════════════════ */
     #toast {
       position: fixed;
       bottom: calc(var(--tab-h) + var(--safe-bot) + 16px);
@@ -607,14 +552,8 @@
       pointer-events: none;
       z-index: 999;
     }
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ══════════════════════════════════════════════════════
-       RESPONSIVE iPad
-    ══════════════════════════════════════════════════════ */
     @media (min-width: 768px) {
       .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
       .nav-rapide-grid { grid-template-columns: repeat(3, 1fr); }
@@ -624,9 +563,6 @@
       .kpi-value { font-size: 32px; }
     }
 
-    /* ══════════════════════════════════════════════════════
-       INSTALL PROMPT
-    ══════════════════════════════════════════════════════ */
     #install-banner {
       display: none;
       position: fixed;
@@ -649,56 +585,42 @@
     .install-title { font-size: 14px; font-weight: 700; }
     .install-sub { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
     .install-btns { display: flex; gap: 8px; margin-top: 10px; }
-    .btn-install {
-      background: white; color: var(--navy);
-      border: none; border-radius: 8px;
-      padding: 8px 16px; font-size: 13px; font-weight: 700;
-      cursor: pointer; flex: 1;
-    }
-    .btn-dismiss {
-      background: rgba(255,255,255,.15); color: white;
-      border: none; border-radius: 8px;
-      padding: 8px 16px; font-size: 13px; font-weight: 600;
-      cursor: pointer;
-    }
+    .btn-install { background: white; color: var(--navy); border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
+    .btn-dismiss { background: rgba(255,255,255,.15); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- ── Header ─────────────────────────────────────────── -->
   <header id="header">
     <div id="header-logo">
       <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="15" cy="15" r="4" fill="#E6F1FB"/>
-        <line x1="3" y1="15" x2="27" y2="15" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"/>
-        <line x1="15" y1="3" x2="15" y2="27" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="6.5" cy="6.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="23.5" cy="6.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="6.5" cy="23.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="23.5" cy="23.5" r="2.5" fill="#1D6B37"/>
+        <circle cx="15" cy="15" r="4" fill="#E6F1FB"></circle>
+        <line x1="3" y1="15" x2="27" y2="15" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
+        <line x1="15" y1="3" x2="15" y2="27" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
+        <circle cx="6.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="23.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="6.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="23.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
       </svg>
       <div>
         <div id="header-title">UAS Manager</div>
-        <div id="header-subtitle">Module 1 · Fondations</div>
+        <div id="header-subtitle">TABLEAU DE BORD</div>
       </div>
     </div>
     <div id="header-right">
-      <button class="header-icon-btn" onclick="navigateTo('config')" title="Configuration">⚙️</button>
+      <button class="header-icon-btn" onclick="navigateTo(&#39;config&#39;)" title="Configuration">⚙️</button>
     </div>
   </header>
 
-  <!-- ── Offline banner ─────────────────────────────────── -->
   <div id="offline-banner">📡 Mode hors-ligne — Données locales</div>
 
-  <!-- ── Main ───────────────────────────────────────────── -->
   <main id="main">
 
-    <!-- ════ ÉCRAN ACCUEIL ════ -->
+    <!-- ════ ACCUEIL ════ -->
     <section id="screen-accueil" class="screen active">
 
-      <!-- Bandeau exploitant -->
       <div class="exploitant-banner">
         <div class="exp-row">
           <div class="exp-avatar">👨‍✈️</div>
@@ -713,43 +635,53 @@
         </div>
       </div>
 
-      <!-- Badges validité -->
       <div class="validity-section" id="validity-section">
-        <!-- Générés par JS -->
+      <div class="validity-card valid">
+        <div class="validity-status-dot"></div>
+        <div class="validity-icon">🟢</div>
+        <div class="validity-label">CATS</div>
+        <div class="validity-date">15/09/2029</div>
+        <div class="validity-remain">Valide — 1235 j restants</div>
+        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">NLD-RP-q99cvjjh51fz</div>
       </div>
+      <div class="validity-card valid">
+        <div class="validity-status-dot"></div>
+        <div class="validity-icon">🟢</div>
+        <div class="validity-label">Assurance COVERDRONE</div>
+        <div class="validity-date">10/04/2027</div>
+        <div class="validity-remain">Valide — 346 j restants</div>
+        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">CDA22411846EUR</div>
+      </div></div>
 
-      <!-- KPIs -->
       <div class="section-header">
         <span class="section-title">Ce mois-ci</span>
-        <span class="section-link" onclick="navigateTo('vols')">Voir tout →</span>
+        <span class="section-link" onclick="navigateTo(&#39;vols&#39;)">Voir tout →</span>
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi-card" onclick="navigateTo('vols')">
+        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
           <div class="kpi-icon">✈️</div>
           <div class="kpi-value" id="kpi-vols">0</div>
           <div class="kpi-label">Vols ce mois</div>
         </div>
-        <div class="kpi-card" onclick="navigateTo('vols')">
+        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
           <div class="kpi-icon">⏱️</div>
           <div class="kpi-value" id="kpi-heures">0h</div>
           <div class="kpi-label">Heures de vol</div>
         </div>
-        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo('maint')">
+        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo(&#39;maint&#39;)">
           <div class="kpi-icon">⚠️</div>
           <div class="kpi-value" id="kpi-incidents">0</div>
           <div class="kpi-label">Incidents REX</div>
         </div>
       </div>
 
-      <!-- Navigation rapide -->
       <div class="section-header">
         <span class="section-title">Navigation rapide</span>
       </div>
 
       <div class="nav-rapide-grid">
-
-        <button class="nav-btn nb-blue" onclick="navigateTo('vols')">
+        <button class="nav-btn nb-blue" onclick="navigateTo(&#39;vols&#39;)">
           <div class="nav-btn-icon">✈️</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Carnet de Vol</div>
@@ -758,7 +690,7 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-green" onclick="navigateTo('maint')">
+        <button class="nav-btn nb-green" onclick="navigateTo(&#39;maint&#39;)">
           <div class="nav-btn-icon">🔧</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Maintenance</div>
@@ -767,16 +699,16 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-amber" onclick="navigateTo('meteo')">
+        <button class="nav-btn nb-amber" onclick="navigateTo(&#39;meteo&#39;)">
           <div class="nav-btn-icon">🌦️</div>
           <div class="nav-btn-info">
-            <div class="nav-btn-label">Météo & NOTAM</div>
+            <div class="nav-btn-label">Météo &amp; NOTAM</div>
             <div class="nav-btn-desc">METAR · TAF · ADS-B</div>
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-teal" onclick="showToast('Check-list — Module à venir')">
+        <button class="nav-btn nb-teal" onclick="showToast(&#39;Check-list — Module à venir&#39;)">
           <div class="nav-btn-icon">✅</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Check-list</div>
@@ -785,42 +717,41 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-red wide" onclick="showToast('Rapports — Module à venir')">
+        <button class="nav-btn nb-red wide" onclick="showToast(&#39;Rapports — Module à venir&#39;)">
           <div class="nav-btn-icon">📊</div>
           <div class="nav-btn-info">
-            <div class="nav-btn-label">Rapports & Bilans</div>
+            <div class="nav-btn-label">Rapports &amp; Bilans</div>
             <div class="nav-btn-desc">Mensuel · Annuel · Export PDF</div>
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
-
       </div>
 
-      <!-- Footer -->
       <div class="app-footer">
-        <div class="footer-version">UAS Manager v1.0.0 · Module 1</div>
+        <div class="footer-version">UAS Manager v1.0.0</div>
         <div class="footer-sync">
-          <div class="footer-sync-dot" id="sync-dot"></div>
-          <span id="sync-label">Sync —</span>
+          <div class="footer-sync-dot" id="sync-dot" style="background: var(--green);"></div>
+          <span id="sync-label">Sync 29/04 00:51</span>
         </div>
       </div>
 
     </section>
 
-  <!-- ════ ÉCRAN VOLS ════ -->
-<section id="screen-vols" class="screen" style="overflow:hidden;padding:0;">
-  <iframe src="https://phil74300.github.io/UAS-MANAGER/vols.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
-</section>
+    <!-- ════ ÉCRAN VOLS ════ -->
+    <section id="screen-vols" class="screen" style="overflow:hidden;padding:0;">
+      <iframe src="./index_files/vols.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
+    </section>
+
     <!-- ════ ÉCRAN MAINTENANCE ════ -->
-<section id="screen-maint" class="screen" style="overflow:hidden;padding:0;">
-  <iframe src="maintenance.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
-</section>
+    <section id="screen-maint" class="screen" style="overflow:hidden;padding:0;">
+      <iframe src="./index_files/maintenance.html" style="width:100%;height:100%;border:none;display:block;flex:1;"></iframe>
+    </section>
 
     <!-- ════ ÉCRAN MÉTÉO ════ -->
     <section id="screen-meteo" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">🌦️</div>
-        <div class="placeholder-title">Météo & NOTAM</div>
+        <div class="placeholder-title">Météo &amp; NOTAM</div>
         <div class="placeholder-text">Module 4 — METAR/TAF CheckWX, météo OpenWeather, ADS-B OpenSky, liens SOFIA</div>
         <div class="placeholder-badge">MODULE 4 — À VENIR</div>
       </div>
@@ -838,41 +769,38 @@
 
   </main>
 
-  <!-- ── Bottom Tab Bar ─────────────────────────────────── -->
   <nav id="tab-bar">
-    <button class="tab-btn active" onclick="navigateTo('accueil')" id="tab-accueil">
+    <button class="tab-btn active" onclick="navigateTo(&#39;accueil&#39;)" id="tab-accueil">
       <div class="tab-indicator"></div>
       <span class="tab-icon">🏠</span>
       <span class="tab-label">Accueil</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('vols')" id="tab-vols">
+    <button class="tab-btn" onclick="navigateTo(&#39;vols&#39;)" id="tab-vols">
       <div class="tab-indicator"></div>
       <span class="tab-icon">✈️</span>
       <span class="tab-label">Vols</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('maint')" id="tab-maint">
+    <button class="tab-btn" onclick="navigateTo(&#39;maint&#39;)" id="tab-maint">
       <div class="tab-indicator"></div>
       <span class="tab-icon">🔧</span>
       <span class="tab-label">Maint.</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('meteo')" id="tab-meteo">
+    <button class="tab-btn" onclick="navigateTo(&#39;meteo&#39;)" id="tab-meteo">
       <div class="tab-indicator"></div>
       <span class="tab-icon">🌦️</span>
       <span class="tab-label">Météo</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('config')" id="tab-config">
+    <button class="tab-btn" onclick="navigateTo(&#39;config&#39;)" id="tab-config">
       <div class="tab-indicator"></div>
       <span class="tab-icon">⚙️</span>
       <span class="tab-label">Config</span>
     </button>
   </nav>
 
-</div><!-- /#app -->
+</div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
-<!-- Install banner -->
 <div id="install-banner">
   <div class="install-row">
     <div style="font-size:32px">📱</div>
@@ -888,11 +816,6 @@
 </div>
 
 <script>
-// ============================================================
-//  UAS Manager — App Logic v1.0
-// ============================================================
-
-// ── Config exploitant ────────────────────────────────────────
 const EXPLOITANT = {
   nom: 'CONTE Philippe',
   alphatango: 'FRAjqq48j12nfy4c',
@@ -905,62 +828,34 @@ const EXPLOITANT = {
 const APP_VERSION = '1.0.0';
 const WARN_DAYS = 30;
 
-// ── Navigation ───────────────────────────────────────────────
 let currentScreen = 'accueil';
 
 function navigateTo(screenId) {
-  // Masque ancien écran
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-  // Affiche nouveau
   const screen = document.getElementById('screen-' + screenId);
   const tab = document.getElementById('tab-' + screenId);
   if (screen) screen.classList.add('active');
   if (tab) tab.classList.add('active');
-
   currentScreen = screenId;
-
-  // Update header subtitle
   const subtitles = {
-    accueil: 'Tableau de bord',
-    vols: 'Carnet de Vol',
-    maint: 'Maintenance & REX',
-    meteo: 'Météo & NOTAM',
-    config: 'Configuration'
+    accueil: 'Tableau de bord', vols: 'Carnet de Vol',
+    maint: 'Maintenance & REX', meteo: 'Météo & NOTAM', config: 'Configuration'
   };
   document.querySelector('#header-subtitle').textContent = subtitles[screenId] || '';
 }
 
-// ── Calcul validité ──────────────────────────────────────────
 function daysBetween(dateStr) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(dateStr);
-  target.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const target = new Date(dateStr); target.setHours(0,0,0,0);
   return Math.round((target - today) / 86400000);
 }
-
-function formatDate(dateStr) {
-  const [y, m, d] = dateStr.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-function getValidityClass(days) {
-  if (days < 0) return 'expired';
-  if (days <= WARN_DAYS) return 'warning';
-  return 'valid';
-}
-
-function getValidityIcon(days) {
-  if (days < 0) return '🔴';
-  if (days <= WARN_DAYS) return '🟡';
-  return '🟢';
-}
-
+function formatDate(dateStr) { const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
+function getValidityClass(days) { if (days < 0) return 'expired'; if (days <= WARN_DAYS) return 'warning'; return 'valid'; }
+function getValidityIcon(days) { if (days < 0) return '🔴'; if (days <= WARN_DAYS) return '🟡'; return '🟢'; }
 function getValidityRemain(days) {
   if (days < 0) return `Expiré depuis ${Math.abs(days)} j`;
-  if (days === 0) return 'Expire aujourd\'hui !';
+  if (days === 0) return "Expire aujourd'hui !";
   if (days <= WARN_DAYS) return `⚠️ Expire dans ${days} j`;
   return `Valide — ${days} j restants`;
 }
@@ -968,68 +863,45 @@ function getValidityRemain(days) {
 function renderValidity() {
   const container = document.getElementById('validity-section');
   const items = [EXPLOITANT.cats, EXPLOITANT.assurance];
-  
   container.innerHTML = items.map(item => {
     const days = daysBetween(item.expire);
     const cls = getValidityClass(days);
-    const icon = getValidityIcon(days);
-    const remain = getValidityRemain(days);
     return `
       <div class="validity-card ${cls}">
         <div class="validity-status-dot"></div>
-        <div class="validity-icon">${icon}</div>
+        <div class="validity-icon">${getValidityIcon(days)}</div>
         <div class="validity-label">${item.label}</div>
         <div class="validity-date">${formatDate(item.expire)}</div>
-        <div class="validity-remain">${remain}</div>
+        <div class="validity-remain">${getValidityRemain(days)}</div>
         <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">${item.ref}</div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
-// ── Lecture KPIs depuis localStorage ────────────────────────
 function loadKPIs() {
   const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-  // Structure attendue dans localStorage :
-  // uas_vols_YYYY-MM = { count: N, heures: H.hh }
-  // uas_incidents_total = N
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const volsData = JSON.parse(localStorage.getItem(`uas_vols_${monthKey}`) || 'null');
   const incidents = parseInt(localStorage.getItem('uas_incidents_total') || '0', 10);
-
   const volsCount = volsData ? volsData.count : 0;
   const heures = volsData ? volsData.heures : 0;
-
   document.getElementById('kpi-vols').textContent = volsCount;
   document.getElementById('kpi-heures').textContent = heures > 0 ? `${heures.toFixed(1)}h` : '0h';
   document.getElementById('kpi-incidents').textContent = incidents;
-
-  const incCard = document.getElementById('kpi-card-incidents');
-  incCard.dataset.zero = incidents === 0 ? 'true' : 'false';
+  document.getElementById('kpi-card-incidents').dataset.zero = incidents === 0 ? 'true' : 'false';
 }
 
-// ── Sync footer ──────────────────────────────────────────────
 function updateSyncLabel() {
   const lastSync = localStorage.getItem('uas_last_sync');
   const label = document.getElementById('sync-label');
   const dot = document.getElementById('sync-dot');
-
-  if (!lastSync) {
-    label.textContent = 'Jamais synchronisé';
-    dot.style.background = 'var(--amber)';
-    return;
-  }
+  if (!lastSync) { label.textContent = 'Jamais synchronisé'; dot.style.background = 'var(--amber)'; return; }
   const d = new Date(parseInt(lastSync));
-  const opts = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
-  label.textContent = `Sync ${d.toLocaleDateString('fr-FR', opts)}`;
+  label.textContent = `Sync ${d.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
   dot.style.background = 'var(--green)';
-
-  // Marquer la sync actuelle
   localStorage.setItem('uas_last_sync', Date.now().toString());
 }
 
-// ── Toast ────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg) {
   const el = document.getElementById('toast');
@@ -1039,56 +911,32 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-// ── Service Worker ───────────────────────────────────────────
 async function registerSW() {
   if ('serviceWorker' in navigator) {
     try {
-      const reg = await navigator.serviceWorker.register('/sw.js');
+      const reg = await navigator.serviceWorker.register('/UAS-MANAGER/sw.js');
       console.log('[App] SW enregistré:', reg.scope);
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showToast('Mise à jour disponible — Rechargez');
-          }
-        });
-      });
-    } catch (err) {
-      console.warn('[App] SW non enregistré:', err);
-    }
+    } catch (err) { console.warn('[App] SW non enregistré:', err); }
   }
 }
 
-// ── PWA Install ──────────────────────────────────────────────
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Afficher banner seulement si pas déjà refusé
+  e.preventDefault(); deferredPrompt = e;
   if (!localStorage.getItem('uas_install_dismissed')) {
-    setTimeout(() => {
-      document.getElementById('install-banner').style.display = 'block';
-    }, 3000);
+    setTimeout(() => { document.getElementById('install-banner').style.display = 'block'; }, 3000);
   }
 });
 
 function triggerInstall() {
   document.getElementById('install-banner').style.display = 'none';
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(r => {
-      if (r.outcome === 'accepted') showToast('✅ UAS Manager installé !');
-      deferredPrompt = null;
-    });
-  }
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
 }
-
 function dismissInstall() {
   document.getElementById('install-banner').style.display = 'none';
   localStorage.setItem('uas_install_dismissed', '1');
 }
 
-// ── Offline detection ────────────────────────────────────────
 function updateOnlineStatus() {
   document.body.classList.toggle('offline', !navigator.onLine);
   if (!navigator.onLine) showToast('📡 Mode hors-ligne activé');
@@ -1096,25 +944,14 @@ function updateOnlineStatus() {
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
-// ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  renderValidity();
-  loadKPIs();
-  updateSyncLabel();
-  updateOnlineStatus();
-  registerSW();
-
-  // Marque la 1ère sync
-  if (!localStorage.getItem('uas_last_sync')) {
-    localStorage.setItem('uas_last_sync', Date.now().toString());
-  }
+  renderValidity(); loadKPIs(); updateSyncLabel(); updateOnlineStatus(); registerSW();
+  if (!localStorage.getItem('uas_last_sync')) localStorage.setItem('uas_last_sync', Date.now().toString());
 });
 
-// ── Gestion back button (Android/iOS PWA) ───────────────────
-window.addEventListener('popstate', () => {
-  if (currentScreen !== 'accueil') navigateTo('accueil');
-});
+window.addEventListener('popstate', () => { if (currentScreen !== 'accueil') navigateTo('accueil'); });
 </script>
 
-</body>
-</html>
+
+
+</body></html>
