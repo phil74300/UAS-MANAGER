@@ -6,10 +6,11 @@
 
 const CACHE_NAME = 'uas-manager-v1.0.0';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/sw.js'
+  '/UAS-MANAGER/',
+  '/UAS-MANAGER/index.html',
+  '/UAS-MANAGER/vols.html',
+  '/UAS-MANAGER/manifest.json',
+  '/UAS-MANAGER/sw.js'
 ];
 
 // APIs externes — toujours réseau (jamais mis en cache)
