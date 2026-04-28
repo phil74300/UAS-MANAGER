@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0047)file:///Users/contephilippe/Downloads/vols.html -->
+<!-- saved from url=(0049)file:///Users/contephilippe/Downloads/vols_1.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -46,7 +46,6 @@
     body { background: #111B28; }
     .card, .modal-box { background: #192232; border: 1px solid #2E3E52; }
     .form-group input, .form-group select, .form-group textarea { background: #1A2535; border-color: #2E3E52; color: var(--text); }
-    .tab-bar { background: #111B28; border-top: 1px solid #2E3E52; }
     .kpi-card { background: #192232; border: 1px solid #2E3E52; }
     .vol-row { background: #192232; border: 1px solid #2E3E52; }
     .vol-row.incident { background: #2A0E0E !important; border-color: #8B2020 !important; }
@@ -61,7 +60,7 @@
 
   /* ── APP SHELL ── */
   .app { display: flex; flex-direction: column; height: 100%; max-width: 768px; margin: 0 auto; position: relative; }
-  .main-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 8px); }
+  .main-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
 
   /* ── HEADER ── */
   .app-header {
@@ -83,7 +82,7 @@
     border-bottom: 1px solid var(--gray-mid);
     padding: 10px 16px;
     display: flex; align-items: center; gap: 12px;
-    position: sticky; top: 62px; z-index: 99;
+    position: sticky; top: 0; z-index: 99;
   }
   .chrono-display { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--navy); min-width: 80px; }
   .chrono-display.running { color: var(--green); }
@@ -227,16 +226,6 @@
   }
   .btn-submit:active { background: var(--navy); }
 
-  /* ── TAB BAR ── */
-  .tab-bar {
-    background: #fff; border-top: 1px solid var(--gray-mid);
-    display: flex; height: calc(var(--tab-h) + var(--safe-bottom));
-    padding-bottom: var(--safe-bottom);
-    position: sticky; bottom: 0; z-index: 100;
-  }
-  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: var(--gray-dark); font-size: 10px; font-weight: 500; padding-top: 6px; }
-  .tab-item.active { color: var(--blue); }
-  .tab-item .tab-icon { font-size: 22px; }
 
   /* ── CONFIRM MODAL ── */
   .confirm-overlay {
@@ -322,13 +311,6 @@
   </div>
 
   <!-- TAB BAR -->
-  <nav class="tab-bar">
-    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🏠</span>Accueil</a>
-    <a class="tab-item active" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">✈️</span>Vols</a>
-    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🔧</span>Maint.</a>
-    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🌦</span>Météo</a>
-    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">⚙️</span>Config</a>
-  </nav>
 </div>
 
 <!-- ══ MODAL SAISIE VOL ══ -->
@@ -522,11 +504,7 @@
     </div>
   </div>
 </div>
-// Masquer la tab bar si chargé dans une iframe
-if (window.self !== window.top) {
-  document.querySelector('.tab-bar').style.display = 'none';
-  document.querySelector('.main-content').style.paddingBottom = '8px';
-}
+
 <script>
 'use strict';
 
