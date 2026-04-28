@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)file:///Users/contephilippe/Downloads/maintenance.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Maintenance — UAS Manager</title>
+<style>
+  :root {
+    --navy:        #0C447C;
+    --blue:        #185FA5;
+    --light-blue:  #E6F1FB;
+    --green:       #1D6B37;
+    --light-green: #E8F5E9;
+    --amber:       #BA7517;
+    --light-amber: #FAEEDA;
+    --red:         #8B2020;
+    --light-red:   #FDECEC;
+    --teal:        #006064;
+    --gray:        #6B7280;
+    --bg:          #F5F7FA;
+    --surface:     #FFFFFF;
+    --border:      #DDE3EC;
+    --text:        #1A202C;
+    --text-muted:  #6B7280;
+    --radius:      12px;
+    --shadow:      0 2px 12px rgba(12,68,124,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E1620; --surface: #162030; --border: #243248;
+      --text: #E8EEF6; --text-muted: #8A9BB5;
+      --light-blue: #162A42; --light-green: #0F2A1A;
+      --light-amber: #2A1E08; --light-red: #2A0F0F;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--navy);
+    color: #fff;
+    padding: calc(env(safe-area-inset-top) + 12px) 16px 14px;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .header-icon { font-size: 22px; }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+  .header-sub { font-size: 11px; opacity: .7; margin-top: 1px; }
+
+  /* ── Alert Banner ── */
+  .alert-banner {
+    display: none; margin: 12px 16px 0;
+    border-radius: var(--radius); padding: 10px 14px;
+    font-size: 13px; font-weight: 600;
+    align-items: center; gap: 8px;
+  }
+  .alert-banner.amber { display: flex; background: var(--light-amber); color: var(--amber); border: 1.5px solid #E8A030; }
+  .alert-banner.red   { display: flex; background: var(--light-red);   color: var(--red);   border: 1.5px solid #C03030; }
+  .alert-banner .alert-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* ── Section ── */
+  .section {
+    margin: 14px 16px 0;
+  }
+  .section-title {
+    font-size: 11px; font-weight: 700; color: var(--navy);
+    text-transform: uppercase; letter-spacing: .8px;
+    margin-bottom: 8px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card + .card { margin-top: 10px; }
+
+  /* ── Card Row ── */
+  .card-row {
+    display: flex; align-items: center;
+    padding: 13px 16px; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-row:last-child { border-bottom: none; }
+  .row-label {
+    font-size: 13px; color: var(--text-muted); min-width: 130px; flex-shrink: 0;
+  }
+  .row-value {
+    font-size: 14px; font-weight: 600; color: var(--text); flex: 1;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+  }
+  .badge-green  { background: var(--light-green); color: var(--green); }
+  .badge-amber  { background: var(--light-amber); color: var(--amber); }
+  .badge-red    { background: var(--light-red);   color: var(--red); }
+  .badge-gray   { background: var(--border); color: var(--gray); }
+
+  /* ── Form Elements ── */
+  .form-row {
+    display: flex; flex-direction: column;
+    padding: 12px 16px; gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-row:last-child { border-bottom: none; }
+  .form-label {
+    font-size: 12px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 15px; color: var(--text);
+    font-family: inherit; -webkit-appearance: none; appearance: none;
+    transition: border-color .2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none; border-color: var(--blue);
+  }
+  .form-textarea { min-height: 80px; resize: vertical; }
+
+  /* ── Inline Grid ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── Button ── */
+  .btn {
+    width: 100%; padding: 14px;
+    border-radius: var(--radius); border: none;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity .15s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn:active { opacity: .8; transform: scale(.98); }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-green   { background: var(--green); color: #fff; }
+  .btn-danger  { background: var(--red); color: #fff; }
+  .btn-ghost   {
+    background: transparent; color: var(--blue);
+    border: 1.5px solid var(--blue);
+  }
+
+  /* ── History List ── */
+  .history-item {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; margin-top: 1px;
+  }
+  .history-body { flex: 1; }
+  .history-title { font-size: 14px; font-weight: 600; }
+  .history-meta  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .history-note  { font-size: 13px; color: var(--text); margin-top: 4px; font-style: italic; }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex; background: var(--surface);
+    border-radius: var(--radius); padding: 4px;
+    box-shadow: var(--shadow); gap: 4px;
+  }
+  .tab-btn {
+    flex: 1; padding: 9px 4px; border: none; border-radius: 8px;
+    background: transparent; cursor: pointer;
+    font-size: 12px; font-weight: 600; color: var(--text-muted);
+    transition: background .2s, color .2s;
+  }
+  .tab-btn.active { background: var(--navy); color: #fff; }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+    z-index: 200;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 2px; text-decoration: none;
+    font-size: 10px; font-weight: 600; color: var(--text-muted);
+    padding: 4px 0; transition: color .2s;
+  }
+  .nav-item.active { color: var(--blue); }
+  .nav-item .nav-icon { font-size: 22px; line-height: 1; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: calc(90px + env(safe-area-inset-bottom));
+    left: 16px; right: 16px;
+    background: var(--navy); color: #fff;
+    padding: 12px 16px; border-radius: var(--radius);
+    font-size: 14px; font-weight: 600;
+    display: none; align-items: center; gap: 8px;
+    z-index: 500; box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  }
+  .toast.show { display: flex; animation: slideUp .3s ease; }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* ── Separator ── */
+  .sep { height: 1px; background: var(--border); margin: 0 16px; }
+
+  /* ── Empty State ── */
+  .empty { text-align: center; padding: 32px 16px; color: var(--text-muted); }
+  .empty-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+
+  /* ── Post-Intervention ── */
+  .post-block {
+    background: var(--light-green); border: 1.5px solid #7DC890;
+    border-radius: var(--radius); padding: 12px 14px; margin-top: 6px;
+  }
+  .post-block .post-title {
+    font-size: 12px; font-weight: 700; color: var(--green);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-icon">🔧</div>
+  <div>
+    <h1>Maintenance</h1>
+    <div class="header-sub">DJI Mavic 4 Pro · UAS-FR-517804</div>
+  </div>
+</div>
+
+<!-- Alert Banner (injecté par JS) -->
+<div class="alert-banner" id="alertBanner">
+  <span class="alert-icon" id="alertIcon">⚠️</span>
+  <span id="alertText"></span>
+</div>
+
+<!-- Tabs -->
+<div class="section">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab(&#39;statut&#39;)" id="tab-statut">📊 Statut</button>
+    <button class="tab-btn" onclick="showTab(&#39;saisie&#39;)" id="tab-saisie">➕ Saisir</button>
+    <button class="tab-btn" onclick="showTab(&#39;historique&#39;)" id="tab-historique">📋 Historique</button>
+  </div>
+</div>
+
+<!-- ── TAB : STATUT ── -->
+<div id="pane-statut">
+  <div class="section">
+    <div class="section-title">État actuel de l'appareil</div>
+    <div class="card">
+      <div class="card-row">
+        <div class="row-label">Dernier entretien</div>
+        <div class="row-value" id="dernierEntretien">—</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Prochain entretien</div>
+        <div class="row-value" id="prochainEntretienDisplay">—</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Heures de vol</div>
+        <div class="row-value" id="heuresVol">—</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Cycles batterie</div>
+        <div class="row-value" id="cyclesBatterie">—</div>
+      </div>
+      <div class="card-row">
+        <div class="row-label">Statut général</div>
+        <div class="row-value" id="statutGeneral"><span class="badge badge-gray">Non défini</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Composants suivis</div>
+    <div class="card" id="composantsCard"><div class="empty"><span class="empty-icon">🔩</span>Aucun composant enregistré</div></div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <button class="btn btn-primary" onclick="showTab(&#39;saisie&#39;)">＋ Ajouter une intervention</button>
+  </div>
+</div>
+
+<!-- ── TAB : SAISIE ── -->
+<div id="pane-saisie" style="display:none">
+  <div class="section">
+    <div class="section-title">Nouvelle intervention</div>
+    <div class="card">
+      <div class="form-row">
+        <label class="form-label">Date d'intervention *</label>
+        <input type="date" class="form-input" id="dateIntervention">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Type d'intervention *</label>
+        <select class="form-select" id="typeIntervention">
+          <option value="">— Sélectionner —</option>
+          <option value="Entretien périodique">Entretien périodique</option>
+          <option value="Remplacement hélices">Remplacement hélices</option>
+          <option value="Remplacement batterie">Remplacement batterie</option>
+          <option value="Mise à jour firmware">Mise à jour firmware</option>
+          <option value="Contrôle visuel">Contrôle visuel</option>
+          <option value="Réparation">Réparation</option>
+          <option value="Étalonnage IMU/compass">Étalonnage IMU/compass</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Opérateur / Technicien</label>
+        <input type="text" class="form-input" id="technicien" placeholder="CONTE Philippe">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Heures de vol au moment de l'intervention</label>
+        <input type="number" class="form-input" id="heuresIntervention" placeholder="ex: 42.5" step="0.1">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Observations / Pièces remplacées</label>
+        <textarea class="form-textarea" id="observationsIntervention" placeholder="Détails de l&#39;intervention, références pièces…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Prochain entretien prévu</div>
+    <div class="card">
+      <div class="form-row">
+        <label class="form-label">Date prévue *</label>
+        <input type="date" class="form-input" id="prochainEntretienDate">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Motif / Seuil de déclenchement</label>
+        <input type="text" class="form-input" id="prochainMotif" placeholder="ex: 50h de vol, 6 mois, …">
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">✅ Essai post-intervention</div>
+    <div class="card">
+      <div class="form-row">
+        <label class="form-label">Date de l'essai</label>
+        <input type="date" class="form-input" id="essaiDate">
+      </div>
+      <div class="form-row">
+        <label class="form-label">N° de vol d'essai</label>
+        <input type="text" class="form-input" id="essaiNumVol" placeholder="ex: VOL-2025-042">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Résultat de l'essai</label>
+        <select class="form-select" id="essaiResultat">
+          <option value="">— Sélectionner —</option>
+          <option value="Conforme">✅ Conforme — appareil opérationnel</option>
+          <option value="Anomalie mineure">⚠️ Anomalie mineure — à surveiller</option>
+          <option value="Non conforme">❌ Non conforme — hors service</option>
+          <option value="Essai non réalisé">⛔ Essai non réalisé</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes essai</label>
+        <textarea class="form-textarea" id="essaiNotes" placeholder="Comportement observé, conditions de vol, …" style="min-height:60px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <button class="btn btn-green" onclick="saveIntervention()">💾 Enregistrer l'intervention</button>
+  </div>
+</div>
+
+<!-- ── TAB : HISTORIQUE ── -->
+<div id="pane-historique" style="display:none">
+  <div class="section">
+    <div class="section-title">Historique des interventions</div>
+    <div class="card" id="historiqueList">
+      <div class="empty"><span class="empty-icon">📋</span>Aucune intervention enregistrée</div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:16px;">
+    <button class="btn btn-ghost" onclick="exportCSV()">⬇️ Exporter CSV</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <a class="nav-item" href="file:///Users/contephilippe/Downloads/maintenance.html#"><div class="nav-icon">🏠</div>Accueil</a>
+  <a class="nav-item" href="file:///Users/contephilippe/Downloads/maintenance.html#"><div class="nav-icon">✈️</div>Vols</a>
+  <a class="nav-item active" href="file:///Users/contephilippe/Downloads/maintenance.html#"><div class="nav-icon">🔧</div>Maint.</a>
+  <a class="nav-item" href="file:///Users/contephilippe/Downloads/maintenance.html#"><div class="nav-icon">🌦</div>Météo</a>
+  <a class="nav-item" href="file:///Users/contephilippe/Downloads/rex.html"><div class="nav-icon">⚙️</div>REX</a>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+const STORAGE_KEY = 'uas_maintenance';
+
+/* ── Helpers ── */
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const diff = new Date(dateStr) - new Date(today());
+  return Math.ceil(diff / 86400000);
+}
+function fmt(dateStr) {
+  if (!dateStr) return '—';
+  const [y,m,d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { interventions: [], config: {} }; }
+  catch { return { interventions: [], config: {} }; }
+}
+function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function showToast(msg, icon='✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = icon;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── Tab navigation ── */
+function showTab(name) {
+  ['statut','saisie','historique'].forEach(t => {
+    document.getElementById('pane-'+t).style.display = t===name ? '' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if (name==='statut') renderStatut();
+  if (name==='historique') renderHistorique();
+}
+
+/* ── Alert Banner ── */
+function updateAlertBanner() {
+  const data = load();
+  const banner = document.getElementById('alertBanner');
+  const prochain = data.config.prochainEntretienPrevu;
+  if (!prochain) { banner.className='alert-banner'; return; }
+  const j = daysUntil(prochain);
+  if (j !== null && j < 1) {
+    banner.className = 'alert-banner red';
+    document.getElementById('alertIcon').textContent = '🚨';
+    document.getElementById('alertText').textContent =
+      `ALERTE CRITIQUE — Entretien prévu le ${fmt(prochain)} (délai dépassé ou J-0)`;
+  } else if (j !== null && j <= 7) {
+    banner.className = 'alert-banner amber';
+    document.getElementById('alertIcon').textContent = '⚠️';
+    document.getElementById('alertText').textContent =
+      `Entretien prévu dans ${j} jour${j>1?'s':''} (${fmt(prochain)})`;
+  } else {
+    banner.className = 'alert-banner';
+  }
+}
+
+/* ── Render Statut ── */
+function renderStatut() {
+  const data = load();
+  const ivs = data.config;
+  const dernier = data.interventions.length
+    ? data.interventions[data.interventions.length-1] : null;
+
+  document.getElementById('dernierEntretien').textContent =
+    dernier ? `${fmt(dernier.date)} — ${dernier.type}` : '—';
+
+  const prochain = ivs.prochainEntretienPrevu;
+  const j = daysUntil(prochain);
+  let badge = '';
+  if (prochain && j !== null) {
+    if (j < 1) badge = `<span class="badge badge-red">🚨 Critique</span>`;
+    else if (j <= 7) badge = `<span class="badge badge-amber">⚠️ J-${j}</span>`;
+    else badge = `<span class="badge badge-green">✅ J-${j}</span>`;
+  }
+  document.getElementById('prochainEntretienDisplay').innerHTML =
+    prochain ? `${fmt(prochain)} ${badge}` : '—';
+
+  document.getElementById('heuresVol').textContent =
+    ivs.dernieresHeures ? `${ivs.dernieresHeures} h` : '—';
+  document.getElementById('cyclesBatterie').textContent =
+    ivs.cyclesBatterie ? `${ivs.cyclesBatterie} cycles` : '—';
+
+  // Statut général
+  const statEl = document.getElementById('statutGeneral');
+  if (!dernier) { statEl.innerHTML = '<span class="badge badge-gray">Non défini</span>'; }
+  else if (dernier.essaiResultat === 'Conforme') {
+    statEl.innerHTML = '<span class="badge badge-green">✅ Opérationnel</span>';
+  } else if (dernier.essaiResultat === 'Non conforme') {
+    statEl.innerHTML = '<span class="badge badge-red">❌ Hors service</span>';
+  } else if (dernier.essaiResultat === 'Anomalie mineure') {
+    statEl.innerHTML = '<span class="badge badge-amber">⚠️ Surveillance</span>';
+  } else {
+    statEl.innerHTML = '<span class="badge badge-gray">Inconnu</span>';
+  }
+
+  // Composants
+  const card = document.getElementById('composantsCard');
+  if (data.interventions.length === 0) {
+    card.innerHTML = '<div class="empty"><span class="empty-icon">🔩</span>Aucun composant enregistré</div>';
+    return;
+  }
+  const types = {};
+  data.interventions.forEach(iv => {
+    if (!types[iv.type] || iv.date > types[iv.type].date) types[iv.type] = iv;
+  });
+  card.innerHTML = Object.entries(types).map(([type, iv]) => `
+    <div class="card-row">
+      <div class="row-label" style="font-size:13px;">${type}</div>
+      <div class="row-value" style="font-size:13px;">${fmt(iv.date)}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Save Intervention ── */
+function saveIntervention() {
+  const dateI = document.getElementById('dateIntervention').value;
+  const typeI = document.getElementById('typeIntervention').value;
+  if (!dateI || !typeI) { showToast('Date et type requis', '⚠️'); return; }
+
+  const data = load();
+  const intervention = {
+    id: Date.now(),
+    date: dateI,
+    type: typeI,
+    technicien: document.getElementById('technicien').value || 'CONTE Philippe',
+    heures: document.getElementById('heuresIntervention').value,
+    observations: document.getElementById('observationsIntervention').value,
+    essaiDate: document.getElementById('essaiDate').value,
+    essaiNumVol: document.getElementById('essaiNumVol').value,
+    essaiResultat: document.getElementById('essaiResultat').value,
+    essaiNotes: document.getElementById('essaiNotes').value,
+  };
+  data.interventions.push(intervention);
+
+  // MAJ config globale
+  const prochain = document.getElementById('prochainEntretienDate').value;
+  if (prochain) data.config.prochainEntretienPrevu = prochain;
+  if (document.getElementById('prochainMotif').value)
+    data.config.prochainMotif = document.getElementById('prochainMotif').value;
+  if (intervention.heures)
+    data.config.dernieresHeures = intervention.heures;
+
+  save(data);
+  updateAlertBanner();
+
+  // Reset form
+  ['dateIntervention','heuresIntervention','observationsIntervention',
+   'essaiDate','essaiNumVol','essaiNotes','prochainEntretienDate','prochainMotif'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('typeIntervention').value = '';
+  document.getElementById('essaiResultat').value = '';
+  document.getElementById('technicien').value = '';
+
+  showToast('Intervention enregistrée');
+  showTab('statut');
+}
+
+/* ── Render Historique ── */
+function renderHistorique() {
+  const data = load();
+  const list = document.getElementById('historiqueList');
+  if (data.interventions.length === 0) {
+    list.innerHTML = '<div class="empty"><span class="empty-icon">📋</span>Aucune intervention enregistrée</div>';
+    return;
+  }
+  const iconMap = {
+    'Entretien périodique': '🔧', 'Remplacement hélices': '🌀',
+    'Remplacement batterie': '🔋', 'Mise à jour firmware': '📱',
+    'Contrôle visuel': '👁', 'Réparation': '🛠', 'Étalonnage IMU/compass': '🧭',
+    'Autre': '📌'
+  };
+  const colorMap = {
+    'Conforme': 'badge-green', 'Anomalie mineure': 'badge-amber',
+    'Non conforme': 'badge-red', 'Essai non réalisé': 'badge-gray', '': 'badge-gray'
+  };
+  list.innerHTML = [...data.interventions].reverse().map(iv => `
+    <div class="history-item">
+      <div class="history-icon" style="background:var(--light-blue);font-size:18px">
+        ${iconMap[iv.type]||'🔧'}
+      </div>
+      <div class="history-body">
+        <div class="history-title">${iv.type}</div>
+        <div class="history-meta">
+          ${fmt(iv.date)} · ${iv.technicien||'—'}
+          ${iv.heures ? ` · ${iv.heures}h` : ''}
+        </div>
+        ${iv.observations ? `<div class="history-note">${iv.observations}</div>` : ''}
+        ${iv.essaiDate ? `
+          <div style="margin-top:6px;padding:6px 10px;background:var(--light-green);border-radius:8px;font-size:12px;">
+            <strong>Essai :</strong> ${fmt(iv.essaiDate)}
+            ${iv.essaiNumVol ? `· N° ${iv.essaiNumVol}` : ''}
+            ${iv.essaiResultat ? `<span class="badge ${colorMap[iv.essaiResultat]||'badge-gray'}" style="margin-left:6px;">${iv.essaiResultat}</span>` : ''}
+            ${iv.essaiNotes ? `<br><em>${iv.essaiNotes}</em>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Export CSV ── */
+function exportCSV() {
+  const data = load();
+  if (!data.interventions.length) { showToast('Aucune donnée à exporter', '⚠️'); return; }
+  const header = 'Date;Type;Technicien;Heures;Observations;Essai Date;Essai Vol;Essai Résultat;Essai Notes';
+  const rows = data.interventions.map(iv =>
+    [iv.date, iv.type, iv.technicien, iv.heures, iv.observations,
+     iv.essaiDate, iv.essaiNumVol, iv.essaiResultat, iv.essaiNotes]
+    .map(v => `"${(v||'').replace(/"/g,'""')}"`)
+    .join(';')
+  );
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `maintenance_UAS_${today()}.csv`;
+  a.click();
+}
+
+/* ── Init ── */
+document.getElementById('dateIntervention').value = today();
+document.getElementById('essaiDate').value = today();
+document.getElementById('technicien').value = 'CONTE Philippe';
+updateAlertBanner();
+renderStatut();
+</script>
+
+
+</body></html>
