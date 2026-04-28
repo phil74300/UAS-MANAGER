@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///Users/contephilippe/Downloads/rex_2.html -->
+<!-- saved from url=(0048)file:///Users/contephilippe/Downloads/rex_3.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -306,7 +306,7 @@
   <div class="dsac-banner-title">🚨 DÉCLARATION DSAC REQUISE — délai dépassé</div>
   <div class="dsac-banner-sub" id="dsacBannerSub"></div>
   <button class="dsac-btn" onclick="openCresus()">
-    🔗 Déclarer sur CRESUS maintenant
+    🔗 Ouvrir le formulaire CRESUS (PDF)
   </button>
 </div>
 
@@ -328,7 +328,9 @@
 <!-- ── TAB : LISTE ── -->
 <div id="pane-liste">
   <div class="section" style="margin-bottom:16px;">
-    <div class="card" id="incidentsList"><div class="empty"><span class="empty-icon">🛡️</span>Aucun incident enregistré — bonne nouvelle !</div></div>
+    <div class="card" id="incidentsList">
+      <div class="empty"><span class="empty-icon">🛡️</span>Aucun incident enregistré — bonne nouvelle !</div>
+    </div>
   </div>
 </div>
 
@@ -404,7 +406,7 @@
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <div id="dsacFields" style="opacity: 0.5;">
+      <div id="dsacFields">
         <div class="form-row">
           <label class="form-label">Date de déclaration CRESUS</label>
           <input type="date" class="form-input" id="dsacDate">
@@ -413,10 +415,18 @@
           <label class="form-label">N° de dossier CRESUS</label>
           <input type="text" class="form-input" id="dsacNumero" placeholder="ex: CRESUS-2025-XXXXX">
         </div>
-        <div class="form-row" style="padding-top:6px;">
-          <button class="cresus-btn" onclick="openCresus()" style="width:auto;">
-            🔗 Ouvrir CRESUS dans Safari
+        <div class="form-row" style="padding-top:6px; gap:8px; display:flex; flex-direction:column;">
+          <button class="cresus-btn" onclick="openCresus()" style="width:100%;">
+            📄 Ouvrir le formulaire CRESUS (PDF)
           </button>
+          <button class="cresus-btn" onclick="sendMailDSAC()" style="width:100%; background:var(--light-amber); color:var(--amber); border-color:var(--amber);">
+            📧 Envoyer par mail à la DSAC
+          </button>
+        </div>
+        <div style="padding:4px 16px 12px; font-size:11px; color:var(--text-muted); line-height:1.6;">
+          Destinataires pré-remplis :<br>
+          · dsac-autorisations-drones-bf@aviation-civile.gouv.fr<br>
+          · ag.dsac-ce@aviation-civile.gouv.fr
         </div>
       </div>
     </div>
@@ -468,7 +478,7 @@
   <a class="nav-item" href="file:///Users/contephilippe/Downloads/index.html"><div class="nav-icon">🏠</div>Accueil</a>
   <a class="nav-item" href="file:///Users/contephilippe/Downloads/vols.html"><div class="nav-icon">✈️</div>Vols</a>
   <a class="nav-item" href="file:///Users/contephilippe/Downloads/maintenance.html"><div class="nav-icon">🔧</div>Maint.</a>
-  <a class="nav-item" href="file:///Users/contephilippe/Downloads/rex_2.html#meteo"><div class="nav-icon">🌦</div>Météo</a>
+  <a class="nav-item" href="file:///Users/contephilippe/Downloads/rex_3.html#meteo"><div class="nav-icon">🌦</div>Météo</a>
   <a class="nav-item active" href="file:///Users/contephilippe/Downloads/rex.html"><div class="nav-icon">⚙️</div>REX</a>
 </nav>
 
@@ -480,7 +490,7 @@
 
 <script>
 const STORAGE_KEY = 'uas_rex';
-const CRESUS_URL  = 'https://cresus.aviation-civile.gouv.fr/';
+const CRESUS_URL  = 'https://www.ecologie.gouv.fr/sites/default/files/documents/CRESUS_2022.pdf';
 const H72         = 72 * 3600 * 1000;
 
 /* ── Helpers ── */
@@ -502,6 +512,62 @@ function showToast(msg, icon='✅') {
 
 /* ── CRESUS ── */
 function openCresus() { window.open(CRESUS_URL, '_blank'); }
+
+function sendMailDSAC() {
+  const to = 'dsac-autorisations-drones-bf@aviation-civile.gouv.fr;ag.dsac-ce@aviation-civile.gouv.fr';
+  const subject = encodeURIComponent('Déclaration incident UAS — CONTE Philippe — FRAjqq48j12nfy4c');
+  const date    = document.getElementById('incidentDate').value;
+  const cat     = document.getElementById('incidentCategorie').value;
+  const grav    = document.getElementById('incidentGravite').value;
+  const lieu    = document.getElementById('incidentLieu').value;
+  const numVol  = document.getElementById('incidentNumVol').value;
+  const desc    = document.getElementById('incidentDescription').value;
+  const causes  = document.getElementById('incidentCauses').value;
+  const actions = document.getElementById('incidentActions').value;
+
+  const body = encodeURIComponent(
+`Madame, Monsieur,
+
+Je vous adresse ci-joint le formulaire CRESUS complété relatif à l'incident suivant :
+
+EXPLOITANT
+──────────────────────────────
+Nom          : CONTE Philippe
+N° AlphaTango: FRAjqq48j12nfy4c
+Aéronef      : DJI Mavic 4 Pro — UAS-FR-517804
+CATS         : NLD-RP-q99cvjjh51fz
+Assurance    : COVERDRONE CDA22411846EUR
+Adresse      : 288, rue de la Concorde — 74300 THYEZ
+Tél.         : +33 6 20 42 55 11
+Email        : contephil74@gmail.com
+
+INCIDENT
+──────────────────────────────
+Date         : ${date || '—'}
+Catégorie    : ${cat || '—'}
+Gravité      : ${grav ? `Niveau ${grav}` : '—'}
+Lieu         : ${lieu || '—'}
+N° vol       : ${numVol || '—'}
+
+Description  :
+${desc || '—'}
+
+Causes identifiées :
+${causes || '—'}
+
+Actions correctives :
+${actions || '—'}
+
+──────────────────────────────
+Veuillez trouver en pièce jointe le formulaire CRESUS dûment complété.
+(Formulaire disponible : https://www.ecologie.gouv.fr/sites/default/files/documents/CRESUS_2022.pdf)
+
+Cordialement,
+CONTE Philippe`
+  );
+
+  window.location.href = \`mailto:\${to}?subject=\${subject}&body=\${body}\`;
+}
 
 /* ── Tab navigation ── */
 function showTab(name) {
@@ -663,7 +729,7 @@ function renderListe() {
           ${!inc.declareDSAC ? `
             <div style="margin-top:8px;">
               <button class="cresus-btn" onclick="declareFromList(${inc.id})">
-                🔗 Déclarer CRESUS
+                🔗 Formulaire CRESUS (PDF)
               </button>
             </div>
           ` : ''}
