@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/contephilippe/Downloads/index_3.html -->
+<!-- saved from url=(0050)file:///Users/contephilippe/Downloads/index_5.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -731,20 +731,28 @@
         <div class="footer-version">UAS Manager v1.0.0</div>
         <div class="footer-sync">
           <div class="footer-sync-dot" id="sync-dot" style="background: var(--green);"></div>
-          <span id="sync-label">Sync 29/04 00:55</span>
+          <span id="sync-label">Sync 29/04 01:22</span>
         </div>
       </div>
 
     </section>
 
     <!-- ════ ÉCRAN VOLS ════ -->
-    <section id="screen-vols" class="screen" style="overflow:hidden;padding:0;">
-      <iframe src="./index_files/vols.html" style="width:100%;height:100%;border:none;display:block;"></iframe>
+    <section id="screen-vols" class="screen">
+      <div class="placeholder-screen">
+        <div class="placeholder-icon">✈️</div>
+        <div class="placeholder-title">Carnet de Vol</div>
+        <div class="placeholder-text">Ouverture du carnet de vol…</div>
+      </div>
     </section>
 
     <!-- ════ ÉCRAN MAINTENANCE ════ -->
-    <section id="screen-maint" class="screen" style="overflow:hidden;padding:0;">
-      <iframe src="./index_files/maintenance.html" style="width:100%;height:100%;border:none;display:block;flex:1;"></iframe>
+    <section id="screen-maint" class="screen">
+      <div class="placeholder-screen">
+        <div class="placeholder-icon">🔧</div>
+        <div class="placeholder-title">Maintenance &amp; REX</div>
+        <div class="placeholder-text">Ouverture du module maintenance…</div>
+      </div>
     </section>
 
     <!-- ════ ÉCRAN MÉTÉO ════ -->
@@ -831,6 +839,10 @@ const WARN_DAYS = 30;
 let currentScreen = 'accueil';
 
 function navigateTo(screenId) {
+  // Navigation directe pour les modules externes
+  if (screenId === 'vols') { window.location.href = 'vols.html'; return; }
+  if (screenId === 'maint') { window.location.href = 'maintenance.html'; return; }
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   const screen = document.getElementById('screen-' + screenId);
