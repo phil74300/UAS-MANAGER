@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)file:///Users/contephilippe/Downloads/vols.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Carnet de Vol</title>
+<style>
+  :root {
+    --navy:        #0C447C;
+    --blue:        #185FA5;
+    --light-blue:  #E6F1FB;
+    --green:       #1D6B37;
+    --light-green: #E8F5E9;
+    --amber:       #BA7517;
+    --light-amber: #FAEEDA;
+    --red:         #8B2020;
+    --light-red:   #FDECEC;
+    --teal:        #006064;
+    --gray:        #F4F6F9;
+    --gray-mid:    #C8D0DC;
+    --gray-dark:   #5A6A7E;
+    --text:        #1A2535;
+    --radius:      12px;
+    --shadow:      0 2px 12px rgba(12,68,124,0.10);
+    --tab-h:       60px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --navy:        #1A5FAA;
+      --blue:        #3B82D4;
+      --light-blue:  #0D2A4A;
+      --green:       #2A8B4A;
+      --light-green: #0D2A18;
+      --amber:       #D4900A;
+      --light-amber: #2A1E05;
+      --red:         #C0392B;
+      --light-red:   #2A0E0E;
+      --gray:        #1A2535;
+      --gray-mid:    #2E3E52;
+      --gray-dark:   #8A9BB0;
+      --text:        #E8EDF4;
+    }
+    body { background: #111B28; }
+    .card, .modal-box { background: #192232; border: 1px solid #2E3E52; }
+    .form-group input, .form-group select, .form-group textarea { background: #1A2535; border-color: #2E3E52; color: var(--text); }
+    .tab-bar { background: #111B28; border-top: 1px solid #2E3E52; }
+    .kpi-card { background: #192232; border: 1px solid #2E3E52; }
+    .vol-row { background: #192232; border: 1px solid #2E3E52; }
+    .vol-row.incident { background: #2A0E0E !important; border-color: #8B2020 !important; }
+    .section-header { background: #111B28; }
+    .chrono-bar { background: #111B28; border-bottom: 1px solid #2E3E52; }
+    .empty-state { color: var(--gray-dark); }
+    .search-bar input { background: #1A2535; border-color: #2E3E52; color: var(--text); }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif; color: var(--text); background: #F0F4F9; }
+
+  /* ── APP SHELL ── */
+  .app { display: flex; flex-direction: column; height: 100%; max-width: 768px; margin: 0 auto; position: relative; }
+  .main-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 8px); }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 16px 12px;
+    padding-top: calc(14px + env(safe-area-inset-top, 0px));
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .app-header h1 { font-size: 17px; font-weight: 700; letter-spacing: .3px; }
+  .app-header .subtitle { font-size: 11px; opacity: .7; margin-top: 1px; }
+  .btn-icon { background: rgba(255,255,255,.15); border: none; color: #fff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+
+  /* ── CHRONO BAR ── */
+  .chrono-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--gray-mid);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 62px; z-index: 99;
+  }
+  .chrono-display { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--navy); min-width: 80px; }
+  .chrono-display.running { color: var(--green); }
+  .chrono-display.stopped { color: var(--amber); }
+  .btn-chrono {
+    padding: 8px 18px; border-radius: 20px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s;
+  }
+  .btn-chrono.start { background: var(--green); color: #fff; }
+  .btn-chrono.stop  { background: var(--red); color: #fff; }
+  .btn-chrono.reset { background: var(--gray-mid); color: var(--text); }
+  .chrono-label { font-size: 11px; color: var(--gray-dark); flex: 1; }
+
+  /* ── KPI STRIP ── */
+  .kpi-strip { display: flex; gap: 10px; padding: 12px 16px 4px; overflow-x: auto; scrollbar-width: none; }
+  .kpi-strip::-webkit-scrollbar { display: none; }
+  .kpi-card {
+    background: #fff; border-radius: var(--radius); padding: 12px 14px;
+    min-width: 110px; flex: 1; box-shadow: var(--shadow);
+    border-top: 3px solid var(--blue);
+  }
+  .kpi-card.green { border-top-color: var(--green); }
+  .kpi-card.amber { border-top-color: var(--amber); }
+  .kpi-card.red   { border-top-color: var(--red); }
+  .kpi-value { font-size: 22px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .kpi-label { font-size: 10px; color: var(--gray-dark); margin-top: 4px; line-height: 1.2; }
+
+  /* ── SEARCH & ACTIONS ── */
+  .list-toolbar { padding: 10px 16px 6px; display: flex; gap: 8px; align-items: center; }
+  .search-bar { flex: 1; position: relative; }
+  .search-bar input {
+    width: 100%; padding: 9px 12px 9px 34px; border-radius: 10px;
+    border: 1px solid var(--gray-mid); background: #fff; font-size: 14px;
+    outline: none;
+  }
+  .search-bar::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; }
+  .btn-add {
+    background: var(--blue); color: #fff; border: none; border-radius: 10px;
+    padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  .btn-export {
+    background: var(--green); color: #fff; border: none; border-radius: 10px;
+    padding: 9px 12px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  }
+
+  /* ── VOL LIST ── */
+  .vol-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .vol-row {
+    background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+    overflow: hidden; border: 1px solid transparent;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .vol-row:active { transform: scale(.99); }
+  .vol-row.incident { background: var(--light-red) !important; border-color: var(--red) !important; }
+  .vol-row-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px 6px;
+  }
+  .vol-num { font-size: 13px; font-weight: 800; color: var(--navy); }
+  .vol-scenario { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 8px; background: var(--light-blue); color: var(--blue); }
+  .vol-scenario.incident-badge { background: var(--light-red); color: var(--red); }
+  .vol-row-body { padding: 0 12px 10px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+  .vol-field { display: flex; flex-direction: column; }
+  .vol-field-label { font-size: 9px; text-transform: uppercase; color: var(--gray-dark); letter-spacing: .5px; }
+  .vol-field-value { font-size: 13px; font-weight: 600; color: var(--text); }
+  .vol-row-footer { padding: 6px 12px; background: rgba(0,0,0,.02); display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--gray-mid); }
+  .vol-site { font-size: 11px; color: var(--gray-dark); }
+  .vol-actions { display: flex; gap: 6px; }
+  .btn-sm { border: none; border-radius: 7px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .btn-edit { background: var(--light-blue); color: var(--blue); }
+  .btn-del  { background: var(--light-red); color: var(--red); }
+  .incident-flag { font-size: 11px; color: var(--red); font-weight: 700; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-dark); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    z-index: 200; display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #fff; width: 100%; max-width: 768px; margin: 0 auto;
+    border-radius: 20px 20px 0 0; max-height: 92vh; overflow-y: auto;
+    transform: translateY(100%); transition: transform .3s cubic-bezier(.32,1,.23,1);
+    padding-bottom: calc(24px + var(--safe-bottom));
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+  .modal-handle { width: 36px; height: 4px; background: var(--gray-mid); border-radius: 2px; margin: 10px auto 0; }
+  .modal-header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-mid); }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+  .btn-close { background: var(--gray); border: none; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+
+  /* ── FORM ── */
+  .form-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group label { font-size: 11px; font-weight: 700; color: var(--gray-dark); text-transform: uppercase; letter-spacing: .5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 10px 12px; border: 1.5px solid var(--gray-mid); border-radius: 10px;
+    font-size: 15px; color: var(--text); background: #fff; outline: none;
+    transition: border-color .2s;
+    -webkit-appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
+  .form-group textarea { resize: vertical; min-height: 70px; }
+  .form-group input[readonly] { background: var(--gray); color: var(--gray-dark); }
+  .form-section-title { font-size: 12px; font-weight: 800; color: var(--navy); text-transform: uppercase; letter-spacing: 1px; padding: 4px 0 2px; border-bottom: 2px solid var(--light-blue); }
+
+  /* Chrono intégré form */
+  .chrono-inForm {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--light-blue); border-radius: 10px; padding: 10px 12px;
+  }
+  .chrono-inForm .time { font-size: 20px; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; min-width: 72px; }
+  .chrono-inForm .time.running { color: var(--green); }
+  .chrono-inForm .time.stopped { color: var(--amber); }
+
+  /* Incident toggle */
+  .incident-toggle { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--gray); border: 2px solid transparent; cursor: pointer; transition: all .2s; }
+  .incident-toggle.yes { background: var(--light-red); border-color: var(--red); }
+  .incident-toggle input { display: none; }
+  .toggle-pill { width: 44px; height: 26px; border-radius: 13px; background: var(--gray-mid); position: relative; transition: background .2s; flex-shrink: 0; }
+  .toggle-pill::after { content: ''; width: 20px; height: 20px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+  .incident-toggle.yes .toggle-pill { background: var(--red); }
+  .incident-toggle.yes .toggle-pill::after { transform: translateX(18px); }
+  .toggle-label { font-size: 14px; font-weight: 600; }
+
+  /* OBS fields */
+  .obs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .obs-label-teal { color: var(--teal) !important; }
+
+  /* Submit btn */
+  .btn-submit {
+    width: 100%; padding: 15px; border-radius: 14px; border: none;
+    background: var(--blue); color: #fff; font-size: 16px; font-weight: 800;
+    cursor: pointer; margin-top: 6px; transition: background .2s;
+  }
+  .btn-submit:active { background: var(--navy); }
+
+  /* ── TAB BAR ── */
+  .tab-bar {
+    background: #fff; border-top: 1px solid var(--gray-mid);
+    display: flex; height: calc(var(--tab-h) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    position: sticky; bottom: 0; z-index: 100;
+  }
+  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-decoration: none; color: var(--gray-dark); font-size: 10px; font-weight: 500; padding-top: 6px; }
+  .tab-item.active { color: var(--blue); }
+  .tab-item .tab-icon { font-size: 22px; }
+
+  /* ── CONFIRM MODAL ── */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .confirm-overlay.open { opacity: 1; pointer-events: all; }
+  .confirm-box {
+    background: #fff; border-radius: 16px; padding: 24px; max-width: 320px; width: 90%;
+    text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  }
+  .confirm-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .confirm-box p { font-size: 14px; color: var(--gray-dark); margin-bottom: 20px; }
+  .confirm-btns { display: flex; gap: 10px; }
+  .confirm-btns button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn-cancel-conf { background: var(--gray); color: var(--text); }
+  .btn-confirm-del { background: var(--red); color: #fff; }
+
+  @media (min-width: 768px) {
+    .form-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div>
+      <div class="app-header h1" style="font-size:17px;font-weight:700;">✈️ Carnet de Vol</div>
+      <div class="subtitle">CONTE Philippe · FRAjqq48j12nfy4c · DJI Mavic 4 Pro</div>
+    </div>
+    <button class="btn-icon" onclick="openModal()" title="Nouveau vol">＋</button>
+  </header>
+
+  <div class="main-content">
+
+    <!-- CHRONO BAR PERSISTANT -->
+    <div class="chrono-bar">
+      <div class="chrono-display" id="chronoDisplay">00:00</div>
+      <div class="chrono-label" id="chronoLabel">Chronomètre de vol</div>
+      <button class="btn-chrono start" id="btnChronoMain" onclick="toggleChronoMain()">▶ START</button>
+      <button class="btn-chrono reset" onclick="resetChronoMain()" title="Réinitialiser">↺</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-strip" id="kpiStrip">
+      <div class="kpi-card">
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-label">Total vols</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-value" id="kpiHeures">0h00</div>
+        <div class="kpi-label">Heures mois courant</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value" id="kpiVols">0</div>
+        <div class="kpi-label">Vols mois courant</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-value" id="kpiIncidents">0</div>
+        <div class="kpi-label">Incidents mois</div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="list-toolbar">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Rechercher (site, scénario, n°)…" oninput="renderList()">
+      </div>
+      <button class="btn-add" onclick="openModal()">+ Vol</button>
+      <button class="btn-export" onclick="exportCSV()">⬇ CSV</button>
+    </div>
+
+    <!-- LISTE VOLS -->
+    <div class="vol-list" id="volList">
+      <div class="empty-state">
+        <div class="icon">✈️</div>
+        <p>Aucun vol enregistré.<br>Appuyez sur <strong>+ Vol</strong> pour commencer.</p>
+      </div></div>
+
+  </div>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🏠</span>Accueil</a>
+    <a class="tab-item active" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">✈️</span>Vols</a>
+    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🔧</span>Maint.</a>
+    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">🌦</span>Météo</a>
+    <a class="tab-item" href="file:///Users/contephilippe/Downloads/vols.html#"><span class="tab-icon">⚙️</span>Config</a>
+  </nav>
+</div>
+
+<!-- ══ MODAL SAISIE VOL ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Nouveau vol</span>
+      <button class="btn-close" onclick="closeModal()">Fermer</button>
+    </div>
+    <div class="form-body">
+
+      <!-- CHRONO IN FORM -->
+      <div>
+        <div class="form-section-title">⏱ Chronomètre de vol</div>
+        <div style="margin-top:8px;" class="chrono-inForm">
+          <div class="time" id="chronoFormDisplay">00:00</div>
+          <button class="btn-chrono start" id="btnChronoForm" onclick="toggleChronoForm()" style="font-size:13px;padding:7px 14px;">▶ START</button>
+          <button class="btn-chrono reset" onclick="resetChronoForm()" style="font-size:13px;padding:7px 12px;" title="Réinitialiser">↺</button>
+          <button class="btn-chrono" onclick="applyChronoToField()" style="background:var(--amber);color:#fff;font-size:13px;padding:7px 12px;" title="Appliquer au champ Durée">→ Durée</button>
+        </div>
+      </div>
+
+      <!-- IDENTIFICATION -->
+      <div class="form-section-title">📋 Identification</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>N° de vol</label>
+          <input type="text" id="fNumVol" readonly="" placeholder="Auto-généré">
+        </div>
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" id="fDate" required="">
+        </div>
+      </div>
+
+      <!-- MISSION -->
+      <div class="form-section-title">🎯 Mission</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Heure départ</label>
+          <input type="time" id="fHeureDep">
+        </div>
+        <div class="form-group">
+          <label>Durée (min) *</label>
+          <input type="number" id="fDuree" min="1" max="999" placeholder="ex: 30" required="">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Scénario *</label>
+          <select id="fScenario" required="">
+            <option value="">-- Choisir --</option>
+            <option value="PDRA-S01">PDRA-S01</option>
+            <option value="PDRA-S02">PDRA-S02</option>
+            <option value="Cat. A1">Cat. A1</option>
+            <option value="Cat. A2">Cat. A2</option>
+            <option value="Cat. A3">Cat. A3</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Type de mission</label>
+          <select id="fTypeMission">
+            <option value="">-- Choisir --</option>
+            <option>Photo/Vidéo</option>
+            <option>Inspection</option>
+            <option>Cartographie</option>
+            <option>Thermographie</option>
+            <option>Formation</option>
+            <option>Test/Essai</option>
+            <option>Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- LOCALISATION -->
+      <div class="form-section-title">📍 Localisation</div>
+      <div class="form-row">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Site de vol *</label>
+          <input type="text" id="fSite" placeholder="Nom du site / commune" required="">
+        </div>
+      </div>
+      <div class="form-row triple">
+        <div class="form-group">
+          <label>Département</label>
+          <input type="text" id="fDept" placeholder="ex: 74">
+        </div>
+        <div class="form-group">
+          <label>Lat. (DD)</label>
+          <input type="number" id="fLat" step="0.000001" placeholder="45.000000">
+        </div>
+        <div class="form-group">
+          <label>Lon. (DD)</label>
+          <input type="number" id="fLon" step="0.000001" placeholder="6.000000">
+        </div>
+      </div>
+
+      <!-- UAS & CONDITIONS -->
+      <div class="form-section-title">🚁 UAS &amp; Conditions</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>UAS (drone)</label>
+          <input type="text" id="fUAS" value="DJI Mavic 4 Pro" readonly="">
+        </div>
+        <div class="form-group">
+          <label>N° batterie</label>
+          <input type="text" id="fBatterie" placeholder="ex: BAT-01">
+        </div>
+      </div>
+      <div class="form-row triple">
+        <div class="form-group">
+          <label>Vent (kt)</label>
+          <input type="number" id="fVent" min="0" max="50" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Visibilité (km)</label>
+          <input type="number" id="fVisib" min="0" step="0.5" placeholder="10">
+        </div>
+        <div class="form-group">
+          <label>Météo</label>
+          <select id="fMeteo">
+            <option value="">--</option>
+            <option>☀️ Ensoleillé</option>
+            <option>⛅ Partiellement nuageux</option>
+            <option>☁️ Nuageux</option>
+            <option>🌧 Pluie légère</option>
+            <option>🌬 Venteux</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- OBSERVATEURS -->
+      <div class="form-section-title" style="color:var(--teal);">👁 Observateurs</div>
+      <div class="obs-row">
+        <div class="form-group">
+          <label class="obs-label-teal">OBS1 – Nom</label>
+          <input type="text" id="fObs1" placeholder="Prénom Nom">
+        </div>
+        <div class="form-group">
+          <label class="obs-label-teal">OBS2 – Nom</label>
+          <input type="text" id="fObs2" placeholder="Prénom Nom">
+        </div>
+      </div>
+
+      <!-- CLIENT -->
+      <div class="form-section-title">👤 Client / Commanditaire</div>
+      <div class="form-row">
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Client</label>
+          <input type="text" id="fClient" placeholder="Nom de l&#39;entreprise ou du particulier">
+        </div>
+      </div>
+
+      <!-- INCIDENT -->
+      <div class="form-section-title">⚠️ Incident / Anomalie</div>
+      <label class="incident-toggle" id="incidentToggle" onclick="toggleIncident()">
+        <input type="checkbox" id="fIncident">
+        <div class="toggle-pill"></div>
+        <div>
+          <div class="toggle-label" id="incidentLabel">Aucun incident</div>
+          <div style="font-size:11px;color:var(--gray-dark);">Activer si incident ou anomalie constaté</div>
+        </div>
+      </label>
+      <div class="form-group" id="incidentDescGroup" style="display:none;">
+        <label>Description de l'incident *</label>
+        <textarea id="fIncidentDesc" rows="3" placeholder="Décrivez brièvement l&#39;incident ou l&#39;anomalie…"></textarea>
+      </div>
+
+      <!-- REMARQUES -->
+      <div class="form-section-title">📝 Remarques</div>
+      <div class="form-group">
+        <label>Observations générales</label>
+        <textarea id="fRemarques" rows="2" placeholder="Notes libres…"></textarea>
+      </div>
+
+      <button class="btn-submit" onclick="saveVol()">💾 Enregistrer le vol</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Supprimer ce vol ?</h3>
+    <p>Cette action est irréversible. Le vol sera définitivement supprimé.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancel-conf" onclick="cancelDelete()">Annuler</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════
+//  DONNÉES
+// ════════════════════════════════════════════
+const STORAGE_KEY = 'uas_vols';
+let vols = [];
+let editingId = null;
+let deleteId  = null;
+
+function loadVols() {
+  try { vols = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { vols = []; }
+}
+function saveVols() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(vols));
+}
+
+// ════════════════════════════════════════════
+//  NUMÉROTATION AUTO
+// ════════════════════════════════════════════
+function getNextNum() {
+  const year = new Date().getFullYear();
+  const prefix = `M${year}-`;
+  const nums = vols
+    .map(v => v.num)
+    .filter(n => n && n.startsWith(prefix))
+    .map(n => parseInt(n.replace(prefix, '')) || 0);
+  const next = nums.length ? Math.max(...nums) + 1 : 1;
+  return `${prefix}${String(next).padStart(3,'0')}`;
+}
+
+// ════════════════════════════════════════════
+//  CHRONOMÈTRE GLOBAL (barre persistante)
+// ════════════════════════════════════════════
+let chronoMainInterval = null;
+let chronoMainSeconds  = 0;
+let chronoMainRunning  = false;
+
+function toggleChronoMain() {
+  if (chronoMainRunning) {
+    clearInterval(chronoMainInterval);
+    chronoMainRunning = false;
+    document.getElementById('btnChronoMain').textContent = '▶ START';
+    document.getElementById('btnChronoMain').className = 'btn-chrono start';
+    document.getElementById('chronoDisplay').classList.remove('running');
+    document.getElementById('chronoDisplay').classList.add('stopped');
+    document.getElementById('chronoLabel').textContent = `Durée enregistrée : ${Math.round(chronoMainSeconds/60)} min`;
+  } else {
+    chronoMainRunning = true;
+    document.getElementById('btnChronoMain').textContent = '⏹ STOP';
+    document.getElementById('btnChronoMain').className = 'btn-chrono stop';
+    document.getElementById('chronoDisplay').classList.add('running');
+    document.getElementById('chronoDisplay').classList.remove('stopped');
+    document.getElementById('chronoLabel').textContent = 'Vol en cours…';
+    chronoMainInterval = setInterval(() => {
+      chronoMainSeconds++;
+      updateChronoMainDisplay();
+    }, 1000);
+  }
+}
+function resetChronoMain() {
+  clearInterval(chronoMainInterval);
+  chronoMainRunning = false;
+  chronoMainSeconds = 0;
+  document.getElementById('btnChronoMain').textContent = '▶ START';
+  document.getElementById('btnChronoMain').className = 'btn-chrono start';
+  document.getElementById('chronoDisplay').textContent = '00:00';
+  document.getElementById('chronoDisplay').className = 'chrono-display';
+  document.getElementById('chronoLabel').textContent = 'Chronomètre de vol';
+}
+function updateChronoMainDisplay() {
+  const m = Math.floor(chronoMainSeconds/60);
+  const s = chronoMainSeconds % 60;
+  document.getElementById('chronoDisplay').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ════════════════════════════════════════════
+//  CHRONOMÈTRE FORMULAIRE
+// ════════════════════════════════════════════
+let chronoFormInterval = null;
+let chronoFormSeconds  = 0;
+let chronoFormRunning  = false;
+
+function toggleChronoForm() {
+  if (chronoFormRunning) {
+    clearInterval(chronoFormInterval);
+    chronoFormRunning = false;
+    document.getElementById('btnChronoForm').textContent = '▶ START';
+    document.getElementById('btnChronoForm').className = 'btn-chrono start';
+    document.getElementById('chronoFormDisplay').classList.remove('running');
+    document.getElementById('chronoFormDisplay').classList.add('stopped');
+  } else {
+    chronoFormRunning = true;
+    document.getElementById('btnChronoForm').textContent = '⏹ STOP';
+    document.getElementById('btnChronoForm').className = 'btn-chrono stop';
+    document.getElementById('chronoFormDisplay').classList.add('running');
+    document.getElementById('chronoFormDisplay').classList.remove('stopped');
+    chronoFormInterval = setInterval(() => {
+      chronoFormSeconds++;
+      updateChronoFormDisplay();
+    }, 1000);
+  }
+}
+function resetChronoForm() {
+  clearInterval(chronoFormInterval);
+  chronoFormRunning = false;
+  chronoFormSeconds = 0;
+  document.getElementById('btnChronoForm').textContent = '▶ START';
+  document.getElementById('btnChronoForm').className = 'btn-chrono start';
+  document.getElementById('chronoFormDisplay').textContent = '00:00';
+  document.getElementById('chronoFormDisplay').className = 'time';
+}
+function updateChronoFormDisplay() {
+  const m = Math.floor(chronoFormSeconds/60);
+  const s = chronoFormSeconds % 60;
+  document.getElementById('chronoFormDisplay').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function applyChronoToField() {
+  const mins = Math.round(chronoFormSeconds/60);
+  if (mins > 0) {
+    document.getElementById('fDuree').value = mins;
+    document.getElementById('fDuree').style.borderColor = 'var(--green)';
+    setTimeout(() => document.getElementById('fDuree').style.borderColor = '', 1500);
+  }
+}
+
+// ════════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════════
+function openModal(id = null) {
+  editingId = id;
+  resetChronoForm();
+  document.getElementById('modalTitle').textContent = id ? 'Modifier le vol' : 'Nouveau vol';
+
+  if (id) {
+    const v = vols.find(x => x.id === id);
+    if (!v) return;
+    fillForm(v);
+  } else {
+    clearForm();
+    document.getElementById('fNumVol').value = getNextNum();
+    document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  resetChronoForm();
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function clearForm() {
+  ['fNumVol','fDate','fHeureDep','fDuree','fSite','fDept','fLat','fLon',
+   'fBatterie','fVent','fVisib','fObs1','fObs2','fClient','fIncidentDesc','fRemarques']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('fScenario').value = '';
+  document.getElementById('fTypeMission').value = '';
+  document.getElementById('fMeteo').value = '';
+  document.getElementById('fUAS').value = 'DJI Mavic 4 Pro';
+  document.getElementById('fIncident').checked = false;
+  document.getElementById('incidentToggle').classList.remove('yes');
+  document.getElementById('incidentLabel').textContent = 'Aucun incident';
+  document.getElementById('incidentDescGroup').style.display = 'none';
+}
+function fillForm(v) {
+  const fields = {
+    fNumVol: v.num, fDate: v.date, fHeureDep: v.heureDep, fDuree: v.duree,
+    fScenario: v.scenario, fTypeMission: v.typeMission, fSite: v.site,
+    fDept: v.dept, fLat: v.lat, fLon: v.lon, fUAS: v.uas,
+    fBatterie: v.batterie, fVent: v.vent, fVisib: v.visib, fMeteo: v.meteo,
+    fObs1: v.obs1, fObs2: v.obs2, fClient: v.client,
+    fIncidentDesc: v.incidentDesc, fRemarques: v.remarques
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.value = val || '';
+  });
+  document.getElementById('fIncident').checked = !!v.incident;
+  if (v.incident) {
+    document.getElementById('incidentToggle').classList.add('yes');
+    document.getElementById('incidentLabel').textContent = '⚠️ Incident signalé';
+    document.getElementById('incidentDescGroup').style.display = '';
+  } else {
+    document.getElementById('incidentToggle').classList.remove('yes');
+    document.getElementById('incidentLabel').textContent = 'Aucun incident';
+    document.getElementById('incidentDescGroup').style.display = 'none';
+  }
+}
+
+function toggleIncident() {
+  const cb = document.getElementById('fIncident');
+  const toggle = document.getElementById('incidentToggle');
+  const label  = document.getElementById('incidentLabel');
+  const desc   = document.getElementById('incidentDescGroup');
+  // Le click sur le label va changer la checkbox APRÈS ce handler
+  setTimeout(() => {
+    if (cb.checked) {
+      toggle.classList.add('yes');
+      label.textContent = '⚠️ Incident signalé';
+      desc.style.display = '';
+    } else {
+      toggle.classList.remove('yes');
+      label.textContent = 'Aucun incident';
+      desc.style.display = 'none';
+    }
+  }, 10);
+}
+
+// ════════════════════════════════════════════
+//  SAVE
+// ════════════════════════════════════════════
+function saveVol() {
+  const date = document.getElementById('fDate').value;
+  const site = document.getElementById('fSite').value.trim();
+  const duree = document.getElementById('fDuree').value;
+  const scenario = document.getElementById('fScenario').value;
+
+  if (!date || !site || !duree || !scenario) {
+    alert('Merci de renseigner les champs obligatoires (*) : date, site, durée, scénario.');
+    return;
+  }
+
+  const incident = document.getElementById('fIncident').checked;
+  if (incident && !document.getElementById('fIncidentDesc').value.trim()) {
+    alert('Merci de décrire l\'incident signalé.');
+    return;
+  }
+
+  const vol = {
+    id: editingId || crypto.randomUUID(),
+    num: document.getElementById('fNumVol').value,
+    date, heureDep: document.getElementById('fHeureDep').value,
+    duree: parseInt(duree),
+    scenario, typeMission: document.getElementById('fTypeMission').value,
+    site, dept: document.getElementById('fDept').value,
+    lat: document.getElementById('fLat').value,
+    lon: document.getElementById('fLon').value,
+    uas: document.getElementById('fUAS').value,
+    batterie: document.getElementById('fBatterie').value,
+    vent: document.getElementById('fVent').value,
+    visib: document.getElementById('fVisib').value,
+    meteo: document.getElementById('fMeteo').value,
+    obs1: document.getElementById('fObs1').value.trim(),
+    obs2: document.getElementById('fObs2').value.trim(),
+    client: document.getElementById('fClient').value.trim(),
+    incident, incidentDesc: document.getElementById('fIncidentDesc').value.trim(),
+    remarques: document.getElementById('fRemarques').value.trim(),
+    createdAt: editingId ? (vols.find(v => v.id === editingId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
+  };
+
+  if (editingId) {
+    const idx = vols.findIndex(v => v.id === editingId);
+    if (idx !== -1) vols[idx] = vol;
+  } else {
+    vols.push(vol);
+  }
+
+  saveVols();
+  closeModal();
+  renderAll();
+}
+
+// ════════════════════════════════════════════
+//  DELETE
+// ════════════════════════════════════════════
+function deleteVol(id) {
+  deleteId = id;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function cancelDelete() {
+  deleteId = null;
+  document.getElementById('confirmOverlay').classList.remove('open');
+}
+function confirmDelete() {
+  if (deleteId) {
+    vols = vols.filter(v => v.id !== deleteId);
+    saveVols();
+    renderAll();
+  }
+  cancelDelete();
+}
+
+// ════════════════════════════════════════════
+//  KPIs
+// ════════════════════════════════════════════
+function updateKPIs() {
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+  const moisVols = vols.filter(v => v.date && v.date.startsWith(ym));
+  const totalMin = moisVols.reduce((s, v) => s + (parseInt(v.duree) || 0), 0);
+  const h = Math.floor(totalMin/60);
+  const m = totalMin % 60;
+
+  document.getElementById('kpiTotal').textContent    = vols.length;
+  document.getElementById('kpiHeures').textContent   = `${h}h${String(m).padStart(2,'0')}`;
+  document.getElementById('kpiVols').textContent     = moisVols.length;
+  document.getElementById('kpiIncidents').textContent = moisVols.filter(v => v.incident).length;
+}
+
+// ════════════════════════════════════════════
+//  RENDER LIST
+// ════════════════════════════════════════════
+function renderList() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const container = document.getElementById('volList');
+
+  let filtered = vols;
+  if (q) {
+    filtered = vols.filter(v =>
+      (v.num||'').toLowerCase().includes(q) ||
+      (v.site||'').toLowerCase().includes(q) ||
+      (v.scenario||'').toLowerCase().includes(q) ||
+      (v.client||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Tri antéchronologique
+  filtered = [...filtered].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">✈️</div>
+        <p>${q ? 'Aucun résultat pour cette recherche.' : 'Aucun vol enregistré.<br>Appuyez sur <strong>+ Vol</strong> pour commencer.'}</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(v => {
+    const isInc = v.incident;
+    const dureeH = v.duree ? `${Math.floor(v.duree/60)}h${String(v.duree%60).padStart(2,'0')}` : '—';
+    return `
+    <div class="vol-row${isInc ? ' incident' : ''}">
+      <div class="vol-row-header">
+        <span class="vol-num">${v.num || '—'}</span>
+        <span class="vol-scenario${isInc ? ' incident-badge' : ''}">${v.scenario || '—'}</span>
+      </div>
+      <div class="vol-row-body">
+        <div class="vol-field">
+          <span class="vol-field-label">Date</span>
+          <span class="vol-field-value">${formatDate(v.date)}</span>
+        </div>
+        <div class="vol-field">
+          <span class="vol-field-label">Durée</span>
+          <span class="vol-field-value" style="color:var(--green)">${v.duree ? v.duree+'min ('+dureeH+')' : '—'}</span>
+        </div>
+        <div class="vol-field">
+          <span class="vol-field-label">Type</span>
+          <span class="vol-field-value">${v.typeMission || '—'}</span>
+        </div>
+        ${v.client ? `<div class="vol-field"><span class="vol-field-label">Client</span><span class="vol-field-value">${v.client}</span></div>` : ''}
+        ${v.batterie ? `<div class="vol-field"><span class="vol-field-label">Batterie</span><span class="vol-field-value">${v.batterie}</span></div>` : ''}
+        ${v.meteo ? `<div class="vol-field"><span class="vol-field-label">Météo</span><span class="vol-field-value">${v.meteo}</span></div>` : ''}
+      </div>
+      <div class="vol-row-footer">
+        <span class="vol-site">📍 ${v.site || '—'}${v.dept ? ' ('+v.dept+')' : ''}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${isInc ? '<span class="incident-flag">⚠️ INCIDENT</span>' : ''}
+          <div class="vol-actions">
+            <button class="btn-sm btn-edit" onclick="openModal('${v.id}')">✏️</button>
+            <button class="btn-sm btn-del" onclick="deleteVol('${v.id}')">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const [y,m,j] = d.split('-');
+  return `${j}/${m}/${y}`;
+}
+
+function renderAll() {
+  updateKPIs();
+  renderList();
+}
+
+// ════════════════════════════════════════════
+//  EXPORT CSV
+// ════════════════════════════════════════════
+function exportCSV() {
+  if (vols.length === 0) { alert('Aucun vol à exporter.'); return; }
+
+  const sep = ';';
+  const headers = [
+    'N° vol','Date','Heure départ','Durée (min)','Scénario','Type mission',
+    'Site','Département','Latitude','Longitude','UAS','Batterie',
+    'Vent (kt)','Visibilité (km)','Météo','OBS1','OBS2','Client',
+    'Incident','Description incident','Remarques'
+  ];
+
+  const esc = v => {
+    const s = String(v ?? '');
+    if (s.includes(sep) || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g,'""')}"`;
+    return s;
+  };
+
+  const rows = vols.map(v => [
+    v.num, v.date, v.heureDep, v.duree, v.scenario, v.typeMission,
+    v.site, v.dept, v.lat, v.lon, v.uas, v.batterie,
+    v.vent, v.visib, v.meteo, v.obs1, v.obs2, v.client,
+    v.incident ? 'Oui' : 'Non', v.incidentDesc, v.remarques
+  ].map(esc).join(sep));
+
+  const bom = '\uFEFF';
+  const csv = bom + [headers.map(esc).join(sep), ...rows].join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = `CarnetVol_CONTE_${date}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+loadVols();
+renderAll();
+</script>
+
+
+</body></html>
