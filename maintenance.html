@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0056)file:///Users/contephilippe/Downloads/maintenance_6.html -->
+<!-- saved from url=(0056)file:///Users/contephilippe/Downloads/maintenance_8.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -139,7 +139,7 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
 
 /* Bottom nav */
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:200;}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .bnav-item.active{color:var(--blue);}
 .bnav-ico{font-size:22px;line-height:1;}
 </style>
@@ -177,7 +177,7 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
 </div>
 
 <!-- ═══ PANE STATUT ═══ -->
-<div id="pane-statut" style="">
+<div id="pane-statut">
   <div class="sec">
     <div class="sec-title">État de l'appareil</div>
     <div class="card">
@@ -259,7 +259,7 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
 </div>
 
 <!-- ═══ PANE REX ═══ -->
-<div id="pane-rex" style="display: none;">
+<div id="pane-rex" style="display:none">
 
   <!-- Sous-onglets REX -->
   <div class="sub-tabs">
@@ -732,11 +732,11 @@ setInterval(checkDSACBanner, 60000);
 
 <!-- Bottom Nav -->
 <nav class="bnav">
-  <a class="bnav-item" href="file:///Users/contephilippe/Downloads/index.html"><div class="bnav-ico">🏠</div>Accueil</a>
-  <a class="bnav-item" href="file:///Users/contephilippe/Downloads/vols.html"><div class="bnav-ico">✈️</div>Vols</a>
-  <a class="bnav-item active" href="file:///Users/contephilippe/Downloads/maintenance.html"><div class="bnav-ico">🔧</div>Maint.</a>
-  <a class="bnav-item" href="file:///Users/contephilippe/Downloads/maintenance_6.html#"><div class="bnav-ico">🌦</div>Météo</a>
-  <a class="bnav-item" href="file:///Users/contephilippe/Downloads/maintenance_6.html#"><div class="bnav-ico">⚙️</div>Config</a>
+  <button class="bnav-item" onclick="window.location.href=&#39;index.html&#39;"><div class="bnav-ico">🏠</div>Accueil</button>
+  <button class="bnav-item" onclick="window.location.href=&#39;vols.html&#39;"><div class="bnav-ico">✈️</div>Vols</button>
+  <button class="bnav-item active" onclick="window.location.href=&#39;maintenance.html&#39;"><div class="bnav-ico">🔧</div>Maint.</button>
+  <button class="bnav-item" onclick="showToast(&#39;Météo — Module à venir&#39;,&#39;🌦&#39;)"><div class="bnav-ico">🌦</div>Météo</button>
+  <button class="bnav-item" onclick="showToast(&#39;Config — Module à venir&#39;,&#39;⚙️&#39;)"><div class="bnav-ico">⚙️</div>Config</button>
 </nav>
 
 
