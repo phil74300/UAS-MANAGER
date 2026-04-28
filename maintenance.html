@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0056)file:///Users/contephilippe/Downloads/maintenance_2.html -->
+<!-- saved from url=(0056)file:///Users/contephilippe/Downloads/maintenance_3.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -440,6 +440,7 @@
 
 <!-- Header -->
 <div class="header">
+  <a href="file:///Users/contephilippe/Downloads/index.html" style="color:#fff;text-decoration:none;font-size:22px;margin-right:8px;line-height:1;">‹</a>
   <div class="header-icon">🔧</div>
   <div>
     <h1>Maintenance &amp; REX</h1>
@@ -457,7 +458,7 @@
 <div class="section">
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showTab(&#39;statut&#39;)" id="tab-statut">📊 Statut</button>
-    <button class="tab-btn" onclick="showTab(&#39;saisie&#39;)" id="tab-saisie">➕ Saisir</button>
+    <button class="tab-btn" onclick="showTabREX(&#39;saisie&#39;)" id="tab-saisie">➕ Saisir</button>
     <button class="tab-btn" onclick="showTab(&#39;historique&#39;)" id="tab-historique">📋 Historique</button>
     <button class="tab-btn" onclick="showTab(&#39;rex&#39;)" id="tab-rex">⚠️ REX</button>
   </div>
@@ -623,9 +624,9 @@
 <!-- Tabs -->
 <div class="section">
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="showTab(&#39;liste&#39;)" id="tab-liste">📋 Incidents</button>
-    <button class="tab-btn" onclick="showTab(&#39;saisie&#39;)" id="tab-saisie">➕ Déclarer</button>
-    <button class="tab-btn" onclick="showTab(&#39;stats&#39;)" id="tab-stats">📊 Statistiques</button>
+    <button class="tab-btn active" onclick="showTabREX(&#39;liste&#39;)" id="tab-liste">📋 Incidents</button>
+    <button class="tab-btn" onclick="showTabREX(&#39;saisie&#39;)" id="tab-saisie">➕ Déclarer</button>
+    <button class="tab-btn" onclick="showTabREX(&#39;stats&#39;)" id="tab-stats">📊 Statistiques</button>
   </div>
 </div>
 
@@ -1102,7 +1103,7 @@ CONTE Philippe`
 }
 
 /* ── Tab navigation ── */
-function showTab(name) {
+function showTabREX(name) {
   ['liste','saisie','stats'].forEach(t => {
     document.getElementById('pane-'+t).style.display = t===name ? '' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
