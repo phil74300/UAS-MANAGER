@@ -2,7 +2,7 @@
   "name": "UAS Manager — CONTE Philippe",
   "short_name": "UAS Manager",
   "description": "Gestionnaire opérationnel UAS — PDRA-S01 / PDRA-S02",
-  "start_url": "/index.html",
+  "start_url": "/UAS-MANAGER/index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0C447C",
@@ -42,6 +42,6 @@
   ],
   "prefer_related_applications": false,
   "related_applications": [],
-  "scope": "/",
+  "scope": "/UAS-MANAGER/",
   "id": "uas-manager-conte-philippe"
 }
