@@ -2,135 +2,137 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Formations — UAS Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formations UAS</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,sans-serif;background:#F2F5F9;color:#1A1A2E;min-height:100vh;padding-bottom:80px}
-.header{background:#0C447C;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top))}
-.h-title{color:#fff;font-size:18px;font-weight:700;margin-bottom:2px}
-.h-sub{color:rgba(255,255,255,0.65);font-size:11px;margin-bottom:10px}
-.op-card{background:rgba(255,255,255,0.12);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px}
-.op-av{width:32px;height:32px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
-.op-name{color:#fff;font-size:13px;font-weight:700}
-.op-id{color:rgba(255,255,255,0.6);font-size:10px;margin-top:1px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; font-size: 16px; }
 
-.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-bottom:1px solid #D0DCE8}
-.stat{padding:12px 8px;text-align:center;border-right:1px solid #D0DCE8}
-.stat:last-child{border-right:none}
-.stat-v{font-size:22px;font-weight:800;color:#0C447C}
-.stat-v.g{color:#1D6B37}.stat-v.a{color:#BA7517}.stat-v.r{color:#8B2020}
-.stat-l{font-size:10px;color:#5A6070;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+#header { background: #0C447C; padding: 14px 16px 14px; }
+#header h1 { color: #fff; font-size: 19px; font-weight: 700; margin-bottom: 3px; }
+#header p { color: rgba(255,255,255,0.65); font-size: 11px; margin-bottom: 10px; }
+#op-card { background: rgba(255,255,255,0.13); border-radius: 8px; padding: 8px 12px; display: table; width: 100%; }
+#op-av { display: table-cell; width: 34px; font-size: 20px; vertical-align: middle; }
+#op-inf { display: table-cell; vertical-align: middle; }
+#op-name { color: #fff; font-size: 13px; font-weight: 700; }
+#op-id { color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 1px; }
 
-.filters{background:#fff;padding:10px 16px;border-bottom:1px solid #D0DCE8;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.chip{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid #D0DCE8;background:#F2F5F9;color:#5A6070;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s}
-.chip.on{background:#0C447C;border-color:#0C447C;color:#fff}
+#stats-bar { background: #fff; border-bottom: 1px solid #d0dce8; display: table; width: 100%; }
+.stat { display: table-cell; width: 33%; text-align: center; padding: 12px 4px; border-right: 1px solid #d0dce8; }
+.stat:last-child { border-right: none; }
+.stat-v { font-size: 22px; font-weight: 800; color: #0C447C; }
+.stat-v.g { color: #1D6B37; }
+.stat-v.a { color: #BA7517; }
+.stat-l { font-size: 10px; color: #5a6070; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
 
-.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#5A6070;padding:14px 16px 5px;background:#F2F5F9}
+#filters { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d0dce8; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+.chip { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid #d0dce8; background: #f0f4f8; color: #5a6070; cursor: pointer; font-family: inherit; margin-right: 6px; }
+.chip.on { background: #0C447C; border-color: #0C447C; color: #fff; }
 
-.card{background:#fff;margin:8px 16px 0;border-radius:12px;overflow:hidden;border:1.5px solid #D0DCE8;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.card.v{border-color:#1D6B37}.card.w{border-color:#BA7517}.card.u{border-color:#8B2020}.card.e{border-color:#8B2020}.card.p{border-color:#0C447C}
-.pin-bar{background:#0C447C;color:rgba(255,255,255,0.85);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:4px 14px}
-.card-top{display:flex;align-items:flex-start;gap:10px;padding:12px 12px 8px}
-.card-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:#E6F1FB}
-.card-ico.v{background:#E8F5E9}.card-ico.w{background:#FAEEDA}.card-ico.u{background:#FDECEC}.card-ico.e{background:#FDECEC}
-.card-inf{flex:1;min-width:0}
-.card-title{font-size:14px;font-weight:700;line-height:1.2}
-.card-iss{font-size:11px;color:#5A6070;margin-top:2px}
-.card-cert{font-size:10px;font-family:monospace;color:#185FA5;background:#E6F1FB;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:4px;word-break:break-all}
-.badge{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0}
-.bv{background:#E8F5E9;color:#1D6B37;border:1px solid #1D6B37}
-.bw{background:#FAEEDA;color:#BA7517;border:1px solid #BA7517}
-.bu{background:#FDECEC;color:#8B2020;border:1px solid #8B2020}
-.be{background:#FDECEC;color:#8B2020;border:1px solid #8B2020}
-.bn{background:#F2F5F9;color:#5A6070;border:1px solid #D0DCE8}
+.sec-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #5a6070; padding: 14px 16px 5px; background: #f0f4f8; }
 
-.card-body{padding:0 12px 10px}
-.row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;font-size:13px}
-.row .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:700;color:#5A6070;min-width:80px}
-.row .val{font-weight:600;flex:1}
-.row .val.r{color:#8B2020}.row .val.a{color:#BA7517}.row .val.g{color:#1D6B37}
+.card { background: #fff; margin: 8px 16px 0; border-radius: 12px; border: 1.5px solid #d0dce8; overflow: hidden; }
+.card.v { border-color: #1D6B37; }
+.card.w { border-color: #BA7517; }
+.card.u { border-color: #8B2020; }
+.card.e { border-color: #8B2020; }
+.card.p { border-color: #0C447C; }
 
-.exp-bar{padding:0 12px 10px}
-.exp-track{height:5px;background:#D0DCE8;border-radius:3px;overflow:hidden}
-.exp-fill{height:100%;border-radius:3px}
+.pin-bar { background: #0C447C; color: rgba(255,255,255,0.85); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
 
-.card-acts{display:flex;border-top:1px solid #D0DCE8}
-.cbtn{flex:1;padding:10px 4px;border:none;background:transparent;font-size:13px;font-weight:600;font-family:inherit;color:#185FA5;cursor:pointer;text-align:center}
-.cbtn+.cbtn{border-left:1px solid #D0DCE8}
-.cbtn.r{color:#8B2020}
+.card-top { display: table; width: 100%; padding: 12px 12px 8px; }
+.card-ico-cell { display: table-cell; width: 46px; vertical-align: top; }
+.card-ico { width: 42px; height: 42px; border-radius: 10px; background: #E6F1FB; text-align: center; line-height: 42px; font-size: 22px; }
+.card-ico.v { background: #E8F5E9; }
+.card-ico.w { background: #FAEEDA; }
+.card-ico.u { background: #FDECEC; }
+.card-ico.e { background: #FDECEC; }
+.card-mid { display: table-cell; vertical-align: top; padding-right: 8px; }
+.card-title { font-size: 14px; font-weight: 700; line-height: 1.2; }
+.card-iss { font-size: 11px; color: #5a6070; margin-top: 3px; }
+.card-cert { font-size: 10px; font-family: monospace; color: #185FA5; background: #E6F1FB; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
+.card-badge-cell { display: table-cell; vertical-align: top; white-space: nowrap; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.bv { background: #E8F5E9; color: #1D6B37; border: 1px solid #1D6B37; }
+.bw { background: #FAEEDA; color: #BA7517; border: 1px solid #BA7517; }
+.bu { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
+.be { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
+.bn { background: #f0f4f8; color: #5a6070; border: 1px solid #d0dce8; }
 
-.fab{position:fixed;bottom:calc(70px + env(safe-area-inset-bottom));right:16px;width:52px;height:52px;background:#185FA5;border:none;border-radius:50%;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(24,95,165,0.4);display:flex;align-items:center;justify-content:center;z-index:80}
+.card-body { padding: 0 12px 10px; }
+.row { margin-bottom: 4px; font-size: 13px; }
+.row .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; color: #5a6070; }
+.row .val { font-weight: 600; }
+.row .val.r { color: #8B2020; }
+.row .val.a { color: #BA7517; }
+.row .val.g { color: #1D6B37; }
 
-.bot-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #D0DCE8;padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:100}
-.btn-p{flex:1;background:#0C447C;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
-.btn-s{background:#F2F5F9;border:1.5px solid #D0DCE8;color:#1A1A2E;border-radius:8px;padding:13px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.exp-bar { padding: 0 12px 10px; }
+.exp-track { height: 5px; background: #d0dce8; border-radius: 3px; overflow: hidden; }
+.exp-fill { height: 5px; border-radius: 3px; }
 
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
-.overlay.show{display:flex}
-.modal{background:#fff;border-radius:20px 20px 0 0;padding:0 0 calc(20px + env(safe-area-inset-bottom));width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
-.modal-hdl{width:36px;height:4px;background:#D0DCE8;border-radius:2px;margin:14px auto 0}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #D0DCE8}
-.modal-title{font-size:17px;font-weight:800;color:#0C447C}
-.btn-close{background:#F2F5F9;border:1.5px solid #D0DCE8;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:13px;cursor:pointer;color:#1A1A2E}
+.card-acts { border-top: 1px solid #d0dce8; display: table; width: 100%; }
+.cbtn { display: table-cell; text-align: center; padding: 11px 4px; border: none; background: transparent; font-size: 13px; font-weight: 600; font-family: inherit; color: #185FA5; cursor: pointer; }
+.cbtn.r { color: #8B2020; }
+.cbtn + .cbtn { border-left: 1px solid #d0dce8; }
 
-.fg{padding:14px 20px 0}
-.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#5A6070;margin-bottom:6px}
-.fi,.fs,.fta{width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid #D0DCE8;background:#F2F5F9;color:#1A1A2E;font-size:15px;font-family:inherit;outline:none}
-.fi:focus,.fs:focus,.fta:focus{border-color:#185FA5}
-.fta{resize:none;height:70px}
-.fhint{font-size:11px;color:#5A6070;margin-top:4px}
+#spacer { height: 90px; }
 
-.form-acts{display:flex;gap:10px;padding:16px 20px 0}
-.fbtn{flex:1;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
-.fbtn.p{background:#0C447C;color:#fff}
-.fbtn.c{background:#F2F5F9;color:#1A1A2E;border:1.5px solid #D0DCE8}
+#bot-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d0dce8; padding: 10px 16px 24px; display: table; width: 100%; }
+#bot-exp { display: table-cell; width: 90px; vertical-align: middle; }
+#bot-exp button { width: 82px; background: #f0f4f8; border: 1.5px solid #d0dce8; border-radius: 8px; padding: 12px 4px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; color: #1a1a2e; }
+#bot-add { display: table-cell; padding-left: 8px; vertical-align: middle; }
+#bot-add button { width: 100%; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
 
-.empty{padding:60px 20px;text-align:center;color:#5A6070}
-.empty-ico{font-size:48px;margin-bottom:12px}
+/* OVERLAY */
+.ov { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; overflow-y: auto; }
+.ov.show { display: block; }
+.modal { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; padding: 0 20px 36px; max-height: 92vh; overflow-y: auto; }
+.modal-hdl { width: 36px; height: 4px; background: #d0dce8; border-radius: 2px; margin: 14px auto 0; }
+.modal-hdr { padding: 12px 0 14px; border-bottom: 1px solid #d0dce8; display: table; width: 100%; margin-bottom: 14px; }
+.modal-t { display: table-cell; font-size: 17px; font-weight: 800; color: #0C447C; vertical-align: middle; }
+.btn-cl { display: table-cell; text-align: right; vertical-align: middle; }
+.btn-cl button { background: #f0f4f8; border: 1.5px solid #d0dce8; border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1a1a2e; }
 
-.toast{position:fixed;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-80px);background:#1A1A2E;color:#fff;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;z-index:300;transition:transform .3s;white-space:nowrap;pointer-events:none}
-.toast.show{transform:translateX(-50%) translateY(0)}
+.fg { margin-bottom: 14px; }
+.fl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #5a6070; margin-bottom: 6px; }
+.fi, .fs, .fta { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1.5px solid #d0dce8; background: #f0f4f8; color: #1a1a2e; font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; }
+.fta { resize: none; height: 68px; }
+.fhint { font-size: 11px; color: #5a6070; margin-top: 4px; }
 
-@media(prefers-color-scheme:dark){
-  body{background:#0D1117;color:#E6EDF3}
-  .stats-bar,.filters,.card,.bot-bar,.modal{background:#161B22;border-color:#30363D}
-  .stat-v{color:#7AB8F5}
-  .sec-lbl{background:#0D1117;color:#8B949E}
-  .chip{background:#0D1117;border-color:#30363D;color:#8B949E}
-  .chip.on{background:#185FA5;border-color:#185FA5;color:#fff}
-  .card-iss,.row .lbl,.stat-l,.fhint{color:#8B949E}
-  .fi,.fs,.fta{background:#0D1117;border-color:#30363D;color:#E6EDF3}
-  .fbtn.c,.btn-close,.btn-s{background:#0D1117;border-color:#30363D;color:#E6EDF3}
-  .card-cert{background:#1A2A3A;color:#7AB8F5}
-  .card-ico{background:#1A2A3A}
-  .modal-hdr{border-color:#30363D}
-}
+.form-acts { display: table; width: 100%; margin-top: 4px; }
+.fbtn-c { display: table-cell; width: 44%; vertical-align: middle; padding-right: 8px; }
+.fbtn-c button { width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #d0dce8; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; background: #f0f4f8; color: #1a1a2e; }
+.fbtn-p { display: table-cell; vertical-align: middle; }
+.fbtn-p button { width: 100%; padding: 13px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; background: #0C447C; color: #fff; }
+
+.empty { padding: 60px 20px; text-align: center; color: #5a6070; }
+.empty-ico { font-size: 48px; margin-bottom: 12px; }
+
+#toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 8px 18px; font-size: 13px; font-weight: 600; z-index: 300; white-space: nowrap; display: none; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="h-title">🎓 Formations & Habilitations</div>
-  <div class="h-sub">Suivi des certificats et qualifications — trié par expiration</div>
-  <div class="op-card">
-    <div class="op-av">👤</div>
-    <div>
-      <div class="op-name">CONTE Philippe</div>
-      <div class="op-id">FRAjqq48j12nfy4c · UAS-FR-517804 · DJI Mavic 4 Pro</div>
-    </div>
+<div id="header">
+  <h1>🎓 Formations & Habilitations</h1>
+  <p>Suivi des certificats — trié par date d'expiration</p>
+  <div id="op-card">
+    <span id="op-av">👤</span>
+    <span id="op-inf">
+      <div id="op-name">CONTE Philippe</div>
+      <div id="op-id">FRAjqq48j12nfy4c · UAS-FR-517804 · DJI Mavic 4 Pro</div>
+    </span>
   </div>
 </div>
 
-<div class="stats-bar">
-  <div class="stat"><div class="stat-v" id="stTotal">—</div><div class="stat-l">Formations</div></div>
-  <div class="stat"><div class="stat-v g" id="stValid">—</div><div class="stat-l">Valides</div></div>
-  <div class="stat"><div class="stat-v a" id="stAlert">—</div><div class="stat-l">À renouveler</div></div>
+<div id="stats-bar">
+  <div class="stat"><div class="stat-v" id="stTot">—</div><div class="stat-l">Formations</div></div>
+  <div class="stat"><div class="stat-v g" id="stVal">—</div><div class="stat-l">Valides</div></div>
+  <div class="stat"><div class="stat-v a" id="stAl">—</div><div class="stat-l">À renouveler</div></div>
 </div>
 
-<div class="filters">
+<div id="filters">
   <button class="chip on" onclick="setFilter('all',this)">Toutes</button>
   <button class="chip" onclick="setFilter('u',this)">🔴 Urgentes</button>
   <button class="chip" onclick="setFilter('w',this)">🟡 Bientôt</button>
@@ -139,20 +141,20 @@ body{font-family:-apple-system,sans-serif;background:#F2F5F9;color:#1A1A2E;min-h
 </div>
 
 <div id="content"></div>
+<div id="spacer"></div>
 
-<button class="fab" onclick="openAdd()">＋</button>
-
-<div class="bot-bar">
-  <button class="btn-s" onclick="exportCSV()">📤 Export</button>
-  <button class="btn-p" onclick="openAdd()">＋ Ajouter une formation</button>
+<div id="bot-bar">
+  <span id="bot-exp"><button onclick="exportCSV()">📤 Export</button></span>
+  <span id="bot-add"><button onclick="openAdd()">＋ Ajouter une formation</button></span>
 </div>
 
-<div class="overlay" id="ovForm">
+<!-- MODAL FORM -->
+<div class="ov" id="ovForm">
   <div class="modal">
     <div class="modal-hdl"></div>
     <div class="modal-hdr">
-      <div class="modal-title" id="formTitle">➕ Nouvelle formation</div>
-      <button class="btn-close" onclick="closeModal()">Fermer</button>
+      <span class="modal-t" id="formTitle">➕ Nouvelle formation</span>
+      <span class="btn-cl"><button onclick="closeForm()">Fermer</button></span>
     </div>
     <div class="fg">
       <label class="fl">Type *</label>
@@ -171,7 +173,7 @@ body{font-family:-apple-system,sans-serif;background:#F2F5F9;color:#1A1A2E;min-h
     </div>
     <div class="fg" id="fgTitle" style="display:none">
       <label class="fl">Intitulé personnalisé</label>
-      <input class="fi" id="fTitle" placeholder="Ex: Inspection thermique">
+      <input class="fi" id="fTitleC" placeholder="Ex: Inspection thermique">
     </div>
     <div class="fg">
       <label class="fl">Organisme / Émetteur</label>
@@ -195,237 +197,275 @@ body{font-family:-apple-system,sans-serif;background:#F2F5F9;color:#1A1A2E;min-h
       <textarea class="fta" id="fNotes" placeholder="Informations complémentaires..."></textarea>
     </div>
     <div class="form-acts">
-      <button class="fbtn c" onclick="closeModal()">Annuler</button>
-      <button class="fbtn p" onclick="saveForm()">Enregistrer</button>
+      <span class="fbtn-c"><button onclick="closeForm()">Annuler</button></span>
+      <span class="fbtn-p"><button onclick="saveForm()">Enregistrer</button></span>
     </div>
-    <div style="height:10px"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-var SK='uas_formations', filt='all', editId=null;
+var SK = 'uas_formations';
+var filt = 'all';
+var editId = null;
 
-var ICONS={CATS:'🏅','PDRA-S01':'🟦','PDRA-S02':'🔷',MANEX:'📘','Premiers secours':'🩺','Réglementation UE':'🇪🇺',Météo:'🌦️',Radionavigation:'📡'};
+var ICONS = { CATS:'🏅', 'PDRA-S01':'🟦', 'PDRA-S02':'🔷', MANEX:'📘', 'Premiers secours':'🩺', 'Réglementation UE':'🇪🇺', Météo:'🌦', Radionavigation:'📡' };
 
-var DEFAULT=[{
-  id:'cats_default',type:'CATS',
-  title:'CATS — Certificat d\'aptitude télépilote',
-  iss:'Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas',
-  cert:'NLD-RP-q99cvjjh51fz',
-  dateO:'',dateE:'2029-09-15',
-  notes:'Reconnu en Europe — UE 2019/947. Valable catégorie Ouverte et Spécifique (PDRA).',
-  pin:true
+var DEFAULT = [{
+  id: 'cats_default', type: 'CATS',
+  title: "CATS — Certificat d'aptitude télépilote",
+  iss: 'Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas',
+  cert: 'NLD-RP-q99cvjjh51fz',
+  dateO: '', dateE: '2029-09-15',
+  notes: "Reconnu en Europe — UE 2019/947. Valable catégories Ouverte et Spécifique (PDRA).",
+  pin: true
 }];
 
-function load(){
-  var d=localStorage.getItem(SK);
-  if(!d){localStorage.setItem(SK,JSON.stringify(DEFAULT));return DEFAULT;}
-  try{return JSON.parse(d);}catch(e){return DEFAULT;}
+function load() {
+  var d = localStorage.getItem(SK);
+  if (!d) { localStorage.setItem(SK, JSON.stringify(DEFAULT)); return DEFAULT.slice(); }
+  try { return JSON.parse(d); } catch(e) { return DEFAULT.slice(); }
 }
-function save(d){localStorage.setItem(SK,JSON.stringify(d));}
+function save(d) { localStorage.setItem(SK, JSON.stringify(d)); }
 
-function status(dateE){
-  if(!dateE)return{s:'n',lbl:'—',days:null};
-  var now=new Date(),exp=new Date(dateE),diff=Math.ceil((exp-now)/(864e5));
-  if(diff<0)return{s:'e',lbl:'Expirée',days:diff};
-  if(diff<=30)return{s:'u',lbl:diff+'j',days:diff};
-  if(diff<=90)return{s:'w',lbl:diff+'j',days:diff};
-  return{s:'v',lbl:diff+'j',days:diff};
-}
-
-function fmtDate(str){
-  if(!str)return'—';
-  var d=new Date(str);
-  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+function getStatus(dateE) {
+  if (!dateE) return { s:'n', lbl:'—', days:null };
+  var now = new Date(), exp = new Date(dateE);
+  var diff = Math.ceil((exp - now) / 86400000);
+  if (diff < 0) return { s:'e', lbl:'Expirée', days:diff };
+  if (diff <= 30) return { s:'u', lbl:diff+'j', days:diff };
+  if (diff <= 90) return { s:'w', lbl:diff+'j', days:diff };
+  return { s:'v', lbl:diff+'j', days:diff };
 }
 
-function pct(dateO,dateE){
-  if(!dateE)return 0;
-  var exp=new Date(dateE),now=new Date();
-  var start=dateO?new Date(dateO):new Date(exp.getFullYear()-5,exp.getMonth(),exp.getDate());
-  var tot=exp-start,el=now-start;
-  if(tot<=0)return 100;
-  return Math.min(100,Math.max(0,Math.round(el/tot*100)));
+function fmtDate(str) {
+  if (!str) return '—';
+  var d = new Date(str);
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
 }
 
-function sort(data){
-  return data.slice().sort(function(a,b){
-    if(a.pin&&!b.pin)return-1;if(!a.pin&&b.pin)return 1;
-    if(!a.dateE&&!b.dateE)return 0;if(!a.dateE)return 1;if(!b.dateE)return-1;
-    return new Date(a.dateE)-new Date(b.dateE);
+function getPct(dateO, dateE) {
+  if (!dateE) return 0;
+  var exp = new Date(dateE), now = new Date();
+  var start = dateO ? new Date(dateO) : new Date(exp.getFullYear() - 5, exp.getMonth(), exp.getDate());
+  var tot = exp - start, el = now - start;
+  if (tot <= 0) return 100;
+  return Math.min(100, Math.max(0, Math.round(el / tot * 100)));
+}
+
+function sortData(data) {
+  return data.slice().sort(function(a, b) {
+    if (a.pin && !b.pin) return -1;
+    if (!a.pin && b.pin) return 1;
+    if (!a.dateE && !b.dateE) return 0;
+    if (!a.dateE) return 1;
+    if (!b.dateE) return -1;
+    return new Date(a.dateE) - new Date(b.dateE);
   });
 }
 
-function render(){
-  var data=load(),sorted=sort(data);
-  var tot=data.length,valid=0,alert=0;
-  data.forEach(function(f){var st=status(f.dateE);if(st.s==='v')valid++;if(st.s==='u'||st.s==='w'||st.s==='e')alert++;});
-  document.getElementById('stTotal').textContent=tot;
-  document.getElementById('stValid').textContent=valid;
-  document.getElementById('stAlert').textContent=alert;
+function render() {
+  var data = load(), sorted = sortData(data);
+  var tot = data.length, valid = 0, alert = 0;
+  for (var i = 0; i < data.length; i++) {
+    var st = getStatus(data[i].dateE);
+    if (st.s === 'v') valid++;
+    if (st.s === 'u' || st.s === 'w' || st.s === 'e') alert++;
+  }
+  document.getElementById('stTot').textContent = tot;
+  document.getElementById('stVal').textContent = valid;
+  document.getElementById('stAl').textContent = alert;
 
-  var filtered=sorted.filter(function(f){
-    if(filt==='all')return true;
-    return status(f.dateE).s===filt;
-  });
+  var filtered = [];
+  for (var i = 0; i < sorted.length; i++) {
+    var st = getStatus(sorted[i].dateE);
+    if (filt === 'all' || st.s === filt) filtered.push(sorted[i]);
+  }
 
-  if(!filtered.length){
-    document.getElementById('content').innerHTML='<div class="empty"><div class="empty-ico">📭</div><div>Aucune formation dans cette catégorie.<br>Appuyez sur <strong>＋ Ajouter</strong>.</div></div>';
+  if (!filtered.length) {
+    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div>Aucune formation dans cette catégorie.<br>Appuyez sur <strong>＋ Ajouter</strong>.</div></div>';
     return;
   }
 
-  var pinned=filtered.filter(function(f){return f.pin;});
-  var others=filtered.filter(function(f){return !f.pin;});
-  var html='';
-  if(pinned.length){html+='<div class="sec-lbl">📌 Certificat principal</div>';pinned.forEach(function(f){html+=card(f);});}
-  if(others.length){html+='<div class="sec-lbl">📚 Autres formations — triées par expiration</div>';others.forEach(function(f){html+=card(f);});}
-  html+='<div style="height:16px"></div>';
-  document.getElementById('content').innerHTML=html;
+  var pinned = [], others = [];
+  for (var i = 0; i < filtered.length; i++) {
+    if (filtered[i].pin) pinned.push(filtered[i]);
+    else others.push(filtered[i]);
+  }
+
+  var html = '';
+  if (pinned.length) {
+    html += '<div class="sec-lbl">📌 Certificat principal</div>';
+    for (var i = 0; i < pinned.length; i++) html += makeCard(pinned[i]);
+  }
+  if (others.length) {
+    html += '<div class="sec-lbl">📚 Autres formations</div>';
+    for (var i = 0; i < others.length; i++) html += makeCard(others[i]);
+  }
+  html += '<div style="height:16px"></div>';
+  document.getElementById('content').innerHTML = html;
 }
 
-function card(f){
-  var st=status(f.dateE),p=pct(f.dateO,f.dateE);
-  var ico=ICONS[f.type]||'📄';
-  var badgeClass={v:'bv',w:'bw',u:'bu',e:'be',n:'bn'}[st.s];
-  var badgeTxt={v:'✅ '+st.days+'j',w:'🟡 '+st.days+'j',u:'⚠️ '+st.days+'j',e:'⛔ Expirée',n:'—'}[st.s];
-  var fillColor={v:'#1D6B37',w:'#BA7517',u:'#8B2020',e:'#8B2020',n:'#D0DCE8'}[st.s];
-  var valClass={v:'g',w:'a',u:'r',e:'r',n:''}[st.s];
+function makeCard(f) {
+  var st = getStatus(f.dateE);
+  var p = getPct(f.dateO, f.dateE);
+  var ico = ICONS[f.type] || '📄';
+  var badgeClass = { v:'bv', w:'bw', u:'bu', e:'be', n:'bn' }[st.s];
+  var badgeTxt = { v:'✅ '+st.days+'j', w:'🟡 '+st.days+'j', u:'⚠️ '+st.days+'j', e:'⛔ Expirée', n:'—' }[st.s];
+  var fillColor = { v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d0dce8' }[st.s];
+  var valClass = { v:'g', w:'a', u:'r', e:'r', n:'' }[st.s];
 
-  return '<div class="card '+st.s+(f.pin?' p':'')+'">'
-    +(f.pin?'<div class="pin-bar">📌 Certificat principal</div>':'')
-    +'<div class="card-top">'
-      +'<div class="card-ico '+st.s+'">'+ico+'</div>'
-      +'<div class="card-inf">'
-        +'<div class="card-title">'+(f.title||f.type)+'</div>'
-        +'<div class="card-iss">'+(f.iss||'—')+'</div>'
-        +(f.cert?'<div class="card-cert">'+f.cert+'</div>':'')
-      +'</div>'
-      +'<span class="badge '+badgeClass+'">'+badgeTxt+'</span>'
-    +'</div>'
-    +'<div class="card-body">'
-      +(f.dateO?'<div class="row"><span class="lbl">Obtention</span><span class="val">'+fmtDate(f.dateO)+'</span></div>':'')
-      +'<div class="row"><span class="lbl">Expiration</span><span class="val '+valClass+'">'+fmtDate(f.dateE)+'</span></div>'
-      +(st.days!==null?'<div class="row"><span class="lbl">Restant</span><span class="val '+valClass+'">'+(st.days>=0?st.days+' jours':'Exp. depuis '+Math.abs(st.days)+' j')+'</span></div>':'')
-      +(f.notes?'<div class="row" style="align-items:flex-start"><span class="lbl">Notes</span><span class="val" style="font-size:12px;color:#5A6070">'+f.notes+'</span></div>':'')
-    +'</div>'
-    +'<div class="exp-bar"><div class="exp-track"><div class="exp-fill" style="width:'+p+'%;background:'+fillColor+'"></div></div></div>'
-    +'<div class="card-acts">'
-      +'<button class="cbtn" onclick="openEdit(\''+f.id+'\')">✏️ Modifier</button>'
-      +(!f.pin?'<button class="cbtn r" onclick="del(\''+f.id+'\')">🗑 Supprimer</button>':'')
-    +'</div>'
-  +'</div>';
+  var html = '<div class="card ' + st.s + (f.pin ? ' p' : '') + '">';
+  if (f.pin) html += '<div class="pin-bar">📌 Certificat principal</div>';
+  html += '<div class="card-top">'
+    + '<span class="card-ico-cell"><div class="card-ico ' + st.s + '">' + ico + '</div></span>'
+    + '<span class="card-mid">'
+      + '<div class="card-title">' + (f.title || f.type) + '</div>'
+      + '<div class="card-iss">' + (f.iss || '—') + '</div>'
+      + (f.cert ? '<div class="card-cert">' + f.cert + '</div>' : '')
+    + '</span>'
+    + '<span class="card-badge-cell"><span class="badge ' + badgeClass + '">' + badgeTxt + '</span></span>'
+  + '</div>';
+
+  html += '<div class="card-body">';
+  if (f.dateO) html += '<div class="row"><span class="lbl">Obtention &nbsp;</span><span class="val">' + fmtDate(f.dateO) + '</span></div>';
+  html += '<div class="row"><span class="lbl">Expiration &nbsp;</span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
+  if (st.days !== null) html += '<div class="row"><span class="lbl">Restant &nbsp;</span><span class="val ' + valClass + '">' + (st.days >= 0 ? st.days + ' jours' : 'Exp. depuis ' + Math.abs(st.days) + ' j') + '</span></div>';
+  if (f.notes) html += '<div class="row" style="margin-top:4px"><span style="font-size:12px;color:#5a6070">' + f.notes + '</span></div>';
+  html += '</div>';
+
+  html += '<div class="exp-bar"><div class="exp-track"><div class="exp-fill" style="width:' + p + '%;background:' + fillColor + '"></div></div></div>';
+  html += '<div class="card-acts">'
+    + '<button class="cbtn" onclick="openEdit(\'' + f.id + '\')">✏️ Modifier</button>'
+    + (!f.pin ? '<button class="cbtn r" onclick="delF(\'' + f.id + '\')">🗑 Supprimer</button>' : '')
+  + '</div>';
+  html += '</div>';
+  return html;
 }
 
-function setFilter(f,el){
-  filt=f;
-  document.querySelectorAll('.chip').forEach(function(c){c.className='chip';});
-  el.className='chip on';
+function setFilter(f, el) {
+  filt = f;
+  var chips = document.querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) chips[i].className = 'chip';
+  el.className = 'chip on';
   render();
 }
 
-function openAdd(){
-  editId=null;
-  document.getElementById('formTitle').textContent='➕ Nouvelle formation';
+function openAdd() {
+  editId = null;
+  document.getElementById('formTitle').textContent = '➕ Nouvelle formation';
   clearForm();
-  document.getElementById('ovForm').className='overlay show';
+  document.getElementById('ovForm').className = 'ov show';
 }
 
-function openEdit(id){
-  var data=load(),f=data.find(function(x){return x.id===id;});
-  if(!f)return;
-  editId=id;
-  document.getElementById('formTitle').textContent='✏️ Modifier';
-  document.getElementById('fType').value=f.type||'';
-  document.getElementById('fTitle').value=f.title||'';
-  document.getElementById('fIss').value=f.iss||'';
-  document.getElementById('fCert').value=f.cert||'';
-  document.getElementById('fDateO').value=f.dateO||'';
-  document.getElementById('fDateE').value=f.dateE||'';
-  document.getElementById('fNotes').value=f.notes||'';
-  document.getElementById('fgTitle').style.display=f.type==='Autre'?'block':'none';
+function openEdit(id) {
+  var data = load();
+  var f = null;
+  for (var i = 0; i < data.length; i++) { if (data[i].id === id) { f = data[i]; break; } }
+  if (!f) return;
+  editId = id;
+  document.getElementById('formTitle').textContent = '✏️ Modifier';
+  document.getElementById('fType').value = f.type || '';
+  document.getElementById('fTitleC').value = f.title || '';
+  document.getElementById('fIss').value = f.iss || '';
+  document.getElementById('fCert').value = f.cert || '';
+  document.getElementById('fDateO').value = f.dateO || '';
+  document.getElementById('fDateE').value = f.dateE || '';
+  document.getElementById('fNotes').value = f.notes || '';
+  document.getElementById('fgTitle').style.display = f.type === 'Autre' ? 'block' : 'none';
   updateHint();
-  document.getElementById('ovForm').className='overlay show';
+  document.getElementById('ovForm').className = 'ov show';
 }
 
-function clearForm(){
-  ['fType','fTitle','fIss','fCert','fDateO','fDateE','fNotes'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.value='';
-  });
-  document.getElementById('fgTitle').style.display='none';
-  document.getElementById('fHint').textContent='';
+function clearForm() {
+  var ids = ['fType','fTitleC','fIss','fCert','fDateO','fDateE','fNotes'];
+  for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
+  document.getElementById('fgTitle').style.display = 'none';
+  document.getElementById('fHint').textContent = '';
 }
 
-function onTypeChange(){
-  var t=document.getElementById('fType').value;
-  document.getElementById('fgTitle').style.display=t==='Autre'?'block':'none';
-  if(t==='CATS'&&!editId){
-    document.getElementById('fIss').value='Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas';
-    document.getElementById('fCert').value='NLD-RP-q99cvjjh51fz';
-    document.getElementById('fDateE').value='2029-09-15';
+function onTypeChange() {
+  var t = document.getElementById('fType').value;
+  document.getElementById('fgTitle').style.display = t === 'Autre' ? 'block' : 'none';
+  if (t === 'CATS' && !editId) {
+    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas';
+    document.getElementById('fCert').value = 'NLD-RP-q99cvjjh51fz';
+    document.getElementById('fDateE').value = '2029-09-15';
     updateHint();
   }
 }
 
-function updateHint(){
-  var v=document.getElementById('fDateE').value;
-  if(!v){document.getElementById('fHint').textContent='';return;}
-  var st=status(v);
-  var msgs={e:'⛔ Date déjà dépassée',u:'⚠️ Expire dans '+st.days+' jour(s) — urgent',w:'🟡 Expire dans '+st.days+' jours — à planifier',v:'✅ Encore '+st.days+' jours',n:''};
-  document.getElementById('fHint').textContent=msgs[st.s]||'';
+function updateHint() {
+  var v = document.getElementById('fDateE').value;
+  if (!v) { document.getElementById('fHint').textContent = ''; return; }
+  var st = getStatus(v);
+  var msgs = { e:'⛔ Date dépassée — certificat expiré', u:'⚠️ Expire dans '+st.days+' jour(s)', w:'🟡 Expire dans '+st.days+' jours', v:'✅ Encore '+st.days+' jours', n:'' };
+  document.getElementById('fHint').textContent = msgs[st.s] || '';
 }
 
-function saveForm(){
-  var t=document.getElementById('fType').value;
-  if(!t){toast('⚠️ Sélectionner un type');return;}
-  var de=document.getElementById('fDateE').value;
-  if(!de){toast('⚠️ Date d\'expiration requise');return;}
-  var title=document.getElementById('fTitle').value.trim()||t;
-  var f={
-    id:editId||'f_'+Date.now(),type:t,title:title,
-    iss:document.getElementById('fIss').value.trim(),
-    cert:document.getElementById('fCert').value.trim(),
-    dateO:document.getElementById('fDateO').value,
-    dateE:de,
-    notes:document.getElementById('fNotes').value.trim(),
-    pin:false
+function saveForm() {
+  var t = document.getElementById('fType').value;
+  if (!t) { toast('⚠️ Sélectionner un type'); return; }
+  var de = document.getElementById('fDateE').value;
+  if (!de) { toast("⚠️ Date d'expiration requise"); return; }
+  var title = document.getElementById('fTitleC').value.trim() || t;
+  var f = {
+    id: editId || ('f_' + Date.now()), type: t, title: title,
+    iss: document.getElementById('fIss').value.trim(),
+    cert: document.getElementById('fCert').value.trim(),
+    dateO: document.getElementById('fDateO').value,
+    dateE: de,
+    notes: document.getElementById('fNotes').value.trim(),
+    pin: false
   };
-  var data=load();
-  if(editId){
-    var idx=data.findIndex(function(x){return x.id===editId;});
-    if(idx>=0){f.pin=data[idx].pin;data[idx]=f;}
-  }else{data.push(f);}
-  save(data);closeModal();render();
-  toast(editId?'✅ Formation mise à jour':'✅ Formation ajoutée');
+  var data = load();
+  if (editId) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].id === editId) { f.pin = data[i].pin; data[i] = f; break; }
+    }
+  } else {
+    data.push(f);
+  }
+  save(data);
+  closeForm();
+  render();
+  toast(editId ? '✅ Formation mise à jour' : '✅ Formation ajoutée');
 }
 
-function del(id){
-  if(!confirm('Supprimer cette formation ?'))return;
-  var data=load().filter(function(x){return x.id!==id;});
-  save(data);render();toast('🗑 Supprimée');
+function delF(id) {
+  if (!confirm('Supprimer cette formation ?')) return;
+  var data = load();
+  var newData = [];
+  for (var i = 0; i < data.length; i++) { if (data[i].id !== id) newData.push(data[i]); }
+  save(newData);
+  render();
+  toast('🗑 Supprimée');
 }
 
-function closeModal(){document.getElementById('ovForm').className='overlay';}
+function closeForm() { document.getElementById('ovForm').className = 'ov'; }
 
-function exportCSV(){
-  var data=sort(load());
-  var csv='\uFEFFType;Titre;Émetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
-  data.forEach(function(f){
-    var st=status(f.dateE);
-    var sl={v:'Valide',w:'À renouveler',u:'URGENT',e:'Expirée',n:'—'}[st.s];
-    csv+=[f.type,f.title,f.iss,f.cert,f.dateO,f.dateE,sl,st.days!==null?st.days:'—',f.notes]
-      .map(function(v){return'"'+(v||'').replace(/"/g,'""')+'"';}).join(';')+'\n';
-  });
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
-  a.download='formations_UAS_CONTE_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();toast('📤 Export CSV téléchargé');
+function exportCSV() {
+  var data = sortData(load());
+  var csv = '\uFEFFType;Titre;Émetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
+  for (var i = 0; i < data.length; i++) {
+    var f = data[i], st = getStatus(f.dateE);
+    var sl = { v:'Valide', w:'À renouveler', u:'URGENT', e:'Expirée', n:'—' }[st.s];
+    var row = [f.type, f.title, f.iss, f.cert, f.dateO, f.dateE, sl, st.days !== null ? st.days : '—', f.notes];
+    csv += row.map(function(v) { return '"' + (v || '').replace(/"/g, '""') + '"'; }).join(';') + '\n';
+  }
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = 'formations_UAS_CONTE_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  toast('📤 Export CSV téléchargé');
 }
 
-function toast(msg){
-  var t=document.getElementById('toast');t.textContent=msg;t.className='toast show';
-  setTimeout(function(){t.className='toast';},2500);
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(function() { t.style.display = 'none'; }, 2500);
 }
 
 render();
