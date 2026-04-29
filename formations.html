@@ -14,24 +14,30 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 .opav { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; text-align: center; line-height: 32px; font-size: 16px; flex-shrink: 0; }
 .opname { color: #fff; font-size: 13px; font-weight: bold; }
 .opid { color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 1px; }
+
 .statsbar { background: #fff; border-bottom: 1px solid #d8e4f0; display: flex; }
 .stat { flex: 1; text-align: center; padding: 12px 4px; border-right: 1px solid #d8e4f0; }
 .stat:last-child { border-right: none; }
 .statv { font-size: 22px; font-weight: bold; color: #0C447C; }
 .statv.g { color: #1D6B37; }
 .statv.a { color: #BA7517; }
+.statv.r { color: #8B2020; }
 .statl { font-size: 10px; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+
 .filters { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d8e4f0; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 .chip { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid #d8e4f0; background: #f0f4f8; color: #6b7280; cursor: pointer; font-family: inherit; margin-right: 6px; }
 .chip.on { background: #0C447C; border-color: #0C447C; color: #fff; }
+
 .seclbl { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; padding: 12px 16px 4px; background: #f0f4f8; }
+
 .card { background: #fff; margin: 8px 16px 0; border-radius: 12px; border: 1px solid #d8e4f0; overflow: hidden; }
 .card.v { border-color: #1D6B37; }
 .card.w { border-color: #BA7517; }
 .card.u { border-color: #8B2020; }
 .card.e { border-color: #8B2020; }
-.card.p { border-color: #0C447C; }
-.pinbar { background: #0C447C; color: rgba(255,255,255,0.85); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
+.card.p { border-left: 4px solid #0C447C; }
+.pinbar { background: #0C447C; color: rgba(255,255,255,0.9); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
+
 .ctop { padding: 12px 12px 8px; display: flex; align-items: flex-start; gap: 10px; }
 .cico { width: 42px; height: 42px; border-radius: 10px; background: #E6F1FB; text-align: center; line-height: 42px; font-size: 22px; flex-shrink: 0; }
 .cico.v { background: #E8F5E9; }
@@ -42,12 +48,14 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 .ctitle { font-size: 14px; font-weight: bold; line-height: 1.2; }
 .ciss { font-size: 11px; color: #6b7280; margin-top: 3px; }
 .ccert { font-size: 10px; font-family: monospace; color: #185FA5; background: #E6F1FB; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
+
 .badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; flex-shrink: 0; white-space: nowrap; }
 .bv { background: #E8F5E9; color: #1D6B37; border: 1px solid #1D6B37; }
 .bw { background: #FAEEDA; color: #BA7517; border: 1px solid #BA7517; }
 .bu { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
 .be { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
 .bn { background: #f0f4f8; color: #6b7280; border: 1px solid #d8e4f0; }
+
 .cbody { padding: 0 12px 10px; }
 .crow { margin-bottom: 4px; font-size: 13px; }
 .crow .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: bold; color: #6b7280; }
@@ -55,19 +63,26 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 .crow .val.r { color: #8B2020; }
 .crow .val.a { color: #BA7517; }
 .crow .val.g { color: #1D6B37; }
+
 .expbar { padding: 0 12px 10px; }
 .extrack { height: 5px; background: #d8e4f0; border-radius: 3px; overflow: hidden; }
 .exfill { height: 5px; border-radius: 3px; }
+
 .cacts { border-top: 1px solid #d8e4f0; display: flex; }
 .cbtn { flex: 1; text-align: center; padding: 11px 4px; border: none; background: transparent; font-size: 13px; font-weight: bold; font-family: inherit; color: #185FA5; cursor: pointer; }
 .cbtn.r { color: #8B2020; }
 .cbtn + .cbtn { border-left: 1px solid #d8e4f0; }
+
 .spacer { height: 90px; }
+
 .botbar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d8e4f0; padding: 10px 16px 24px; display: flex; gap: 8px; }
-.botbar .btn-exp { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: bold; font-family: inherit; cursor: pointer; color: #1a1a2e; }
+.botbar .btn-exp { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: bold; font-family: inherit; cursor: pointer; color: #1a1a2e; white-space: nowrap; }
 .botbar .btn-add { flex: 1; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
+.btn-back { background: rgba(255,255,255,0.2); border: none; border-radius: 6px; color: #fff; font-size: 12px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
+
 .empty { padding: 60px 20px; text-align: center; color: #6b7280; }
 .empty-ico { font-size: 48px; margin-bottom: 12px; }
+
 .ovlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; }
 .ovlay.show { display: block; }
 .mdl { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 18px 18px 0 0; padding: 0 20px 40px; max-height: 92vh; overflow-y: auto; }
@@ -75,36 +90,42 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 .mdl-hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 14px; border-bottom: 1px solid #d8e4f0; margin-bottom: 14px; }
 .mdl-t { font-size: 16px; font-weight: bold; color: #0C447C; }
 .mdl-close { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1a1a2e; }
+
 .fg { margin-bottom: 14px; }
 .fl { display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 6px; }
 .fi, .fs, .fta { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid #d8e4f0; background: #f0f4f8; color: #1a1a2e; font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; }
 .fta { resize: none; height: 68px; }
 .fhint { font-size: 11px; color: #6b7280; margin-top: 4px; }
+
 .factrow { display: flex; gap: 8px; margin-top: 4px; }
 .fbtn { flex: 1; padding: 13px; border-radius: 10px; border: none; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
 .fbtn.p { background: #0C447C; color: #fff; }
 .fbtn.c { background: #f0f4f8; color: #1a1a2e; border: 1px solid #d8e4f0; }
+
 #toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: bold; z-index: 300; white-space: nowrap; display: none; pointer-events: none; }
 </style>
 </head>
 <body>
 
 <div class="hdr">
-  <h1>&#127891; Formations &amp; Habilitations</h1>
-  <p>Suivi des certificats - trie par date d'expiration</p>
-  <div class="opcard">
-    <div class="opav">&#128100;</div>
-    <div>
-      <div class="opname">CONTE Philippe</div>
-      <div class="opid">FRAjqq48j12nfy4c &middot; UAS-FR-517804 &middot; DJI Mavic 4 Pro</div>
+  <h1>Formations &amp; Habilitations</h1>
+  <p>Suivi des certificats - trie par date expiration</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="opcard" style="flex:1;margin-right:10px;">
+      <div class="opav">P</div>
+      <div>
+        <div class="opname">CONTE Philippe</div>
+        <div class="opid">FRAjqq48j12nfy4c - UAS-FR-517804</div>
+      </div>
     </div>
+    <button class="btn-back" onclick="window.location.href='index.html'">Accueil</button>
   </div>
 </div>
 
 <div class="statsbar">
-  <div class="stat"><div class="statv" id="stTot">-</div><div class="statl">Formations</div></div>
+  <div class="stat"><div class="statv" id="stTot">-</div><div class="statl">Total</div></div>
   <div class="stat"><div class="statv g" id="stVal">-</div><div class="statl">Valides</div></div>
-  <div class="stat"><div class="statv a" id="stAl">-</div><div class="statl">A renouveler</div></div>
+  <div class="stat"><div class="statv a" id="stAl">-</div><div class="statl">Alertes</div></div>
 </div>
 
 <div class="filters">
@@ -120,7 +141,7 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 
 <div class="botbar">
   <button class="btn-exp" onclick="exportCSV()">Export CSV</button>
-  <button class="btn-add" onclick="openAdd()">+ Ajouter une formation</button>
+  <button class="btn-add" onclick="openAdd()">+ Ajouter</button>
 </div>
 
 <div class="ovlay" id="ovForm">
@@ -146,7 +167,7 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
       </select>
     </div>
     <div class="fg" id="fgTitle" style="display:none;">
-      <label class="fl">Intitule personnalise</label>
+      <label class="fl">Intitule</label>
       <input class="fi" id="fTitleC" placeholder="Ex: Inspection thermique">
     </div>
     <div class="fg">
@@ -184,60 +205,57 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 var SK = 'uas_formations';
 var filt = 'all';
 var editId = null;
-var store = {};
+var mem = {};
 
 function sGet(k) {
-  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return store[k] || null; }
+  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return mem[k] || null; }
 }
 function sPut(k, v) {
-  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { store[k] = v; }
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { mem[k] = v; }
 }
 
 var DEFAULT = [{
   id: 'cats_default',
   type: 'CATS',
   title: 'CATS - Certificat aptitude telepilote',
-  iss: 'Rijksdienst voor het Wegverkeer RDW Pays-Bas',
+  iss: 'Rijksdienst voor het Wegverkeer RDW - Pays-Bas',
   cert: 'NLD-RP-q99cvjjh51fz',
   dateO: '',
   dateE: '2029-09-15',
-  notes: 'Reconnu en Europe UE 2019/947. Valable categories Ouverte et Specifique PDRA.',
+  notes: 'Reconnu UE 2019/947 - Categories Ouverte et Specifique PDRA.',
   pin: true
 }];
 
-var ICONS = { CATS:'&#127885;', 'PDRA-S01':'&#128310;', 'PDRA-S02':'&#128311;', MANEX:'&#128216;', 'Premiers secours':'&#129658;', 'Reglementation UE':'&#127466;&#127482;', Meteo:'&#127750;', Radionavigation:'&#128225;' };
-
 function loadData() {
   var d = sGet(SK);
-  if (!d) { sPut(SK, DEFAULT); return DEFAULT.slice(); }
+  if (!d || !d.length) { sPut(SK, DEFAULT); return DEFAULT.slice(); }
   return d;
 }
 function saveData(d) { sPut(SK, d); }
 
 function getStatus(dateE) {
-  if (!dateE) { return { s:'n', lbl:'-', days:null }; }
-  var now = new Date();
-  var exp = new Date(dateE);
+  if (!dateE) { return {s:'n', lbl:'-', days:null}; }
+  var now = new Date(); now.setHours(0,0,0,0);
+  var exp = new Date(dateE); exp.setHours(0,0,0,0);
   var diff = Math.ceil((exp - now) / 86400000);
-  if (diff < 0) { return { s:'e', lbl:'Expiree', days:diff }; }
-  if (diff <= 30) { return { s:'u', lbl:diff+'j', days:diff }; }
-  if (diff <= 90) { return { s:'w', lbl:diff+'j', days:diff }; }
-  return { s:'v', lbl:diff+'j', days:diff };
+  if (diff < 0) { return {s:'e', lbl:'Expiree', days:diff}; }
+  if (diff <= 30) { return {s:'u', lbl:diff+'j', days:diff}; }
+  if (diff <= 90) { return {s:'w', lbl:diff+'j', days:diff}; }
+  return {s:'v', lbl:diff+'j', days:diff};
 }
 
 function fmtDate(str) {
   if (!str) { return '-'; }
-  var d = new Date(str);
-  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+  var parts = str.split('-');
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
 }
 
 function getPct(dateO, dateE) {
   if (!dateE) { return 0; }
-  var exp = new Date(dateE);
-  var now = new Date();
+  var exp = new Date(dateE); exp.setHours(0,0,0,0);
+  var now = new Date(); now.setHours(0,0,0,0);
   var start = dateO ? new Date(dateO) : new Date(exp.getFullYear() - 5, exp.getMonth(), exp.getDate());
-  var tot = exp - start;
-  var el = now - start;
+  var tot = exp - start; var el = now - start;
   if (tot <= 0) { return 100; }
   return Math.min(100, Math.max(0, Math.round(el / tot * 100)));
 }
@@ -274,7 +292,7 @@ function render() {
   }
 
   if (!filtered.length) {
-    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">&#128219;</div><div>Aucune formation dans cette categorie.<br>Appuyez sur <b>+ Ajouter</b>.</div></div>';
+    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div>Aucune formation.<br>Appuyez sur <b>+ Ajouter</b>.</div></div>';
     return;
   }
 
@@ -289,7 +307,7 @@ function render() {
     for (i = 0; i < pinned.length; i++) { html += makeCard(pinned[i]); }
   }
   if (others.length) {
-    html += '<div class="seclbl">Autres formations</div>';
+    html += '<div class="seclbl">Autres formations - tri par expiration</div>';
     for (i = 0; i < others.length; i++) { html += makeCard(others[i]); }
   }
   html += '<div style="height:16px;"></div>';
@@ -299,16 +317,21 @@ function render() {
 function makeCard(f) {
   var st = getStatus(f.dateE);
   var p = getPct(f.dateO, f.dateE);
-  var ico = ICONS[f.type] || '&#128196;';
-  var badgeClass = { v:'bv', w:'bw', u:'bu', e:'be', n:'bn' }[st.s];
-  var badgeTxt = { v:'OK '+st.days+'j', w:'Bientot '+st.days+'j', u:'URGENT '+st.days+'j', e:'Expiree', n:'-' }[st.s];
-  var fillColor = { v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d8e4f0' }[st.s];
-  var valClass = { v:'g', w:'a', u:'r', e:'r', n:'' }[st.s];
+  var icons = {CATS:'M', 'PDRA-S01':'S1', 'PDRA-S02':'S2', MANEX:'MX', 'Premiers secours':'PS', 'Reglementation UE':'EU', Meteo:'WX', Radionavigation:'RC'};
+  var ico = icons[f.type] || '?';
+  var badgeClass = {v:'bv', w:'bw', u:'bu', e:'be', n:'bn'}[st.s];
+  var badgeTxt = {v:'OK '+st.days+'j', w:'Bientot '+st.days+'j', u:'URGENT '+st.days+'j', e:'Expiree', n:'-'}[st.s];
+  var fillColor = {v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d8e4f0'}[st.s];
+  var valClass = {v:'g', w:'a', u:'r', e:'r', n:''}[st.s];
+  var restant = '';
+  if (st.days !== null) {
+    restant = st.days >= 0 ? (st.days + ' jours') : ('Exp. depuis ' + Math.abs(st.days) + ' j');
+  }
 
   var html = '<div class="card ' + st.s + (f.pin ? ' p' : '') + '">';
   if (f.pin) { html += '<div class="pinbar">Certificat principal</div>'; }
   html += '<div class="ctop">';
-  html += '<div class="cico ' + st.s + '">' + ico + '</div>';
+  html += '<div class="cico ' + st.s + '" style="font-size:14px;font-weight:bold;">' + ico + '</div>';
   html += '<div class="cinf">';
   html += '<div class="ctitle">' + (f.title || f.type) + '</div>';
   html += '<div class="ciss">' + (f.iss || '-') + '</div>';
@@ -317,12 +340,9 @@ function makeCard(f) {
   html += '<span class="badge ' + badgeClass + '">' + badgeTxt + '</span>';
   html += '</div>';
   html += '<div class="cbody">';
-  if (f.dateO) { html += '<div class="crow"><span class="lbl">Obtention </span><span class="val">' + fmtDate(f.dateO) + '</span></div>'; }
-  html += '<div class="crow"><span class="lbl">Expiration </span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
-  if (st.days !== null) {
-    var restant = st.days >= 0 ? (st.days + ' jours') : ('Exp. depuis ' + Math.abs(st.days) + ' j');
-    html += '<div class="crow"><span class="lbl">Restant </span><span class="val ' + valClass + '">' + restant + '</span></div>';
-  }
+  if (f.dateO) { html += '<div class="crow"><span class="lbl">Obtenu le </span><span class="val">' + fmtDate(f.dateO) + '</span></div>'; }
+  html += '<div class="crow"><span class="lbl">Expire le </span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
+  if (restant) { html += '<div class="crow"><span class="lbl">Restant </span><span class="val ' + valClass + '">' + restant + '</span></div>'; }
   if (f.notes) { html += '<div class="crow" style="margin-top:4px;"><span style="font-size:12px;color:#6b7280;">' + f.notes + '</span></div>'; }
   html += '</div>';
   html += '<div class="expbar"><div class="extrack"><div class="exfill" style="width:' + p + '%;background:' + fillColor + ';"></div></div></div>';
@@ -351,13 +371,11 @@ function openAdd() {
 }
 
 function openEdit(id) {
-  var data = loadData();
-  var f = null;
-  var i;
+  var data = loadData(); var f = null; var i;
   for (i = 0; i < data.length; i++) { if (data[i].id === id) { f = data[i]; break; } }
   if (!f) { return; }
   editId = id;
-  document.getElementById('formTitle').textContent = 'Modifier la formation';
+  document.getElementById('formTitle').textContent = 'Modifier';
   document.getElementById('fType').value = f.type || '';
   document.getElementById('fTitleC').value = f.title || '';
   document.getElementById('fIss').value = f.iss || '';
@@ -371,7 +389,7 @@ function openEdit(id) {
 }
 
 function clearForm() {
-  var ids = ['fType', 'fTitleC', 'fIss', 'fCert', 'fDateO', 'fDateE', 'fNotes'];
+  var ids = ['fType','fTitleC','fIss','fCert','fDateO','fDateE','fNotes'];
   var i;
   for (i = 0; i < ids.length; i++) { document.getElementById(ids[i]).value = ''; }
   document.getElementById('fgTitle').style.display = 'none';
@@ -382,7 +400,7 @@ function onTypeChange() {
   var t = document.getElementById('fType').value;
   document.getElementById('fgTitle').style.display = t === 'Autre' ? 'block' : 'none';
   if (t === 'CATS' && !editId) {
-    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer RDW Pays-Bas';
+    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer RDW - Pays-Bas';
     document.getElementById('fCert').value = 'NLD-RP-q99cvjjh51fz';
     document.getElementById('fDateE').value = '2029-09-15';
     updateHint();
@@ -393,7 +411,7 @@ function updateHint() {
   var v = document.getElementById('fDateE').value;
   if (!v) { document.getElementById('fHint').textContent = ''; return; }
   var st = getStatus(v);
-  var msgs = { e:'Date depassee - certificat expire', u:'Expire dans '+st.days+' jour(s) - urgent', w:'Expire dans '+st.days+' jours - a planifier', v:'Encore '+st.days+' jours de validite', n:'' };
+  var msgs = {e:'Date depassee - certificat expire', u:'Expire dans '+st.days+' jour(s) - urgent', w:'Expire dans '+st.days+' jours - a planifier', v:'Encore '+st.days+' jours de validite', n:''};
   document.getElementById('fHint').textContent = msgs[st.s] || '';
 }
 
@@ -406,8 +424,7 @@ function saveForm() {
   var title = (tc ? tc.trim() : '') || t;
   var f = {
     id: editId || ('f_' + Date.now()),
-    type: t,
-    title: title,
+    type: t, title: title,
     iss: document.getElementById('fIss').value,
     cert: document.getElementById('fCert').value,
     dateO: document.getElementById('fDateO').value,
@@ -415,30 +432,21 @@ function saveForm() {
     notes: document.getElementById('fNotes').value,
     pin: false
   };
-  var data = loadData();
-  var i;
+  var data = loadData(); var i;
   if (editId) {
     for (i = 0; i < data.length; i++) {
       if (data[i].id === editId) { f.pin = data[i].pin; data[i] = f; break; }
     }
-  } else {
-    data.push(f);
-  }
-  saveData(data);
-  closeForm();
-  render();
+  } else { data.push(f); }
+  saveData(data); closeForm(); render();
   toast(editId ? 'Formation mise a jour' : 'Formation ajoutee');
 }
 
 function delF(id) {
   if (!confirm('Supprimer cette formation ?')) { return; }
-  var data = loadData();
-  var nd = [];
-  var i;
+  var data = loadData(); var nd = []; var i;
   for (i = 0; i < data.length; i++) { if (data[i].id !== id) { nd.push(data[i]); } }
-  saveData(nd);
-  render();
-  toast('Formation supprimee');
+  saveData(nd); render(); toast('Supprimee');
 }
 
 function closeForm() { document.getElementById('ovForm').className = 'ovlay'; }
@@ -447,24 +455,21 @@ function exportCSV() {
   var data = sortData(loadData());
   var csv = '\uFEFFType;Titre;Emetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
   var i, f, st, sl, row;
+  var statLabels = {v:'Valide', w:'A renouveler', u:'URGENT', e:'Expiree', n:'-'};
   for (i = 0; i < data.length; i++) {
-    f = data[i];
-    st = getStatus(f.dateE);
-    sl = { v:'Valide', w:'A renouveler', u:'URGENT', e:'Expiree', n:'-' }[st.s];
+    f = data[i]; st = getStatus(f.dateE); sl = statLabels[st.s];
     row = [f.type, f.title, f.iss, f.cert, f.dateO, f.dateE, sl, st.days !== null ? st.days : '-', f.notes];
     csv += row.map(function(v) { return '"' + (v || '').replace(/"/g, '""') + '"'; }).join(';') + '\n';
   }
   var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
   a.download = 'formations_UAS_CONTE.csv';
   a.click();
   toast('Export CSV telecharge');
 }
 
 function toast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
+  var t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
   setTimeout(function() { t.style.display = 'none'; }, 2500);
 }
 
