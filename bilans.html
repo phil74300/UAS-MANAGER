@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/bilans_1.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0C447C">
 <title>UAS Manager — Bilans</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="./UAS Manager — Bilans_files/chart.umd.min.js"></script>
 <style>
   /* ===== CSS VARIABLES ===== */
   :root {
@@ -463,25 +463,121 @@
       <option value="10">Novembre</option>
       <option value="11">Décembre</option>
     </select>
-    <select id="selectAnnee" onchange="onPeriodChange()"></select>
+    <select id="selectAnnee" onchange="onPeriodChange()"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option></select>
     <button id="btnAnnuel" class="btn btn-annual" onclick="toggleAnnuel()">📅 Annuel</button>
   </div>
 
   <!-- MAIN -->
   <main class="main" id="mainContent">
-    <!-- Injected by JS -->
+    <div class="period-label">Bilan — Avril 2026</div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">✈️ Vols</div>
+        <div class="kpi-value">4</div>
+        <div class="kpi-sub">opérations</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">⏱ Durée totale</div>
+        <div class="kpi-value">4h</div>
+        <div class="kpi-sub">temps de vol</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">🎯 Scénarios</div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-sub">types distincts</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-label">👤 RPIC</div>
+        <div class="kpi-value">1</div>
+        <div class="kpi-sub">pilotes actifs</div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUES -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--blue)"></span>
+          Vols par mois
+        </div>
+        <div class="chart-wrapper"><canvas id="chartMois" width="639" height="220" style="display: block; box-sizing: border-box; height: 220px; width: 639px;"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--navy)"></span>
+          Répartition scénarios
+        </div>
+        <div class="chart-wrapper"><canvas id="chartScenarios" width="639" height="220" style="display: block; box-sizing: border-box; height: 220px; width: 639px;"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--green)"></span>
+          Heures par activité
+        </div>
+        <div class="chart-wrapper"><canvas id="chartActivites" width="639" height="220" style="display: block; box-sizing: border-box; height: 220px; width: 639px;"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--amber)"></span>
+          Vols par RPIC
+        </div>
+        <div class="chart-wrapper"><canvas id="chartRPIC" width="639" height="220" style="display: block; box-sizing: border-box; height: 220px; width: 639px;"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABLE DÉTAIL VOLS -->
+    <div class="section-title">Détail des vols</div>
+    
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Scénario</th>
+          <th>Lieu</th>
+          <th>Durée</th>
+          <th>RPIC</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>25/04/2026</td>
+        <td><span class="badge badge-s02">PDRA-S02</span></td>
+        <td>Thyez ZI</td>
+        <td>1h20</td>
+        <td>CONTE Philippe</td>
+      </tr>
+      <tr>
+        <td>18/04/2026</td>
+        <td><span class="badge badge-s01">PDRA-S01</span></td>
+        <td>Sallanches</td>
+        <td>35min</td>
+        <td>CONTE Philippe</td>
+      </tr>
+      <tr>
+        <td>14/04/2026</td>
+        <td><span class="badge badge-s02">PDRA-S02</span></td>
+        <td>Cluses</td>
+        <td>1h15</td>
+        <td>CONTE Philippe</td>
+      </tr>
+      <tr>
+        <td>05/04/2026</td>
+        <td><span class="badge badge-s01">PDRA-S01</span></td>
+        <td>Marnaz</td>
+        <td>50min</td>
+        <td>CONTE Philippe</td>
+      </tr></tbody>
+    </table>
   </main>
 
 </div>
 
-<!-- BOTTOM TAB BAR -->
-<nav class="tab-bar">
-  <a class="tab-item" href="#"><span class="tab-icon">🏠</span>Accueil</a>
-  <a class="tab-item" href="#"><span class="tab-icon">✈️</span>Vols</a>
-  <a class="tab-item" href="#"><span class="tab-icon">🔧</span>Maint.</a>
-  <a class="tab-item" href="#"><span class="tab-icon">🌦</span>Météo</a>
-  <a class="tab-item active" href="#"><span class="tab-icon">📊</span>Bilans</a>
-</nav>
+
+<!-- ✅ TAB BAR UNIFIÉE — 5 boutons -->
+<nav id="tab-bar-unified" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e8ecf0;display:flex;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(12,68,124,.08);z-index:200;"><button onclick="window.location.href=&#39;index.html&#39;" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:3px;border:none;background:none;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;"><span style="font-size:22px;line-height:1;">🏠</span><span style="font-size:10px;font-weight:600;color:#B0BAC6;">Accueil</span></button><button onclick="window.location.href=&#39;vols.html&#39;" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:3px;border:none;background:none;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;"><span style="font-size:22px;line-height:1;">✈️</span><span style="font-size:10px;font-weight:600;color:#B0BAC6;">Vols</span></button><button onclick="window.location.href=&#39;maintenance.html&#39;" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:3px;border:none;background:none;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;"><span style="font-size:22px;line-height:1;">🔧</span><span style="font-size:10px;font-weight:600;color:#B0BAC6;">Maint.</span></button><button onclick="window.location.href=&#39;checklist.html&#39;" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:3px;border:none;background:none;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;"><span style="font-size:22px;line-height:1;">✅</span><span style="font-size:10px;font-weight:600;color:#B0BAC6;">Check-list</span></button><button onclick="window.location.href=&#39;bilans.html&#39;" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;gap:3px;border:none;background:none;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;"><div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 3px 3px;background:#0C447C;"></div><span style="font-size:22px;line-height:1;transform:scale(1.15);">📊</span><span style="font-size:10px;font-weight:600;color:#0C447C;">Bilans</span></button></nav>
+
 
 <script>
 /* ============================================================
@@ -913,5 +1009,6 @@ function formatDate(str) {
   localStorage.setItem('uas_vols', JSON.stringify(demo));
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
