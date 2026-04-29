@@ -6,181 +6,155 @@
 <title>Formations UAS</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; font-size: 16px; }
-
-#header { background: #0C447C; padding: 14px 16px 14px; }
-#header h1 { color: #fff; font-size: 19px; font-weight: 700; margin-bottom: 3px; }
-#header p { color: rgba(255,255,255,0.65); font-size: 11px; margin-bottom: 10px; }
-#op-card { background: rgba(255,255,255,0.13); border-radius: 8px; padding: 8px 12px; display: table; width: 100%; }
-#op-av { display: table-cell; width: 34px; font-size: 20px; vertical-align: middle; }
-#op-inf { display: table-cell; vertical-align: middle; }
-#op-name { color: #fff; font-size: 13px; font-weight: 700; }
-#op-id { color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 1px; }
-
-#stats-bar { background: #fff; border-bottom: 1px solid #d0dce8; display: table; width: 100%; }
-.stat { display: table-cell; width: 33%; text-align: center; padding: 12px 4px; border-right: 1px solid #d0dce8; }
+body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
+.hdr { background: #0C447C; padding: 14px 16px; }
+.hdr h1 { color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 3px; }
+.hdr p { color: #aac8e8; font-size: 11px; margin-bottom: 10px; }
+.opcard { background: rgba(255,255,255,0.13); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+.opav { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; text-align: center; line-height: 32px; font-size: 16px; flex-shrink: 0; }
+.opname { color: #fff; font-size: 13px; font-weight: bold; }
+.opid { color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 1px; }
+.statsbar { background: #fff; border-bottom: 1px solid #d8e4f0; display: flex; }
+.stat { flex: 1; text-align: center; padding: 12px 4px; border-right: 1px solid #d8e4f0; }
 .stat:last-child { border-right: none; }
-.stat-v { font-size: 22px; font-weight: 800; color: #0C447C; }
-.stat-v.g { color: #1D6B37; }
-.stat-v.a { color: #BA7517; }
-.stat-l { font-size: 10px; color: #5a6070; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
-
-#filters { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d0dce8; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-.chip { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1.5px solid #d0dce8; background: #f0f4f8; color: #5a6070; cursor: pointer; font-family: inherit; margin-right: 6px; }
+.statv { font-size: 22px; font-weight: bold; color: #0C447C; }
+.statv.g { color: #1D6B37; }
+.statv.a { color: #BA7517; }
+.statl { font-size: 10px; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+.filters { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d8e4f0; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+.chip { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid #d8e4f0; background: #f0f4f8; color: #6b7280; cursor: pointer; font-family: inherit; margin-right: 6px; }
 .chip.on { background: #0C447C; border-color: #0C447C; color: #fff; }
-
-.sec-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #5a6070; padding: 14px 16px 5px; background: #f0f4f8; }
-
-.card { background: #fff; margin: 8px 16px 0; border-radius: 12px; border: 1.5px solid #d0dce8; overflow: hidden; }
+.seclbl { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; padding: 12px 16px 4px; background: #f0f4f8; }
+.card { background: #fff; margin: 8px 16px 0; border-radius: 12px; border: 1px solid #d8e4f0; overflow: hidden; }
 .card.v { border-color: #1D6B37; }
 .card.w { border-color: #BA7517; }
 .card.u { border-color: #8B2020; }
 .card.e { border-color: #8B2020; }
 .card.p { border-color: #0C447C; }
-
-.pin-bar { background: #0C447C; color: rgba(255,255,255,0.85); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
-
-.card-top { display: table; width: 100%; padding: 12px 12px 8px; }
-.card-ico-cell { display: table-cell; width: 46px; vertical-align: top; }
-.card-ico { width: 42px; height: 42px; border-radius: 10px; background: #E6F1FB; text-align: center; line-height: 42px; font-size: 22px; }
-.card-ico.v { background: #E8F5E9; }
-.card-ico.w { background: #FAEEDA; }
-.card-ico.u { background: #FDECEC; }
-.card-ico.e { background: #FDECEC; }
-.card-mid { display: table-cell; vertical-align: top; padding-right: 8px; }
-.card-title { font-size: 14px; font-weight: 700; line-height: 1.2; }
-.card-iss { font-size: 11px; color: #5a6070; margin-top: 3px; }
-.card-cert { font-size: 10px; font-family: monospace; color: #185FA5; background: #E6F1FB; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
-.card-badge-cell { display: table-cell; vertical-align: top; white-space: nowrap; }
-.badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.pinbar { background: #0C447C; color: rgba(255,255,255,0.85); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
+.ctop { padding: 12px 12px 8px; display: flex; align-items: flex-start; gap: 10px; }
+.cico { width: 42px; height: 42px; border-radius: 10px; background: #E6F1FB; text-align: center; line-height: 42px; font-size: 22px; flex-shrink: 0; }
+.cico.v { background: #E8F5E9; }
+.cico.w { background: #FAEEDA; }
+.cico.u { background: #FDECEC; }
+.cico.e { background: #FDECEC; }
+.cinf { flex: 1; min-width: 0; }
+.ctitle { font-size: 14px; font-weight: bold; line-height: 1.2; }
+.ciss { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.ccert { font-size: 10px; font-family: monospace; color: #185FA5; background: #E6F1FB; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; flex-shrink: 0; white-space: nowrap; }
 .bv { background: #E8F5E9; color: #1D6B37; border: 1px solid #1D6B37; }
 .bw { background: #FAEEDA; color: #BA7517; border: 1px solid #BA7517; }
 .bu { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
 .be { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
-.bn { background: #f0f4f8; color: #5a6070; border: 1px solid #d0dce8; }
-
-.card-body { padding: 0 12px 10px; }
-.row { margin-bottom: 4px; font-size: 13px; }
-.row .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; color: #5a6070; }
-.row .val { font-weight: 600; }
-.row .val.r { color: #8B2020; }
-.row .val.a { color: #BA7517; }
-.row .val.g { color: #1D6B37; }
-
-.exp-bar { padding: 0 12px 10px; }
-.exp-track { height: 5px; background: #d0dce8; border-radius: 3px; overflow: hidden; }
-.exp-fill { height: 5px; border-radius: 3px; }
-
-.card-acts { border-top: 1px solid #d0dce8; display: table; width: 100%; }
-.cbtn { display: table-cell; text-align: center; padding: 11px 4px; border: none; background: transparent; font-size: 13px; font-weight: 600; font-family: inherit; color: #185FA5; cursor: pointer; }
+.bn { background: #f0f4f8; color: #6b7280; border: 1px solid #d8e4f0; }
+.cbody { padding: 0 12px 10px; }
+.crow { margin-bottom: 4px; font-size: 13px; }
+.crow .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: bold; color: #6b7280; }
+.crow .val { font-weight: bold; }
+.crow .val.r { color: #8B2020; }
+.crow .val.a { color: #BA7517; }
+.crow .val.g { color: #1D6B37; }
+.expbar { padding: 0 12px 10px; }
+.extrack { height: 5px; background: #d8e4f0; border-radius: 3px; overflow: hidden; }
+.exfill { height: 5px; border-radius: 3px; }
+.cacts { border-top: 1px solid #d8e4f0; display: flex; }
+.cbtn { flex: 1; text-align: center; padding: 11px 4px; border: none; background: transparent; font-size: 13px; font-weight: bold; font-family: inherit; color: #185FA5; cursor: pointer; }
 .cbtn.r { color: #8B2020; }
-.cbtn + .cbtn { border-left: 1px solid #d0dce8; }
-
-#spacer { height: 90px; }
-
-#bot-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d0dce8; padding: 10px 16px 24px; display: table; width: 100%; }
-#bot-exp { display: table-cell; width: 90px; vertical-align: middle; }
-#bot-exp button { width: 82px; background: #f0f4f8; border: 1.5px solid #d0dce8; border-radius: 8px; padding: 12px 4px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; color: #1a1a2e; }
-#bot-add { display: table-cell; padding-left: 8px; vertical-align: middle; }
-#bot-add button { width: 100%; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 13px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
-
-/* OVERLAY */
-.ov { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; overflow-y: auto; }
-.ov.show { display: block; }
-.modal { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; padding: 0 20px 36px; max-height: 92vh; overflow-y: auto; }
-.modal-hdl { width: 36px; height: 4px; background: #d0dce8; border-radius: 2px; margin: 14px auto 0; }
-.modal-hdr { padding: 12px 0 14px; border-bottom: 1px solid #d0dce8; display: table; width: 100%; margin-bottom: 14px; }
-.modal-t { display: table-cell; font-size: 17px; font-weight: 800; color: #0C447C; vertical-align: middle; }
-.btn-cl { display: table-cell; text-align: right; vertical-align: middle; }
-.btn-cl button { background: #f0f4f8; border: 1.5px solid #d0dce8; border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1a1a2e; }
-
-.fg { margin-bottom: 14px; }
-.fl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #5a6070; margin-bottom: 6px; }
-.fi, .fs, .fta { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1.5px solid #d0dce8; background: #f0f4f8; color: #1a1a2e; font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; }
-.fta { resize: none; height: 68px; }
-.fhint { font-size: 11px; color: #5a6070; margin-top: 4px; }
-
-.form-acts { display: table; width: 100%; margin-top: 4px; }
-.fbtn-c { display: table-cell; width: 44%; vertical-align: middle; padding-right: 8px; }
-.fbtn-c button { width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #d0dce8; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; background: #f0f4f8; color: #1a1a2e; }
-.fbtn-p { display: table-cell; vertical-align: middle; }
-.fbtn-p button { width: 100%; padding: 13px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; background: #0C447C; color: #fff; }
-
-.empty { padding: 60px 20px; text-align: center; color: #5a6070; }
+.cbtn + .cbtn { border-left: 1px solid #d8e4f0; }
+.spacer { height: 90px; }
+.botbar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d8e4f0; padding: 10px 16px 24px; display: flex; gap: 8px; }
+.botbar .btn-exp { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: bold; font-family: inherit; cursor: pointer; color: #1a1a2e; }
+.botbar .btn-add { flex: 1; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
+.empty { padding: 60px 20px; text-align: center; color: #6b7280; }
 .empty-ico { font-size: 48px; margin-bottom: 12px; }
-
-#toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 8px 18px; font-size: 13px; font-weight: 600; z-index: 300; white-space: nowrap; display: none; }
+.ovlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; }
+.ovlay.show { display: block; }
+.mdl { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 18px 18px 0 0; padding: 0 20px 40px; max-height: 92vh; overflow-y: auto; }
+.mdl-hdl { width: 36px; height: 4px; background: #d8e4f0; border-radius: 2px; margin: 14px auto 0; }
+.mdl-hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 14px; border-bottom: 1px solid #d8e4f0; margin-bottom: 14px; }
+.mdl-t { font-size: 16px; font-weight: bold; color: #0C447C; }
+.mdl-close { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1a1a2e; }
+.fg { margin-bottom: 14px; }
+.fl { display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 6px; }
+.fi, .fs, .fta { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid #d8e4f0; background: #f0f4f8; color: #1a1a2e; font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; }
+.fta { resize: none; height: 68px; }
+.fhint { font-size: 11px; color: #6b7280; margin-top: 4px; }
+.factrow { display: flex; gap: 8px; margin-top: 4px; }
+.fbtn { flex: 1; padding: 13px; border-radius: 10px; border: none; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
+.fbtn.p { background: #0C447C; color: #fff; }
+.fbtn.c { background: #f0f4f8; color: #1a1a2e; border: 1px solid #d8e4f0; }
+#toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: bold; z-index: 300; white-space: nowrap; display: none; pointer-events: none; }
 </style>
 </head>
 <body>
 
-<div id="header">
-  <h1>🎓 Formations & Habilitations</h1>
-  <p>Suivi des certificats — trié par date d'expiration</p>
-  <div id="op-card">
-    <span id="op-av">👤</span>
-    <span id="op-inf">
-      <div id="op-name">CONTE Philippe</div>
-      <div id="op-id">FRAjqq48j12nfy4c · UAS-FR-517804 · DJI Mavic 4 Pro</div>
-    </span>
+<div class="hdr">
+  <h1>&#127891; Formations &amp; Habilitations</h1>
+  <p>Suivi des certificats - trie par date d'expiration</p>
+  <div class="opcard">
+    <div class="opav">&#128100;</div>
+    <div>
+      <div class="opname">CONTE Philippe</div>
+      <div class="opid">FRAjqq48j12nfy4c &middot; UAS-FR-517804 &middot; DJI Mavic 4 Pro</div>
+    </div>
   </div>
 </div>
 
-<div id="stats-bar">
-  <div class="stat"><div class="stat-v" id="stTot">—</div><div class="stat-l">Formations</div></div>
-  <div class="stat"><div class="stat-v g" id="stVal">—</div><div class="stat-l">Valides</div></div>
-  <div class="stat"><div class="stat-v a" id="stAl">—</div><div class="stat-l">À renouveler</div></div>
+<div class="statsbar">
+  <div class="stat"><div class="statv" id="stTot">-</div><div class="statl">Formations</div></div>
+  <div class="stat"><div class="statv g" id="stVal">-</div><div class="statl">Valides</div></div>
+  <div class="stat"><div class="statv a" id="stAl">-</div><div class="statl">A renouveler</div></div>
 </div>
 
-<div id="filters">
-  <button class="chip on" onclick="setFilter('all',this)">Toutes</button>
-  <button class="chip" onclick="setFilter('u',this)">🔴 Urgentes</button>
-  <button class="chip" onclick="setFilter('w',this)">🟡 Bientôt</button>
-  <button class="chip" onclick="setFilter('v',this)">🟢 Valides</button>
-  <button class="chip" onclick="setFilter('e',this)">⛔ Expirées</button>
+<div class="filters">
+  <button class="chip on" onclick="setFilt('all',this)">Toutes</button>
+  <button class="chip" onclick="setFilt('u',this)">Urgentes</button>
+  <button class="chip" onclick="setFilt('w',this)">Bientot</button>
+  <button class="chip" onclick="setFilt('v',this)">Valides</button>
+  <button class="chip" onclick="setFilt('e',this)">Expirees</button>
 </div>
 
 <div id="content"></div>
-<div id="spacer"></div>
+<div class="spacer"></div>
 
-<div id="bot-bar">
-  <span id="bot-exp"><button onclick="exportCSV()">📤 Export</button></span>
-  <span id="bot-add"><button onclick="openAdd()">＋ Ajouter une formation</button></span>
+<div class="botbar">
+  <button class="btn-exp" onclick="exportCSV()">Export CSV</button>
+  <button class="btn-add" onclick="openAdd()">+ Ajouter une formation</button>
 </div>
 
-<!-- MODAL FORM -->
-<div class="ov" id="ovForm">
-  <div class="modal">
-    <div class="modal-hdl"></div>
-    <div class="modal-hdr">
-      <span class="modal-t" id="formTitle">➕ Nouvelle formation</span>
-      <span class="btn-cl"><button onclick="closeForm()">Fermer</button></span>
+<div class="ovlay" id="ovForm">
+  <div class="mdl">
+    <div class="mdl-hdl"></div>
+    <div class="mdl-hdr">
+      <div class="mdl-t" id="formTitle">Nouvelle formation</div>
+      <button class="mdl-close" onclick="closeForm()">Fermer</button>
     </div>
     <div class="fg">
       <label class="fl">Type *</label>
       <select class="fs" id="fType" onchange="onTypeChange()">
-        <option value="">— Sélectionner —</option>
-        <option value="CATS">CATS — Certificat d'aptitude télépilote</option>
+        <option value="">-- Selectionner --</option>
+        <option value="CATS">CATS - Certificat aptitude telepilote</option>
         <option value="PDRA-S01">Habilitation PDRA-S01</option>
         <option value="PDRA-S02">Habilitation PDRA-S02</option>
         <option value="MANEX">Formation MANEX</option>
-        <option value="Premiers secours">Premiers secours (PSC1/SST)</option>
-        <option value="Réglementation UE">Réglementation UE 2019/947</option>
-        <option value="Météo">Météorologie avancée</option>
+        <option value="Premiers secours">Premiers secours PSC1/SST</option>
+        <option value="Reglementation UE">Reglementation UE 2019/947</option>
+        <option value="Meteo">Meteorologie avancee</option>
         <option value="Radionavigation">Radionavigation</option>
         <option value="Autre">Autre</option>
       </select>
     </div>
-    <div class="fg" id="fgTitle" style="display:none">
-      <label class="fl">Intitulé personnalisé</label>
+    <div class="fg" id="fgTitle" style="display:none;">
+      <label class="fl">Intitule personnalise</label>
       <input class="fi" id="fTitleC" placeholder="Ex: Inspection thermique">
     </div>
     <div class="fg">
-      <label class="fl">Organisme / Émetteur</label>
+      <label class="fl">Organisme / Emetteur</label>
       <input class="fi" id="fIss" placeholder="Ex: DGAC, RDW, Skeyes...">
     </div>
     <div class="fg">
-      <label class="fl">N° Certificat</label>
+      <label class="fl">Numero de certificat</label>
       <input class="fi" id="fCert" placeholder="Ex: NLD-RP-q99cvjjh51fz">
     </div>
     <div class="fg">
@@ -194,12 +168,13 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
     </div>
     <div class="fg">
       <label class="fl">Notes</label>
-      <textarea class="fta" id="fNotes" placeholder="Informations complémentaires..."></textarea>
+      <textarea class="fta" id="fNotes" placeholder="Informations complementaires..."></textarea>
     </div>
-    <div class="form-acts">
-      <span class="fbtn-c"><button onclick="closeForm()">Annuler</button></span>
-      <span class="fbtn-p"><button onclick="saveForm()">Enregistrer</button></span>
+    <div class="factrow">
+      <button class="fbtn c" onclick="closeForm()">Annuler</button>
+      <button class="fbtn p" onclick="saveForm()">Enregistrer</button>
     </div>
+    <div style="height:10px;"></div>
   </div>
 </div>
 
@@ -209,163 +184,180 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 var SK = 'uas_formations';
 var filt = 'all';
 var editId = null;
+var store = {};
 
-var ICONS = { CATS:'🏅', 'PDRA-S01':'🟦', 'PDRA-S02':'🔷', MANEX:'📘', 'Premiers secours':'🩺', 'Réglementation UE':'🇪🇺', Météo:'🌦', Radionavigation:'📡' };
+function sGet(k) {
+  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return store[k] || null; }
+}
+function sPut(k, v) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { store[k] = v; }
+}
 
 var DEFAULT = [{
-  id: 'cats_default', type: 'CATS',
-  title: "CATS — Certificat d'aptitude télépilote",
-  iss: 'Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas',
+  id: 'cats_default',
+  type: 'CATS',
+  title: 'CATS - Certificat aptitude telepilote',
+  iss: 'Rijksdienst voor het Wegverkeer RDW Pays-Bas',
   cert: 'NLD-RP-q99cvjjh51fz',
-  dateO: '', dateE: '2029-09-15',
-  notes: "Reconnu en Europe — UE 2019/947. Valable catégories Ouverte et Spécifique (PDRA).",
+  dateO: '',
+  dateE: '2029-09-15',
+  notes: 'Reconnu en Europe UE 2019/947. Valable categories Ouverte et Specifique PDRA.',
   pin: true
 }];
 
-function load() {
-  var d = localStorage.getItem(SK);
-  if (!d) { localStorage.setItem(SK, JSON.stringify(DEFAULT)); return DEFAULT.slice(); }
-  try { return JSON.parse(d); } catch(e) { return DEFAULT.slice(); }
+var ICONS = { CATS:'&#127885;', 'PDRA-S01':'&#128310;', 'PDRA-S02':'&#128311;', MANEX:'&#128216;', 'Premiers secours':'&#129658;', 'Reglementation UE':'&#127466;&#127482;', Meteo:'&#127750;', Radionavigation:'&#128225;' };
+
+function loadData() {
+  var d = sGet(SK);
+  if (!d) { sPut(SK, DEFAULT); return DEFAULT.slice(); }
+  return d;
 }
-function save(d) { localStorage.setItem(SK, JSON.stringify(d)); }
+function saveData(d) { sPut(SK, d); }
 
 function getStatus(dateE) {
-  if (!dateE) return { s:'n', lbl:'—', days:null };
-  var now = new Date(), exp = new Date(dateE);
+  if (!dateE) { return { s:'n', lbl:'-', days:null }; }
+  var now = new Date();
+  var exp = new Date(dateE);
   var diff = Math.ceil((exp - now) / 86400000);
-  if (diff < 0) return { s:'e', lbl:'Expirée', days:diff };
-  if (diff <= 30) return { s:'u', lbl:diff+'j', days:diff };
-  if (diff <= 90) return { s:'w', lbl:diff+'j', days:diff };
+  if (diff < 0) { return { s:'e', lbl:'Expiree', days:diff }; }
+  if (diff <= 30) { return { s:'u', lbl:diff+'j', days:diff }; }
+  if (diff <= 90) { return { s:'w', lbl:diff+'j', days:diff }; }
   return { s:'v', lbl:diff+'j', days:diff };
 }
 
 function fmtDate(str) {
-  if (!str) return '—';
+  if (!str) { return '-'; }
   var d = new Date(str);
   return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
 }
 
 function getPct(dateO, dateE) {
-  if (!dateE) return 0;
-  var exp = new Date(dateE), now = new Date();
+  if (!dateE) { return 0; }
+  var exp = new Date(dateE);
+  var now = new Date();
   var start = dateO ? new Date(dateO) : new Date(exp.getFullYear() - 5, exp.getMonth(), exp.getDate());
-  var tot = exp - start, el = now - start;
-  if (tot <= 0) return 100;
+  var tot = exp - start;
+  var el = now - start;
+  if (tot <= 0) { return 100; }
   return Math.min(100, Math.max(0, Math.round(el / tot * 100)));
 }
 
 function sortData(data) {
   return data.slice().sort(function(a, b) {
-    if (a.pin && !b.pin) return -1;
-    if (!a.pin && b.pin) return 1;
-    if (!a.dateE && !b.dateE) return 0;
-    if (!a.dateE) return 1;
-    if (!b.dateE) return -1;
+    if (a.pin && !b.pin) { return -1; }
+    if (!a.pin && b.pin) { return 1; }
+    if (!a.dateE && !b.dateE) { return 0; }
+    if (!a.dateE) { return 1; }
+    if (!b.dateE) { return -1; }
     return new Date(a.dateE) - new Date(b.dateE);
   });
 }
 
 function render() {
-  var data = load(), sorted = sortData(data);
+  var data = loadData();
+  var sorted = sortData(data);
   var tot = data.length, valid = 0, alert = 0;
-  for (var i = 0; i < data.length; i++) {
-    var st = getStatus(data[i].dateE);
-    if (st.s === 'v') valid++;
-    if (st.s === 'u' || st.s === 'w' || st.s === 'e') alert++;
+  var i, st;
+  for (i = 0; i < data.length; i++) {
+    st = getStatus(data[i].dateE);
+    if (st.s === 'v') { valid++; }
+    if (st.s === 'u' || st.s === 'w' || st.s === 'e') { alert++; }
   }
   document.getElementById('stTot').textContent = tot;
   document.getElementById('stVal').textContent = valid;
   document.getElementById('stAl').textContent = alert;
 
   var filtered = [];
-  for (var i = 0; i < sorted.length; i++) {
-    var st = getStatus(sorted[i].dateE);
-    if (filt === 'all' || st.s === filt) filtered.push(sorted[i]);
+  for (i = 0; i < sorted.length; i++) {
+    st = getStatus(sorted[i].dateE);
+    if (filt === 'all' || st.s === filt) { filtered.push(sorted[i]); }
   }
 
   if (!filtered.length) {
-    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div>Aucune formation dans cette catégorie.<br>Appuyez sur <strong>＋ Ajouter</strong>.</div></div>';
+    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">&#128219;</div><div>Aucune formation dans cette categorie.<br>Appuyez sur <b>+ Ajouter</b>.</div></div>';
     return;
   }
 
   var pinned = [], others = [];
-  for (var i = 0; i < filtered.length; i++) {
-    if (filtered[i].pin) pinned.push(filtered[i]);
-    else others.push(filtered[i]);
+  for (i = 0; i < filtered.length; i++) {
+    if (filtered[i].pin) { pinned.push(filtered[i]); } else { others.push(filtered[i]); }
   }
 
   var html = '';
   if (pinned.length) {
-    html += '<div class="sec-lbl">📌 Certificat principal</div>';
-    for (var i = 0; i < pinned.length; i++) html += makeCard(pinned[i]);
+    html += '<div class="seclbl">Certificat principal</div>';
+    for (i = 0; i < pinned.length; i++) { html += makeCard(pinned[i]); }
   }
   if (others.length) {
-    html += '<div class="sec-lbl">📚 Autres formations</div>';
-    for (var i = 0; i < others.length; i++) html += makeCard(others[i]);
+    html += '<div class="seclbl">Autres formations</div>';
+    for (i = 0; i < others.length; i++) { html += makeCard(others[i]); }
   }
-  html += '<div style="height:16px"></div>';
+  html += '<div style="height:16px;"></div>';
   document.getElementById('content').innerHTML = html;
 }
 
 function makeCard(f) {
   var st = getStatus(f.dateE);
   var p = getPct(f.dateO, f.dateE);
-  var ico = ICONS[f.type] || '📄';
+  var ico = ICONS[f.type] || '&#128196;';
   var badgeClass = { v:'bv', w:'bw', u:'bu', e:'be', n:'bn' }[st.s];
-  var badgeTxt = { v:'✅ '+st.days+'j', w:'🟡 '+st.days+'j', u:'⚠️ '+st.days+'j', e:'⛔ Expirée', n:'—' }[st.s];
-  var fillColor = { v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d0dce8' }[st.s];
+  var badgeTxt = { v:'OK '+st.days+'j', w:'Bientot '+st.days+'j', u:'URGENT '+st.days+'j', e:'Expiree', n:'-' }[st.s];
+  var fillColor = { v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d8e4f0' }[st.s];
   var valClass = { v:'g', w:'a', u:'r', e:'r', n:'' }[st.s];
 
   var html = '<div class="card ' + st.s + (f.pin ? ' p' : '') + '">';
-  if (f.pin) html += '<div class="pin-bar">📌 Certificat principal</div>';
-  html += '<div class="card-top">'
-    + '<span class="card-ico-cell"><div class="card-ico ' + st.s + '">' + ico + '</div></span>'
-    + '<span class="card-mid">'
-      + '<div class="card-title">' + (f.title || f.type) + '</div>'
-      + '<div class="card-iss">' + (f.iss || '—') + '</div>'
-      + (f.cert ? '<div class="card-cert">' + f.cert + '</div>' : '')
-    + '</span>'
-    + '<span class="card-badge-cell"><span class="badge ' + badgeClass + '">' + badgeTxt + '</span></span>'
-  + '</div>';
-
-  html += '<div class="card-body">';
-  if (f.dateO) html += '<div class="row"><span class="lbl">Obtention &nbsp;</span><span class="val">' + fmtDate(f.dateO) + '</span></div>';
-  html += '<div class="row"><span class="lbl">Expiration &nbsp;</span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
-  if (st.days !== null) html += '<div class="row"><span class="lbl">Restant &nbsp;</span><span class="val ' + valClass + '">' + (st.days >= 0 ? st.days + ' jours' : 'Exp. depuis ' + Math.abs(st.days) + ' j') + '</span></div>';
-  if (f.notes) html += '<div class="row" style="margin-top:4px"><span style="font-size:12px;color:#5a6070">' + f.notes + '</span></div>';
+  if (f.pin) { html += '<div class="pinbar">Certificat principal</div>'; }
+  html += '<div class="ctop">';
+  html += '<div class="cico ' + st.s + '">' + ico + '</div>';
+  html += '<div class="cinf">';
+  html += '<div class="ctitle">' + (f.title || f.type) + '</div>';
+  html += '<div class="ciss">' + (f.iss || '-') + '</div>';
+  if (f.cert) { html += '<div class="ccert">' + f.cert + '</div>'; }
   html += '</div>';
-
-  html += '<div class="exp-bar"><div class="exp-track"><div class="exp-fill" style="width:' + p + '%;background:' + fillColor + '"></div></div></div>';
-  html += '<div class="card-acts">'
-    + '<button class="cbtn" onclick="openEdit(\'' + f.id + '\')">✏️ Modifier</button>'
-    + (!f.pin ? '<button class="cbtn r" onclick="delF(\'' + f.id + '\')">🗑 Supprimer</button>' : '')
-  + '</div>';
+  html += '<span class="badge ' + badgeClass + '">' + badgeTxt + '</span>';
+  html += '</div>';
+  html += '<div class="cbody">';
+  if (f.dateO) { html += '<div class="crow"><span class="lbl">Obtention </span><span class="val">' + fmtDate(f.dateO) + '</span></div>'; }
+  html += '<div class="crow"><span class="lbl">Expiration </span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
+  if (st.days !== null) {
+    var restant = st.days >= 0 ? (st.days + ' jours') : ('Exp. depuis ' + Math.abs(st.days) + ' j');
+    html += '<div class="crow"><span class="lbl">Restant </span><span class="val ' + valClass + '">' + restant + '</span></div>';
+  }
+  if (f.notes) { html += '<div class="crow" style="margin-top:4px;"><span style="font-size:12px;color:#6b7280;">' + f.notes + '</span></div>'; }
+  html += '</div>';
+  html += '<div class="expbar"><div class="extrack"><div class="exfill" style="width:' + p + '%;background:' + fillColor + ';"></div></div></div>';
+  html += '<div class="cacts">';
+  html += '<button class="cbtn" onclick="openEdit(\'' + f.id + '\')">Modifier</button>';
+  if (!f.pin) { html += '<button class="cbtn r" onclick="delF(\'' + f.id + '\')">Supprimer</button>'; }
+  html += '</div>';
   html += '</div>';
   return html;
 }
 
-function setFilter(f, el) {
+function setFilt(f, el) {
   filt = f;
   var chips = document.querySelectorAll('.chip');
-  for (var i = 0; i < chips.length; i++) chips[i].className = 'chip';
+  var i;
+  for (i = 0; i < chips.length; i++) { chips[i].className = 'chip'; }
   el.className = 'chip on';
   render();
 }
 
 function openAdd() {
   editId = null;
-  document.getElementById('formTitle').textContent = '➕ Nouvelle formation';
+  document.getElementById('formTitle').textContent = 'Nouvelle formation';
   clearForm();
-  document.getElementById('ovForm').className = 'ov show';
+  document.getElementById('ovForm').className = 'ovlay show';
 }
 
 function openEdit(id) {
-  var data = load();
+  var data = loadData();
   var f = null;
-  for (var i = 0; i < data.length; i++) { if (data[i].id === id) { f = data[i]; break; } }
-  if (!f) return;
+  var i;
+  for (i = 0; i < data.length; i++) { if (data[i].id === id) { f = data[i]; break; } }
+  if (!f) { return; }
   editId = id;
-  document.getElementById('formTitle').textContent = '✏️ Modifier';
+  document.getElementById('formTitle').textContent = 'Modifier la formation';
   document.getElementById('fType').value = f.type || '';
   document.getElementById('fTitleC').value = f.title || '';
   document.getElementById('fIss').value = f.iss || '';
@@ -375,12 +367,13 @@ function openEdit(id) {
   document.getElementById('fNotes').value = f.notes || '';
   document.getElementById('fgTitle').style.display = f.type === 'Autre' ? 'block' : 'none';
   updateHint();
-  document.getElementById('ovForm').className = 'ov show';
+  document.getElementById('ovForm').className = 'ovlay show';
 }
 
 function clearForm() {
-  var ids = ['fType','fTitleC','fIss','fCert','fDateO','fDateE','fNotes'];
-  for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
+  var ids = ['fType', 'fTitleC', 'fIss', 'fCert', 'fDateO', 'fDateE', 'fNotes'];
+  var i;
+  for (i = 0; i < ids.length; i++) { document.getElementById(ids[i]).value = ''; }
   document.getElementById('fgTitle').style.display = 'none';
   document.getElementById('fHint').textContent = '';
 }
@@ -389,7 +382,7 @@ function onTypeChange() {
   var t = document.getElementById('fType').value;
   document.getElementById('fgTitle').style.display = t === 'Autre' ? 'block' : 'none';
   if (t === 'CATS' && !editId) {
-    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer (RDW) — Pays-Bas';
+    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer RDW Pays-Bas';
     document.getElementById('fCert').value = 'NLD-RP-q99cvjjh51fz';
     document.getElementById('fDateE').value = '2029-09-15';
     updateHint();
@@ -400,65 +393,72 @@ function updateHint() {
   var v = document.getElementById('fDateE').value;
   if (!v) { document.getElementById('fHint').textContent = ''; return; }
   var st = getStatus(v);
-  var msgs = { e:'⛔ Date dépassée — certificat expiré', u:'⚠️ Expire dans '+st.days+' jour(s)', w:'🟡 Expire dans '+st.days+' jours', v:'✅ Encore '+st.days+' jours', n:'' };
+  var msgs = { e:'Date depassee - certificat expire', u:'Expire dans '+st.days+' jour(s) - urgent', w:'Expire dans '+st.days+' jours - a planifier', v:'Encore '+st.days+' jours de validite', n:'' };
   document.getElementById('fHint').textContent = msgs[st.s] || '';
 }
 
 function saveForm() {
   var t = document.getElementById('fType').value;
-  if (!t) { toast('⚠️ Sélectionner un type'); return; }
+  if (!t) { toast('Selectionner un type'); return; }
   var de = document.getElementById('fDateE').value;
-  if (!de) { toast("⚠️ Date d'expiration requise"); return; }
-  var title = document.getElementById('fTitleC').value.trim() || t;
+  if (!de) { toast('Date expiration requise'); return; }
+  var tc = document.getElementById('fTitleC').value;
+  var title = (tc ? tc.trim() : '') || t;
   var f = {
-    id: editId || ('f_' + Date.now()), type: t, title: title,
-    iss: document.getElementById('fIss').value.trim(),
-    cert: document.getElementById('fCert').value.trim(),
+    id: editId || ('f_' + Date.now()),
+    type: t,
+    title: title,
+    iss: document.getElementById('fIss').value,
+    cert: document.getElementById('fCert').value,
     dateO: document.getElementById('fDateO').value,
     dateE: de,
-    notes: document.getElementById('fNotes').value.trim(),
+    notes: document.getElementById('fNotes').value,
     pin: false
   };
-  var data = load();
+  var data = loadData();
+  var i;
   if (editId) {
-    for (var i = 0; i < data.length; i++) {
+    for (i = 0; i < data.length; i++) {
       if (data[i].id === editId) { f.pin = data[i].pin; data[i] = f; break; }
     }
   } else {
     data.push(f);
   }
-  save(data);
+  saveData(data);
   closeForm();
   render();
-  toast(editId ? '✅ Formation mise à jour' : '✅ Formation ajoutée');
+  toast(editId ? 'Formation mise a jour' : 'Formation ajoutee');
 }
 
 function delF(id) {
-  if (!confirm('Supprimer cette formation ?')) return;
-  var data = load();
-  var newData = [];
-  for (var i = 0; i < data.length; i++) { if (data[i].id !== id) newData.push(data[i]); }
-  save(newData);
+  if (!confirm('Supprimer cette formation ?')) { return; }
+  var data = loadData();
+  var nd = [];
+  var i;
+  for (i = 0; i < data.length; i++) { if (data[i].id !== id) { nd.push(data[i]); } }
+  saveData(nd);
   render();
-  toast('🗑 Supprimée');
+  toast('Formation supprimee');
 }
 
-function closeForm() { document.getElementById('ovForm').className = 'ov'; }
+function closeForm() { document.getElementById('ovForm').className = 'ovlay'; }
 
 function exportCSV() {
-  var data = sortData(load());
-  var csv = '\uFEFFType;Titre;Émetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
-  for (var i = 0; i < data.length; i++) {
-    var f = data[i], st = getStatus(f.dateE);
-    var sl = { v:'Valide', w:'À renouveler', u:'URGENT', e:'Expirée', n:'—' }[st.s];
-    var row = [f.type, f.title, f.iss, f.cert, f.dateO, f.dateE, sl, st.days !== null ? st.days : '—', f.notes];
+  var data = sortData(loadData());
+  var csv = '\uFEFFType;Titre;Emetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
+  var i, f, st, sl, row;
+  for (i = 0; i < data.length; i++) {
+    f = data[i];
+    st = getStatus(f.dateE);
+    sl = { v:'Valide', w:'A renouveler', u:'URGENT', e:'Expiree', n:'-' }[st.s];
+    row = [f.type, f.title, f.iss, f.cert, f.dateO, f.dateE, sl, st.days !== null ? st.days : '-', f.notes];
     csv += row.map(function(v) { return '"' + (v || '').replace(/"/g, '""') + '"'; }).join(';') + '\n';
   }
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-  a.download = 'formations_UAS_CONTE_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = 'formations_UAS_CONTE.csv';
   a.click();
-  toast('📤 Export CSV téléchargé');
+  toast('Export CSV telecharge');
 }
 
 function toast(msg) {
