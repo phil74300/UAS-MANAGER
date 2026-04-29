@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Check-list — UAS Manager</title>
+<style>
+  :root {
+    --navy: #0C447C;
+    --blue: #185FA5;
+    --light-blue: #E6F1FB;
+    --green: #1D6B37;
+    --light-green: #E8F5E9;
+    --amber: #BA7517;
+    --light-amber: #FAEEDA;
+    --red: #8B2020;
+    --light-red: #FDECEC;
+    --teal: #006064;
+    --bg: #F2F5F9;
+    --surface: #FFFFFF;
+    --text: #1A1A2E;
+    --text-secondary: #5A6070;
+    --border: #D0DCE8;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(12,68,124,0.10);
+    --shadow-lg: 0 6px 28px rgba(12,68,124,0.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0D1117;
+      --surface: #161B22;
+      --text: #E6EDF3;
+      --text-secondary: #8B949E;
+      --border: #30363D;
+      --light-blue: #1A2A3A;
+      --light-green: #0D2318;
+      --light-amber: #2A1E08;
+      --light-red: #2A1010;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 6px 28px rgba(0,0,0,0.5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'SF Pro Text', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom);
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy);
+    padding: 14px 16px 12px;
+    padding-top: calc(14px + env(safe-area-inset-top));
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .header-top {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .header-icon {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.15);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header-title { color: #fff; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+  .header-sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-top: 1px; }
+
+  /* MISSION SELECTOR */
+  .mission-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm); padding: 8px 12px;
+  }
+  .mission-bar label { color: rgba(255,255,255,0.75); font-size: 12px; white-space: nowrap; }
+  .mission-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #fff; font-size: 14px; font-weight: 600;
+    font-family: inherit;
+  }
+  .mission-input::placeholder { color: rgba(255,255,255,0.4); }
+  .btn-new-mission {
+    background: rgba(255,255,255,0.2); border: none; border-radius: 6px;
+    color: #fff; font-size: 12px; padding: 4px 8px; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+  }
+
+  /* SEGMENTED CONTROL */
+  .segment-wrap {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 12px 16px; position: sticky; top: 110px; z-index: 90;
+    box-shadow: var(--shadow);
+  }
+  .segment {
+    display: flex; background: var(--bg); border-radius: 10px; padding: 3px; gap: 3px;
+  }
+  .seg-btn {
+    flex: 1; padding: 9px 4px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: all .2s; background: transparent; color: var(--text-secondary);
+  }
+  .seg-btn.active {
+    background: var(--navy); color: #fff; box-shadow: 0 2px 8px rgba(12,68,124,0.3);
+  }
+  .seg-btn .seg-count {
+    display: inline-block; background: rgba(255,255,255,0.25); border-radius: 10px;
+    font-size: 10px; padding: 1px 6px; margin-left: 5px;
+  }
+  .seg-btn:not(.active) .seg-count {
+    background: var(--border); color: var(--text-secondary);
+  }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    background: var(--surface); padding: 10px 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .progress-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+  .progress-pct { font-size: 18px; font-weight: 800; color: var(--navy); }
+  @media (prefers-color-scheme: dark) { .progress-pct { color: #7AB8F5; } }
+  .progress-track {
+    height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 4px; background: var(--green);
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-status {
+    margin-top: 5px; font-size: 11px; color: var(--text-secondary);
+    display: flex; gap: 12px;
+  }
+  .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
+
+  /* ACTION BUTTONS */
+  .actions-row {
+    display: flex; gap: 8px; padding: 10px 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .btn-action {
+    flex: 1; padding: 9px 8px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+    font-family: inherit; cursor: pointer; background: var(--surface);
+    color: var(--text); transition: all .15s;
+  }
+  .btn-action:active { transform: scale(.97); }
+  .btn-action.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .btn-action.danger { background: var(--light-red); border-color: var(--red); color: var(--red); }
+  .btn-action.success { background: var(--light-green); border-color: var(--green); color: var(--green); }
+  .btn-action.amber { background: var(--light-amber); border-color: var(--amber); color: var(--amber); }
+
+  /* GO / NO-GO BANNER */
+  .go-banner {
+    margin: 12px 16px 0; border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px; display: none;
+  }
+  .go-banner.show { display: flex; }
+  .go-banner.go { background: var(--light-green); border: 1.5px solid var(--green); }
+  .go-banner.nogo { background: var(--light-red); border: 1.5px solid var(--red); }
+  .banner-icon { font-size: 28px; }
+  .banner-text { flex: 1; }
+  .banner-label { font-size: 16px; font-weight: 800; }
+  .go-banner.go .banner-label { color: var(--green); }
+  .go-banner.nogo .banner-label { color: var(--red); }
+  .banner-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .btn-override {
+    background: var(--red); color: #fff; border: none; border-radius: var(--radius-sm);
+    padding: 8px 12px; font-size: 12px; font-weight: 700; font-family: inherit;
+    cursor: pointer; white-space: nowrap;
+  }
+
+  /* SECTION */
+  .section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-secondary);
+    padding: 16px 16px 6px; background: var(--bg);
+  }
+
+  /* CHECKLIST ITEMS */
+  .check-item {
+    background: var(--surface); margin: 0 0 1px;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px;
+    border-left: 3px solid transparent;
+    transition: all .2s;
+    position: relative;
+  }
+  .check-item.critical { border-left-color: var(--amber); }
+  .check-item.critical.checked { border-left-color: var(--green); }
+  .check-item:not(.critical).checked { border-left-color: var(--green); }
+  .check-item.checked { background: var(--light-green); }
+
+  .check-box {
+    width: 24px; height: 24px; border-radius: 6px;
+    border: 2px solid var(--border); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all .2s;
+    margin-top: 1px;
+  }
+  .check-item.checked .check-box {
+    background: var(--green); border-color: var(--green);
+  }
+  .check-box svg { display: none; }
+  .check-item.checked .check-box svg { display: block; }
+
+  .check-content { flex: 1; min-width: 0; }
+  .check-text {
+    font-size: 14px; font-weight: 500; line-height: 1.35;
+    color: var(--text);
+  }
+  .check-item.checked .check-text {
+    color: var(--green); text-decoration: line-through; text-decoration-color: rgba(29,107,55,0.4);
+  }
+  .check-sub {
+    font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.3;
+  }
+  .check-footer { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .star-badge {
+    background: var(--light-amber); border: 1px solid var(--amber);
+    color: var(--amber); font-size: 9px; font-weight: 700;
+    padding: 1px 6px; border-radius: 4px; letter-spacing: .5px;
+  }
+  .check-item.checked .star-badge {
+    background: var(--light-green); border-color: var(--green); color: var(--green);
+  }
+  .time-badge {
+    font-size: 11px; color: var(--text-secondary); font-variant-numeric: tabular-nums;
+  }
+
+  /* MODALS */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px); z-index: 200;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    width: 100%; max-width: 600px;
+    transform: translateY(30px); transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .overlay.show .modal { transform: translateY(0); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--red); }
+  .modal-body { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px; }
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+  .btn-modal {
+    width: 100%; padding: 14px; border-radius: var(--radius); border: none;
+    font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-modal:active { transform: scale(.98); }
+  .btn-modal.cancel { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-modal.confirm-override { background: var(--red); color: #fff; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: calc(20px + env(safe-area-inset-top));
+    left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--text); color: var(--bg);
+    border-radius: 20px; padding: 8px 18px; font-size: 13px; font-weight: 600;
+    z-index: 300; transition: transform .3s cubic-bezier(.4,0,.2,1); white-space: nowrap;
+    box-shadow: var(--shadow-lg);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* MISSIONS LIST (slide-up) */
+  .missions-panel {
+    position: fixed; inset: 0; background: var(--surface); z-index: 150;
+    transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    overflow-y: auto; padding-bottom: env(safe-area-inset-bottom);
+  }
+  .missions-panel.show { transform: translateY(0); }
+  .missions-header {
+    background: var(--navy); padding: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top));
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .missions-header h2 { color: #fff; font-size: 18px; font-weight: 700; }
+  .btn-close-panel { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: #fff; padding: 6px 12px; font-family: inherit; font-size: 14px; cursor: pointer; }
+  .mission-item {
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .mission-item:active { background: var(--light-blue); }
+  .mission-item-icon { font-size: 24px; }
+  .mission-item-text { flex: 1; }
+  .mission-item-name { font-size: 14px; font-weight: 600; }
+  .mission-item-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .mission-item-pct { font-size: 14px; font-weight: 700; color: var(--blue); }
+  .empty-state { padding: 40px 16px; text-align: center; color: var(--text-secondary); }
+
+  /* BOTTOM SAVE BAR */
+  .save-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display: flex; gap: 10px; z-index: 90;
+  }
+  .btn-save {
+    flex: 1; background: var(--navy); color: #fff; border: none;
+    border-radius: var(--radius-sm); padding: 13px; font-size: 15px;
+    font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s;
+  }
+  .btn-save:active { transform: scale(.98); }
+  .btn-missions {
+    background: var(--bg); border: 1.5px solid var(--border); color: var(--text);
+    border-radius: var(--radius-sm); padding: 13px 16px; font-size: 14px;
+    font-weight: 600; font-family: inherit; cursor: pointer;
+  }
+
+  .content-scroll { padding-bottom: 90px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-icon">✅</div>
+    <div>
+      <div class="header-title">Check-list de vol</div>
+      <div class="header-sub">CONTE Philippe · FRAjqq48j12nfy4c</div>
+    </div>
+  </div>
+  <div class="mission-bar">
+    <label>Mission :</label>
+    <input class="mission-input" id="missionInput" placeholder="Ex: M2025-042" maxlength="30">
+    <button class="btn-new-mission" onclick="showMissions()">📋 Missions</button>
+  </div>
+</div>
+
+<!-- SEGMENT -->
+<div class="segment-wrap">
+  <div class="segment">
+    <button class="seg-btn active" id="segPre" onclick="switchPhase('pre')">
+      🛫 Pré-vol <span class="seg-count" id="countPre">0/0</span>
+    </button>
+    <button class="seg-btn" id="segPost" onclick="switchPhase('post')">
+      🛬 Post-vol <span class="seg-count" id="countPost">0/0</span>
+    </button>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-header">
+    <span class="progress-label">Progression check-list</span>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-status">
+    <span><span class="status-dot" style="background:var(--green)"></span><span id="checkedCount">0</span> cochés</span>
+    <span><span class="status-dot" style="background:var(--amber)"></span><span id="criticalRemain">0</span> critiques restants</span>
+    <span><span class="status-dot" style="background:var(--border)"></span><span id="totalCount">0</span> total</span>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="actions-row">
+  <button class="btn-action success" onclick="checkAll()">☑️ Tout cocher</button>
+  <button class="btn-action danger" onclick="confirmReset()">🔄 Réinitialiser</button>
+  <button class="btn-action amber" id="btnGo" onclick="showGoStatus()">🚦 Statut GO</button>
+</div>
+
+<!-- GO/NOGO BANNER -->
+<div class="go-banner" id="goBanner">
+  <div class="banner-icon" id="bannerIcon">✅</div>
+  <div class="banner-text">
+    <div class="banner-label" id="bannerLabel">GO — Décollage autorisé</div>
+    <div class="banner-desc" id="bannerDesc">Tous les items critiques sont validés.</div>
+  </div>
+  <button class="btn-override" id="btnOverride" onclick="showOverrideModal()" style="display:none">Passer outre</button>
+</div>
+
+<!-- CHECKLIST CONTENT -->
+<div class="content-scroll" id="checklistContent"></div>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <button class="btn-missions" onclick="showMissions()">📋</button>
+  <button class="btn-save" onclick="saveMission()">💾 Enregistrer la mission</button>
+</div>
+
+<!-- OVERRIDE MODAL -->
+<div class="overlay" id="overrideOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚠️ Avertissement critique</div>
+    <div class="modal-body" id="overrideModalBody">
+      Des items marqués ★ CRITIQUE n'ont pas été cochés. Passer outre cette exigence peut compromettre la sécurité du vol.<br><br>
+      <strong>Êtes-vous certain de vouloir autoriser le décollage malgré ces items non validés ?</strong>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal confirm-override" onclick="confirmOverride()">⚠️ Oui, autoriser le décollage</button>
+      <button class="btn-modal cancel" onclick="closeOverlay('overrideOverlay')">Annuler — Revenir à la check-list</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET MODAL -->
+<div class="overlay" id="resetOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔄 Réinitialiser la check-list</div>
+    <div class="modal-body">Cette action décochera tous les items de la phase en cours. Continuer ?</div>
+    <div class="modal-actions">
+      <button class="btn-modal confirm-override" onclick="doReset()">Réinitialiser</button>
+      <button class="btn-modal cancel" onclick="closeOverlay('resetOverlay')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- MISSIONS PANEL -->
+<div class="missions-panel" id="missionsPanel">
+  <div class="missions-header">
+    <h2>📋 Missions sauvegardées</h2>
+    <button class="btn-close-panel" onclick="hideMissions()">Fermer</button>
+  </div>
+  <div id="missionsList"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA — CHECKLISTS
+// ═══════════════════════════════════════
+const CHECKLISTS = {
+  pre: [
+    {
+      section: '🔋 Énergie & Batteries',
+      items: [
+        { id:'pre_01', text:'Batteries drone chargées ≥ 80%', sub:'Vérifier niveau sur écran et dans DJI Fly', critical:true },
+        { id:'pre_02', text:'Batterie télécommande chargée ≥ 60%', sub:'RC-N2 ou RC 2 selon config', critical:true },
+        { id:'pre_03', text:'Appareil mobile chargé (si applicable)', sub:'Connexion USB-C vérifiée', critical:false },
+      ]
+    },
+    {
+      section: '📋 Documents & Réglementation',
+      items: [
+        { id:'pre_04', text:'Numéro de mission renseigné', sub:'Pour traçabilité et rapport de vol', critical:true },
+        { id:'pre_05', text:'Autorisation préfectorale valide (si PDRA-S02)', sub:'Ou confirmation notification 10 jours ouvrés', critical:true },
+        { id:'pre_06', text:'NOTAM consultés — zone dégagée', sub:'Sofia Briefing / SIA', critical:true },
+        { id:'pre_07', text:'Conditions météo vérifiées (METAR/TAF)', sub:'Vent, visibilité, précipitations', critical:true },
+        { id:'pre_08', text:'Assurance COVERDRONE active', sub:'CDA22411846EUR — valide 10/04/2027', critical:false },
+        { id:'pre_09', text:'CATS NLD-RP-q99cvjjh51fz valide', sub:'Exp. 15/09/2029', critical:false },
+        { id:'pre_10', text:'Carnet de vol à jour', sub:'Dernier vol et maintenance enregistrés', critical:false },
+      ]
+    },
+    {
+      section: '🚁 Drone — Inspection physique',
+      items: [
+        { id:'pre_11', text:'Bras de sustentation dépliés et verrouillés', sub:'DJI Mavic 4 Pro — 4 bras', critical:true },
+        { id:'pre_12', text:'Hélices correctement fixées et sans dommage', sub:'Contrôle visuel de chaque pale', critical:true },
+        { id:'pre_13', text:'Caméra et cardan — absence de blocage', sub:'Protège-cardan retiré', critical:true },
+        { id:'pre_14', text:'Capteurs visuels et sonars propres', sub:'Avant, arrière, bas, côtés', critical:false },
+        { id:'pre_15', text:'Numéro UAS-FR-517804 visible sur le drone', sub:'Marquage réglementaire obligatoire', critical:true },
+        { id:'pre_16', text:'Module DRI activé', sub:'FRAjqq48j12nfy4cvsy — vérifier signal', critical:true },
+        { id:'pre_17', text:'Carte mémoire insérée et espace disponible', sub:'Optionnel selon mission', critical:false },
+      ]
+    },
+    {
+      section: '📡 Liaison & Calibration',
+      items: [
+        { id:'pre_18', text:'Télécommande allumée AVANT le drone', sub:'Respecter procédure DJI Fly', critical:true },
+        { id:'pre_19', text:'Liaison RC établie (barre signal verte)', sub:'DJI O4 Pro — min 4 barres', critical:true },
+        { id:'pre_20', text:'GPS acquis — min 8 satellites', sub:'Attendre fixe RTK si disponible', critical:true },
+        { id:'pre_21', text:'Calibration boussole effectuée si nécessaire', sub:'Obligatoire en zone magnétique perturbée', critical:false },
+        { id:'pre_22', text:'Mode de vol sélectionné (N / S / C)', sub:'Normal par défaut', critical:false },
+        { id:'pre_23', text:'Hauteur max configurée selon scénario', sub:'PDRA-S01: 120m / PDRA-S02: voir autorisation', critical:true },
+        { id:'pre_24', text:'Point de retour RTH défini', sub:'Position décollage confirmée', critical:true },
+      ]
+    },
+    {
+      section: '👥 Zone & Personnel',
+      items: [
+        { id:'pre_25', text:'Zone d\'évolution dégagée et sécurisée', sub:'Périmètre de sécurité établi', critical:true },
+        { id:'pre_26', text:'Observateurs informés (si PDRA-S02)', sub:'OBS1 / OBS2 positionnés et radio OK', critical:false },
+        { id:'pre_27', text:'Briefing participants effectué', sub:'Procédures d\'urgence communiquées', critical:false },
+        { id:'pre_28', text:'Contacts d\'urgence disponibles', sub:'Pompiers 18, SAMU 15, Police 17', critical:false },
+      ]
+    },
+    {
+      section: '✅ Go / No-Go final',
+      items: [
+        { id:'pre_29', text:'Décision Go/No-Go prononcée', sub:'Par le commandant de bord (CONTE Philippe)', critical:true },
+        { id:'pre_30', text:'Heure de décollage enregistrée', sub:'Pour calcul durée totale de vol', critical:false },
+      ]
+    }
+  ],
+  post: [
+    {
+      section: '🛬 Procédures d\'atterrissage',
+      items: [
+        { id:'post_01', text:'Atterrissage effectué — drone immobile', sub:'Moteurs arrêtés avant manipulation', critical:true },
+        { id:'post_02', text:'Drone arrêté avant télécommande', sub:'Respecter ordre d\'extinction', critical:true },
+        { id:'post_03', text:'Heure d\'atterrissage notée', sub:'Pour calcul durée de vol', critical:false },
+      ]
+    },
+    {
+      section: '🔋 Batteries post-vol',
+      items: [
+        { id:'post_04', text:'Niveau batterie drone relevé', sub:'À consigner dans le carnet de vol', critical:false },
+        { id:'post_05', text:'Température batteries vérifiée (< 45°C)', sub:'Ne pas charger si trop chaud', critical:true },
+        { id:'post_06', text:'Batteries mises en charge si nécessaire', sub:'Niveau cible ≥ 80% pour prochain vol', critical:false },
+      ]
+    },
+    {
+      section: '🔍 Inspection post-vol',
+      items: [
+        { id:'post_07', text:'Hélices inspectées — aucun dommage visible', sub:'Fissures, éclats, perte de matière', critical:true },
+        { id:'post_08', text:'Bras repliés correctement', sub:'Position transport — éviter contrainte', critical:false },
+        { id:'post_09', text:'Cardan et caméra — protège installé', sub:'Protection transport remise en place', critical:false },
+        { id:'post_10', text:'Capteurs et objectifs propres', sub:'Nettoyage si contamination', critical:false },
+        { id:'post_11', text:'Anomalie ou incident constaté ?', sub:'Si oui → ouvrir fiche REX', critical:true },
+      ]
+    },
+    {
+      section: '📊 Enregistrement & Traçabilité',
+      items: [
+        { id:'post_12', text:'Carnet de vol mis à jour', sub:'Durée, lieu, PDRA, conditions', critical:true },
+        { id:'post_13', text:'Fichier vidéo/photo transféré et sauvegardé', sub:'Optionnel selon mission', critical:false },
+        { id:'post_14', text:'Données de vol téléchargées (DJI Fly)', sub:'Logs FlightRecord archivés', critical:false },
+        { id:'post_15', text:'Rapport de mission complété', sub:'Si requis par le client ou la DSAC', critical:false },
+        { id:'post_16', text:'Maintenance préventive planifiée si nécessaire', sub:'Selon compteur cycles batteries', critical:false },
+      ]
+    },
+    {
+      section: '📦 Rangement',
+      items: [
+        { id:'post_17', text:'Drone rangé dans la valise de transport', sub:'Fixations et protections en place', critical:false },
+        { id:'post_18', text:'Télécommande et câbles rangés', sub:'Enrouler les câbles sans forcer', critical:false },
+        { id:'post_19', text:'Accessoires inventoriés', sub:'Hélices de rechange, chargeurs, adaptateurs', critical:false },
+        { id:'post_20', text:'Zone d\'opération nettoyée', sub:'Aucun déchet ou matériel oublié', critical:false },
+      ]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let currentPhase = 'pre';
+let currentMission = '';
+let overrideGranted = false;
+
+function getState() {
+  const key = 'uas_checklist_' + (currentMission || '_temp');
+  try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+}
+function saveState(state) {
+  const key = 'uas_checklist_' + (currentMission || '_temp');
+  localStorage.setItem(key, JSON.stringify(state));
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function render() {
+  const state = getState();
+  const list = CHECKLISTS[currentPhase];
+  const content = document.getElementById('checklistContent');
+  let html = '';
+
+  list.forEach(section => {
+    html += `<div class="section-label">${section.section}</div>`;
+    section.items.forEach(item => {
+      const checked = !!state[item.id];
+      const time = state[item.id + '_time'] || '';
+      html += `
+        <div class="check-item ${item.critical ? 'critical' : ''} ${checked ? 'checked' : ''}" id="ci_${item.id}" onclick="toggleItem('${item.id}')">
+          <div class="check-box">
+            <svg width="13" height="10" viewBox="0 0 13 10"><polyline points="1.5,5 5,8.5 11.5,1.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="check-content">
+            <div class="check-text">${item.text}</div>
+            ${item.sub ? `<div class="check-sub">${item.sub}</div>` : ''}
+            <div class="check-footer">
+              ${item.critical ? `<span class="star-badge">★ CRITIQUE</span>` : ''}
+              ${time ? `<span class="time-badge">✓ ${time}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+    });
+  });
+
+  content.innerHTML = html;
+  updateProgress();
+}
+
+function toggleItem(id) {
+  const state = getState();
+  if (state[id]) {
+    delete state[id];
+    delete state[id + '_time'];
+  } else {
+    state[id] = true;
+    const now = new Date();
+    state[id + '_time'] = now.toTimeString().slice(0, 5);
+  }
+  saveState(state);
+  // Animate
+  const el = document.getElementById('ci_' + id);
+  el.style.transform = 'scale(.97)';
+  setTimeout(() => { el.style.transform = ''; render(); }, 100);
+}
+
+function updateProgress() {
+  const state = getState();
+  const list = CHECKLISTS[currentPhase];
+  let total = 0, checked = 0, criticalRemain = 0;
+
+  list.forEach(s => s.items.forEach(item => {
+    total++;
+    if (state[item.id]) checked++;
+    else if (item.critical) criticalRemain++;
+  }));
+
+  const pct = total ? Math.round((checked / total) * 100) : 0;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressFill').style.background = pct === 100 ? 'var(--green)' : pct > 60 ? 'var(--blue)' : 'var(--amber)';
+  document.getElementById('checkedCount').textContent = checked;
+  document.getElementById('criticalRemain').textContent = criticalRemain;
+  document.getElementById('totalCount').textContent = total;
+
+  // Update segment counts
+  updateSegCounts();
+  // Hide banner when editing
+  document.getElementById('goBanner').classList.remove('show');
+}
+
+function updateSegCounts() {
+  ['pre','post'].forEach(phase => {
+    const state = getState();
+    const list = CHECKLISTS[phase];
+    let total = 0, checked = 0;
+    list.forEach(s => s.items.forEach(i => { total++; if(state[i.id]) checked++; }));
+    document.getElementById('count' + phase.charAt(0).toUpperCase() + phase.slice(1)).textContent = checked + '/' + total;
+  });
+}
+
+// ═══════════════════════════════════════
+// PHASE SWITCH
+// ═══════════════════════════════════════
+function switchPhase(phase) {
+  currentPhase = phase;
+  document.getElementById('segPre').classList.toggle('active', phase === 'pre');
+  document.getElementById('segPost').classList.toggle('active', phase === 'post');
+  document.getElementById('goBanner').classList.remove('show');
+  render();
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════
+// CHECK ALL / RESET
+// ═══════════════════════════════════════
+function checkAll() {
+  const state = getState();
+  const now = new Date().toTimeString().slice(0, 5);
+  CHECKLISTS[currentPhase].forEach(s => s.items.forEach(item => {
+    if (!state[item.id]) {
+      state[item.id] = true;
+      state[item.id + '_time'] = now;
+    }
+  }));
+  saveState(state);
+  render();
+  showToast('✅ Tous les items cochés');
+}
+
+function confirmReset() { document.getElementById('resetOverlay').classList.add('show'); }
+function doReset() {
+  const state = getState();
+  CHECKLISTS[currentPhase].forEach(s => s.items.forEach(item => {
+    delete state[item.id]; delete state[item.id + '_time'];
+  }));
+  overrideGranted = false;
+  saveState(state);
+  closeOverlay('resetOverlay');
+  render();
+  showToast('🔄 Check-list réinitialisée');
+}
+
+// ═══════════════════════════════════════
+// GO / NO-GO
+// ═══════════════════════════════════════
+function showGoStatus() {
+  if (currentPhase !== 'pre') { showToast('ℹ️ Statut GO applicable en pré-vol'); return; }
+  const state = getState();
+  const list = CHECKLISTS.pre;
+  let uncritical = [];
+  list.forEach(s => s.items.forEach(i => {
+    if (i.critical && !state[i.id]) uncritical.push(i.text);
+  }));
+  const banner = document.getElementById('goBanner');
+  const override = document.getElementById('btnOverride');
+  banner.classList.add('show');
+  if (uncritical.length === 0 || overrideGranted) {
+    banner.className = 'go-banner show go';
+    document.getElementById('bannerIcon').textContent = '✅';
+    document.getElementById('bannerLabel').textContent = overrideGranted && uncritical.length > 0
+      ? '⚠️ GO avec dérogation' : '✅ GO — Décollage autorisé';
+    document.getElementById('bannerDesc').textContent = overrideGranted && uncritical.length > 0
+      ? `Dérogation accordée — ${uncritical.length} item(s) critique(s) non validé(s)`
+      : 'Tous les items critiques sont validés. Vol autorisé.';
+    override.style.display = 'none';
+  } else {
+    banner.className = 'go-banner show nogo';
+    document.getElementById('bannerIcon').textContent = '🚫';
+    document.getElementById('bannerLabel').textContent = 'NO-GO — Décollage interdit';
+    document.getElementById('bannerDesc').textContent = `${uncritical.length} item(s) critique(s) non validé(s)`;
+    override.style.display = 'block';
+  }
+  banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showOverrideModal() {
+  const state = getState();
+  const list = CHECKLISTS.pre;
+  let items = [];
+  list.forEach(s => s.items.forEach(i => {
+    if (i.critical && !state[i.id]) items.push(`• ${i.text}`);
+  }));
+  document.getElementById('overrideModalBody').innerHTML =
+    `Items critiques non validés :<br><br><strong>${items.join('<br>')}</strong><br><br>Passer outre ces vérifications engage votre seule responsabilité de commandant de bord. Continuer ?`;
+  document.getElementById('overrideOverlay').classList.add('show');
+}
+
+function confirmOverride() {
+  overrideGranted = true;
+  closeOverlay('overrideOverlay');
+  showGoStatus();
+  showToast('⚠️ Dérogation enregistrée');
+}
+
+// ═══════════════════════════════════════
+// MISSIONS
+// ═══════════════════════════════════════
+function saveMission() {
+  const id = document.getElementById('missionInput').value.trim();
+  if (!id) { showToast('⚠️ Saisir un numéro de mission'); return; }
+  currentMission = id;
+  const state = getState();
+  const meta = { id, date: new Date().toISOString(), override: overrideGranted };
+  // Save meta
+  const missions = getMissions();
+  missions[id] = meta;
+  localStorage.setItem('uas_checklist_missions', JSON.stringify(missions));
+  saveState(state);
+  showToast('💾 Mission ' + id + ' sauvegardée');
+}
+
+function getMissions() {
+  try { return JSON.parse(localStorage.getItem('uas_checklist_missions')) || {}; } catch { return {}; }
+}
+
+function showMissions() {
+  const missions = getMissions();
+  const list = document.getElementById('missionsList');
+  const keys = Object.keys(missions).sort().reverse();
+  if (!keys.length) {
+    list.innerHTML = '<div class="empty-state">📭 Aucune mission sauvegardée</div>';
+  } else {
+    list.innerHTML = keys.map(k => {
+      const m = missions[k];
+      const d = new Date(m.date).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'});
+      return `<div class="mission-item" onclick="loadMission('${k}')">
+        <div class="mission-item-icon">✈️</div>
+        <div class="mission-item-text">
+          <div class="mission-item-name">${k}</div>
+          <div class="mission-item-meta">${d}${m.override ? ' · ⚠️ Dérogation' : ''}</div>
+        </div>
+        <div class="mission-item-pct">→</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('missionsPanel').classList.add('show');
+}
+
+function loadMission(id) {
+  currentMission = id;
+  document.getElementById('missionInput').value = id;
+  overrideGranted = getMissions()[id]?.override || false;
+  hideMissions();
+  render();
+  showToast('📂 Mission ' + id + ' chargée');
+}
+
+function hideMissions() { document.getElementById('missionsPanel').classList.remove('show'); }
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Mission input
+document.getElementById('missionInput').addEventListener('change', e => {
+  currentMission = e.target.value.trim();
+  overrideGranted = false;
+  render();
+});
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Formations — UAS Manager</title>
+<style>
+  :root {
+    --navy: #0C447C;
+    --blue: #185FA5;
+    --light-blue: #E6F1FB;
+    --green: #1D6B37;
+    --light-green: #E8F5E9;
+    --amber: #BA7517;
+    --light-amber: #FAEEDA;
+    --red: #8B2020;
+    --light-red: #FDECEC;
+    --teal: #006064;
+    --bg: #F2F5F9;
+    --surface: #FFFFFF;
+    --text: #1A1A2E;
+    --text-secondary: #5A6070;
+    --border: #D0DCE8;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(12,68,124,0.10);
+    --shadow-lg: 0 6px 28px rgba(12,68,124,0.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0D1117; --surface: #161B22; --text: #E6EDF3;
+      --text-secondary: #8B949E; --border: #30363D;
+      --light-blue: #1A2A3A; --light-green: #0D2318;
+      --light-amber: #2A1E08; --light-red: #2A1010;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4); --shadow-lg: 0 6px 28px rgba(0,0,0,0.5);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, 'SF Pro Text', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy); padding: 14px 16px 16px;
+    padding-top: calc(14px + env(safe-area-inset-top));
+    position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-lg);
+  }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .header-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .header-title { color: #fff; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+  .header-sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-top: 1px; }
+
+  /* OPERATOR CARD */
+  .op-card {
+    background: rgba(255,255,255,0.12); border-radius: var(--radius-sm);
+    padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .op-avatar {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .op-info { flex: 1; min-width: 0; }
+  .op-name { color: #fff; font-size: 13px; font-weight: 700; }
+  .op-id { color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 1px; font-variant-numeric: tabular-nums; }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .stat-item { padding: 12px 8px; text-align: center; border-right: 1px solid var(--border); }
+  .stat-item:last-child { border-right: none; }
+  .stat-val { font-size: 22px; font-weight: 800; color: var(--navy); }
+  @media (prefers-color-scheme: dark) { .stat-val { color: #7AB8F5; } }
+  .stat-val.green { color: var(--green); }
+  .stat-val.amber { color: var(--amber); }
+  .stat-val.red { color: var(--red); }
+  .stat-lbl { font-size: 10px; color: var(--text-secondary); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: var(--surface); padding: 10px 16px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--border); background: var(--bg); color: var(--text-secondary);
+    cursor: pointer; white-space: nowrap; font-family: inherit; transition: all .15s;
+  }
+  .filter-chip.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  /* FORMATION CARD */
+  .formation-card {
+    background: var(--surface); margin: 10px 16px 0;
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); border: 1.5px solid var(--border);
+    transition: transform .15s;
+  }
+  .formation-card:active { transform: scale(.99); }
+  .formation-card.urgent { border-color: var(--red); }
+  .formation-card.warning { border-color: var(--amber); }
+  .formation-card.valid { border-color: var(--green); }
+  .formation-card.pinned { border-color: var(--navy); }
+
+  .card-header {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 14px 10px;
+  }
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+    background: var(--light-blue);
+  }
+  .card-icon.urgent { background: var(--light-red); }
+  .card-icon.warning { background: var(--light-amber); }
+  .card-icon.valid { background: var(--light-green); }
+  .card-icon.pinned { background: var(--light-blue); }
+
+  .card-info { flex: 1; min-width: 0; }
+  .card-title { font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .card-issuer { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .card-cert {
+    font-size: 11px; font-family: 'SF Mono', monospace; color: var(--blue);
+    background: var(--light-blue); padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-top: 4px; word-break: break-all;
+  }
+  @media (prefers-color-scheme: dark) { .card-cert { color: #7AB8F5; } }
+
+  .status-badge {
+    padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-valid { background: var(--light-green); color: var(--green); border: 1px solid var(--green); }
+  .badge-warning { background: var(--light-amber); color: var(--amber); border: 1px solid var(--amber); }
+  .badge-urgent { background: var(--light-red); color: var(--red); border: 1px solid var(--red); }
+  .badge-expired { background: var(--light-red); color: var(--red); border: 1px solid var(--red); }
+  .badge-none { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+
+  .card-body { padding: 0 14px 10px; }
+  .card-row {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;
+  }
+  .card-row .label { min-width: 90px; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+  .card-row .value { font-weight: 600; color: var(--text); flex: 1; }
+  .card-row .value.red { color: var(--red); }
+  .card-row .value.amber { color: var(--amber); }
+  .card-row .value.green { color: var(--green); }
+
+  /* PROGRESS EXPIRY */
+  .expiry-bar-wrap { padding: 0 14px 12px; }
+  .expiry-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .expiry-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+
+  /* CARD ACTIONS */
+  .card-actions {
+    display: flex; border-top: 1px solid var(--border);
+  }
+  .card-btn {
+    flex: 1; padding: 10px 4px; border: none; background: transparent;
+    font-size: 13px; font-weight: 600; font-family: inherit; color: var(--blue);
+    cursor: pointer; transition: background .15s;
+  }
+  .card-btn:active { background: var(--light-blue); }
+  .card-btn + .card-btn { border-left: 1px solid var(--border); }
+  .card-btn.danger { color: var(--red); }
+
+  /* PINNED / CATS SPECIAL */
+  .pinned-banner {
+    background: var(--navy); color: rgba(255,255,255,0.85);
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+    padding: 3px 14px; display: flex; align-items: center; gap: 5px;
+  }
+
+  /* ADD BUTTON */
+  .fab {
+    position: fixed; bottom: calc(76px + env(safe-area-inset-bottom));
+    right: 16px; width: 52px; height: 52px;
+    background: var(--blue); border: none; border-radius: 50%;
+    color: #fff; font-size: 24px; cursor: pointer;
+    box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center;
+    transition: transform .15s;
+    z-index: 80;
+  }
+  .fab:active { transform: scale(.93); }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display: flex; gap: 8px; z-index: 90;
+  }
+  .btn-bottom {
+    flex: 1; padding: 11px; border-radius: var(--radius-sm); font-size: 14px;
+    font-weight: 700; font-family: inherit; cursor: pointer; border: none;
+    transition: all .15s;
+  }
+  .btn-bottom:active { transform: scale(.98); }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+
+  /* MODAL */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px); z-index: 200;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 0 0 calc(20px + env(safe-area-inset-bottom));
+    width: 100%; max-width: 600px;
+    transform: translateY(40px); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    max-height: 92vh; overflow-y: auto;
+  }
+  .overlay.show .modal { transform: translateY(0); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 16px auto 0; }
+  .modal-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; }
+  .btn-modal-close { background: var(--bg); border: 1.5px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 14px; cursor: pointer; }
+
+  /* FORM */
+  .form-group { padding: 14px 20px 0; }
+  .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border); background: var(--bg); color: var(--text);
+    font-size: 15px; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue); }
+  .form-textarea { resize: none; height: 80px; }
+  .form-hint { font-size: 11px; color: var(--text-secondary); margin-top: 5px; }
+  .form-actions { padding: 20px 20px 0; display: flex; gap: 10px; }
+  .btn-form { flex: 1; padding: 14px; border-radius: var(--radius-sm); border: none; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s; }
+  .btn-form:active { transform: scale(.98); }
+  .btn-form.primary { background: var(--navy); color: #fff; }
+  .btn-form.cancel { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: calc(20px + env(safe-area-inset-top));
+    left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--text); color: var(--bg); border-radius: 20px;
+    padding: 8px 18px; font-size: 13px; font-weight: 600;
+    z-index: 300; transition: transform .3s cubic-bezier(.4,0,.2,1); white-space: nowrap;
+    box-shadow: var(--shadow-lg);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* EMPTY */
+  .empty-state { padding: 60px 20px; text-align: center; color: var(--text-secondary); }
+  .empty-icon { font-size: 52px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; line-height: 1.5; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-secondary);
+    padding: 16px 16px 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-icon">🎓</div>
+    <div>
+      <div class="header-title">Formations & Habilitations</div>
+      <div class="header-sub">Suivi des certificats et qualifications</div>
+    </div>
+  </div>
+  <div class="op-card">
+    <div class="op-avatar">👤</div>
+    <div class="op-info">
+      <div class="op-name">CONTE Philippe</div>
+      <div class="op-id">AlphaTango · FRAjqq48j12nfy4c · UAS-FR-517804</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-val" id="statTotal">—</div>
+    <div class="stat-lbl">Formations</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val green" id="statValid">—</div>
+    <div class="stat-lbl">Valides</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val amber" id="statAlert">—</div>
+    <div class="stat-lbl">À renouveler</div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <button class="filter-chip active" onclick="setFilter('all', this)">Toutes</button>
+  <button class="filter-chip" onclick="setFilter('urgent', this)">🔴 Urgentes</button>
+  <button class="filter-chip" onclick="setFilter('warning', this)">🟡 Bientôt</button>
+  <button class="filter-chip" onclick="setFilter('valid', this)">🟢 Valides</button>
+  <button class="filter-chip" onclick="setFilter('expired', this)">⚫ Expirées</button>
+</div>
+
+<!-- CONTENT -->
+<div id="formationsContent"></div>
+
+<!-- FAB -->
+<button class="fab" onclick="openAddModal()" title="Ajouter une formation">＋</button>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="btn-bottom btn-secondary" onclick="exportData()">📤 Exporter</button>
+  <button class="btn-bottom btn-primary" onclick="openAddModal()">＋ Ajouter</button>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="addOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">➕ Nouvelle formation</div>
+      <button class="btn-modal-close" onclick="closeOverlay('addOverlay')">Fermer</button>
+    </div>
+    <div id="formFields">
+      <div class="form-group">
+        <label class="form-label">Type / Intitulé *</label>
+        <select class="form-select" id="fType" onchange="onTypeChange()">
+          <option value="">— Sélectionner —</option>
+          <option value="CATS">CATS — Certificat d'aptitude télépilote</option>
+          <option value="PDRA-S01">Habilitation PDRA-S01</option>
+          <option value="PDRA-S02">Habilitation PDRA-S02</option>
+          <option value="MANEX">Formation MANEX / procédures internes</option>
+          <option value="Premiers secours">Premiers secours (PSC1/SST)</option>
+          <option value="Sûreté aérienne">Sûreté aérienne</option>
+          <option value="Réglementation UE">Réglementation UE 2019/947</option>
+          <option value="Météo avancée">Météorologie avancée</option>
+          <option value="Radionavigation">Radionavigation / liaison RC</option>
+          <option value="Autre">Autre formation</option>
+        </select>
+      </div>
+      <div class="form-group" id="fieldCustomTitle" style="display:none">
+        <label class="form-label">Intitulé personnalisé</label>
+        <input class="form-input" id="fTitle" placeholder="Ex: Formation inspection thermique">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organisme / Émetteur</label>
+        <input class="form-input" id="fIssuer" placeholder="Ex: DGAC, Eurocopter Academy, Skeyes…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">N° de certificat / référence</label>
+        <input class="form-input" id="fCert" placeholder="Ex: NLD-RP-q99cvjjh51fz">
+        <div class="form-hint">Laisser vide si non applicable</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date d'obtention</label>
+        <input class="form-input" id="fDateObtained" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date d'expiration *</label>
+        <input class="form-input" id="fDateExpiry" type="date">
+        <div class="form-hint" id="expiryHint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="fNotes" placeholder="Informations complémentaires…"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-form cancel" onclick="closeOverlay('addOverlay')">Annuler</button>
+        <button class="btn-form primary" onclick="saveFormation()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const STORAGE_KEY = 'uas_formations';
+let currentFilter = 'all';
+let editingId = null;
+
+// DEFAULT — CATS préchargé
+const DEFAULT_FORMATIONS = [
+  {
+    id: 'cats_default',
+    type: 'CATS',
+    title: 'CATS — Certificat d\'aptitude télépilote',
+    issuer: 'Rijksdienst voor het Wegverkeer (RDW) — NL',
+    cert: 'NLD-RP-q99cvjjh51fz',
+    dateObtained: '',
+    dateExpiry: '2029-09-15',
+    notes: 'Certificat CATS reconnu en Europe (règlement UE 2019/947). Valable pour opérations en catégorie Ouverte et Spécifique (PDRA).',
+    pinned: true
+  }
+];
+
+function getData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function initData() {
+  if (!getData()) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_FORMATIONS));
+  }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════
+// STATUS LOGIC
+// ═══════════════════════════════════════
+function getStatus(dateExpiry) {
+  if (!dateExpiry) return { status: 'none', label: 'Aucune exp.', days: null };
+  const now = new Date();
+  const exp = new Date(dateExpiry);
+  const diffMs = exp - now;
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  if (days < 0) return { status: 'expired', label: 'Expirée', days };
+  if (days <= 30) return { status: 'urgent', label: `${days}j`, days };
+  if (days <= 90) return { status: 'warning', label: `${days}j`, days };
+  return { status: 'valid', label: `${days}j`, days };
+}
+
+function getExpiryColor(status) {
+  return { urgent: 'var(--red)', warning: 'var(--amber)', valid: 'var(--green)', expired: 'var(--red)', none: 'var(--border)' }[status];
+}
+
+function getExpiryPct(dateObtained, dateExpiry) {
+  if (!dateExpiry) return 0;
+  const exp = new Date(dateExpiry);
+  const now = new Date();
+  const start = dateObtained ? new Date(dateObtained) : new Date(exp.getFullYear() - 5, exp.getMonth(), exp.getDate());
+  const total = exp - start;
+  const elapsed = now - start;
+  if (total <= 0) return 100;
+  return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+// ═══════════════════════════════════════
+// SORT
+// ═══════════════════════════════════════
+function sortByExpiry(data) {
+  return [...data].sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    if (!a.dateExpiry && !b.dateExpiry) return 0;
+    if (!a.dateExpiry) return 1;
+    if (!b.dateExpiry) return -1;
+    return new Date(a.dateExpiry) - new Date(b.dateExpiry);
+  });
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function render() {
+  const data = getData() || [];
+  const sorted = sortByExpiry(data);
+
+  // Stats
+  let total = data.length, valid = 0, alert = 0;
+  data.forEach(f => {
+    const { status } = getStatus(f.dateExpiry);
+    if (status === 'valid') valid++;
+    if (status === 'urgent' || status === 'warning' || status === 'expired') alert++;
+  });
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statValid').textContent = valid;
+  document.getElementById('statAlert').textContent = alert;
+
+  // Filter
+  const filtered = sorted.filter(f => {
+    if (currentFilter === 'all') return true;
+    const { status } = getStatus(f.dateExpiry);
+    if (currentFilter === 'urgent') return status === 'urgent';
+    if (currentFilter === 'warning') return status === 'warning';
+    if (currentFilter === 'valid') return status === 'valid';
+    if (currentFilter === 'expired') return status === 'expired';
+    return true;
+  });
+
+  const content = document.getElementById('formationsContent');
+
+  if (!filtered.length) {
+    content.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">Aucune formation dans cette catégorie.<br>Appuyez sur <strong>＋ Ajouter</strong> pour commencer.</div>
+    </div>`;
+    return;
+  }
+
+  // Group pinned vs others
+  let html = '';
+  const pinned = filtered.filter(f => f.pinned);
+  const others = filtered.filter(f => !f.pinned);
+
+  if (pinned.length) {
+    html += `<div class="section-label">📌 Certificat principal</div>`;
+    pinned.forEach(f => { html += renderCard(f); });
+  }
+  if (others.length) {
+    html += `<div class="section-label">📚 Autres formations — triées par expiration</div>`;
+    others.forEach(f => { html += renderCard(f); });
+  }
+
+  html += '<div style="height:16px"></div>';
+  content.innerHTML = html;
+}
+
+function renderCard(f) {
+  const { status, label, days } = getStatus(f.dateExpiry);
+  const pct = getExpiryPct(f.dateObtained, f.dateExpiry);
+  const fillColor = getExpiryColor(status);
+
+  const badgeClass = { valid: 'badge-valid', warning: 'badge-warning', urgent: 'badge-urgent', expired: 'badge-expired', none: 'badge-none' }[status];
+  const badgeLabel = status === 'expired' ? '⛔ Expirée' : status === 'urgent' ? `⚠️ ${label}` : status === 'warning' ? `🟡 ${label}` : status === 'valid' ? `✅ ${days}j` : '—';
+  const iconEmoji = { CATS: '🏅', 'PDRA-S01': '🟦', 'PDRA-S02': '🔷', MANEX: '📘', 'Premiers secours': '🩺', 'Sûreté aérienne': '🛡️', 'Réglementation UE': '🇪🇺', 'Météo avancée': '🌦️', Radionavigation: '📡' }[f.type] || '📄';
+
+  return `<div class="formation-card ${status}" data-id="${f.id}">
+    ${f.pinned ? `<div class="pinned-banner">📌 Certificat principal · Toujours affiché en priorité</div>` : ''}
+    <div class="card-header">
+      <div class="card-icon ${status}">${iconEmoji}</div>
+      <div class="card-info">
+        <div class="card-title">${f.title || f.type}</div>
+        <div class="card-issuer">${f.issuer || '—'}</div>
+        ${f.cert ? `<div class="card-cert">${f.cert}</div>` : ''}
+      </div>
+      <span class="status-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    <div class="card-body">
+      ${f.dateObtained ? `<div class="card-row"><span class="label">Obtention</span><span class="value">${formatDate(f.dateObtained)}</span></div>` : ''}
+      <div class="card-row">
+        <span class="label">Expiration</span>
+        <span class="value ${status === 'expired' ? 'red' : status === 'urgent' ? 'red' : status === 'warning' ? 'amber' : 'green'}">${formatDate(f.dateExpiry)}</span>
+      </div>
+      ${days !== null ? `<div class="card-row"><span class="label">Durée rest.</span><span class="value">${days >= 0 ? days + ' jours' : 'Expirée depuis ' + Math.abs(days) + ' jours'}</span></div>` : ''}
+      ${f.notes ? `<div class="card-row" style="align-items:flex-start"><span class="label">Notes</span><span class="value" style="font-size:12px;color:var(--text-secondary)">${f.notes}</span></div>` : ''}
+    </div>
+    <div class="expiry-bar-wrap">
+      <div class="expiry-bar"><div class="expiry-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+    </div>
+    <div class="card-actions">
+      <button class="card-btn" onclick="openEditModal('${f.id}')">✏️ Modifier</button>
+      ${!f.pinned ? `<button class="card-btn danger" onclick="deleteFormation('${f.id}')">🗑 Supprimer</button>` : ''}
+      ${status === 'urgent' || status === 'warning' ? `<button class="card-btn" onclick="remindRenewal('${f.id}')">🔔 Rappel</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+// ═══════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '➕ Nouvelle formation';
+  clearForm();
+  document.getElementById('addOverlay').classList.add('show');
+}
+
+function openEditModal(id) {
+  const data = getData() || [];
+  const f = data.find(x => x.id === id);
+  if (!f) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '✏️ Modifier la formation';
+  document.getElementById('fType').value = f.type || '';
+  document.getElementById('fTitle').value = f.title || '';
+  document.getElementById('fIssuer').value = f.issuer || '';
+  document.getElementById('fCert').value = f.cert || '';
+  document.getElementById('fDateObtained').value = f.dateObtained || '';
+  document.getElementById('fDateExpiry').value = f.dateExpiry || '';
+  document.getElementById('fNotes').value = f.notes || '';
+  document.getElementById('fieldCustomTitle').style.display = (f.type === 'Autre') ? 'block' : 'none';
+  updateExpiryHint();
+  document.getElementById('addOverlay').classList.add('show');
+}
+
+function clearForm() {
+  ['fType','fTitle','fIssuer','fCert','fDateObtained','fDateExpiry','fNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('fieldCustomTitle').style.display = 'none';
+  document.getElementById('expiryHint').textContent = '';
+}
+
+function onTypeChange() {
+  const type = document.getElementById('fType').value;
+  document.getElementById('fieldCustomTitle').style.display = type === 'Autre' ? 'block' : 'none';
+  // Auto-fill known certs
+  if (type === 'CATS' && !editingId) {
+    document.getElementById('fIssuer').value = 'Rijksdienst voor het Wegverkeer (RDW) — NL';
+    document.getElementById('fCert').value = 'NLD-RP-q99cvjjh51fz';
+    document.getElementById('fDateExpiry').value = '2029-09-15';
+    updateExpiryHint();
+  }
+}
+
+document.getElementById('fDateExpiry').addEventListener('input', updateExpiryHint);
+function updateExpiryHint() {
+  const val = document.getElementById('fDateExpiry').value;
+  if (!val) { document.getElementById('expiryHint').textContent = ''; return; }
+  const { status, days } = getStatus(val);
+  const msgs = {
+    expired: '⛔ Date déjà dépassée — certificat expiré',
+    urgent: `⚠️ Expire dans ${days} jour(s) — renouvellement urgent`,
+    warning: `🟡 Expire dans ${days} jours — planifier le renouvellement`,
+    valid: `✅ Encore ${days} jours de validité`,
+    none: ''
+  };
+  document.getElementById('expiryHint').textContent = msgs[status] || '';
+}
+
+function saveFormation() {
+  const type = document.getElementById('fType').value;
+  if (!type) { showToast('⚠️ Sélectionner un type de formation'); return; }
+  const dateExpiry = document.getElementById('fDateExpiry').value;
+  if (!dateExpiry) { showToast('⚠️ Date d\'expiration requise'); return; }
+
+  const formation = {
+    id: editingId || 'f_' + Date.now(),
+    type,
+    title: type === 'Autre' ? document.getElementById('fTitle').value.trim() : (document.getElementById('fTitle').value.trim() || type),
+    issuer: document.getElementById('fIssuer').value.trim(),
+    cert: document.getElementById('fCert').value.trim(),
+    dateObtained: document.getElementById('fDateObtained').value,
+    dateExpiry,
+    notes: document.getElementById('fNotes').value.trim(),
+    pinned: false
+  };
+
+  if (!formation.title) formation.title = type;
+
+  const data = getData() || [];
+  if (editingId) {
+    const idx = data.findIndex(x => x.id === editingId);
+    if (idx !== -1) { formation.pinned = data[idx].pinned; data[idx] = formation; }
+  } else {
+    data.push(formation);
+  }
+  saveData(data);
+  closeOverlay('addOverlay');
+  render();
+  showToast(editingId ? '✅ Formation mise à jour' : '✅ Formation ajoutée');
+}
+
+function deleteFormation(id) {
+  if (!confirm('Supprimer cette formation ?')) return;
+  const data = (getData() || []).filter(x => x.id !== id);
+  saveData(data);
+  render();
+  showToast('🗑 Formation supprimée');
+}
+
+function remindRenewal(id) {
+  const data = getData() || [];
+  const f = data.find(x => x.id === id);
+  if (!f) return;
+  showToast(`🔔 Rappel : renouveler "${f.type}" avant le ${formatDate(f.dateExpiry)}`);
+}
+
+// ═══════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════
+function exportData() {
+  const data = getData() || [];
+  const sorted = sortByExpiry(data);
+  let csv = 'Type;Titre;Émetteur;N° Certificat;Obtention;Expiration;Statut;Jours restants;Notes\n';
+  sorted.forEach(f => {
+    const { status, days } = getStatus(f.dateExpiry);
+    const statusLabel = { valid: 'Valide', warning: 'À renouveler', urgent: 'URGENT', expired: 'Expirée', none: '—' }[status];
+    csv += [f.type, f.title, f.issuer, f.cert, f.dateObtained, f.dateExpiry, statusLabel, days !== null ? days : '—', f.notes]
+      .map(v => `"${(v || '').replace(/"/g, '""')}"`)
+      .join(';') + '\n';
+  });
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'formations_UAS_CONTE_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📤 Export CSV téléchargé');
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+initData();
+render();
+</script>
+</body>
+</html>
