@@ -1,784 +1,479 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_10.html -->
+<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_13.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="UAS Manager">
-  <meta name="theme-color" content="#0C447C">
-  <meta name="description" content="Gestionnaire opérationnel UAS — CONTE Philippe">
-  <title>UAS Manager</title>
-  <link rel="manifest" href="file:///Users/contephilippe/Downloads/manifest.json">
 
-  <style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UAS Manager">
+<title>UAS Manager — Accueil</title>
+<style>
+  :root {
+    --navy:        #0C447C;
+    --blue:        #185FA5;
+    --light-blue:  #E6F1FB;
+    --green:       #1D6B37;
+    --light-green: #E8F5E9;
+    --amber:       #BA7517;
+    --light-amber: #FAEEDA;
+    --red:         #8B2020;
+    --light-red:   #FDECEC;
+    --teal:        #006064;
+    --bg:          #F0F4FA;
+    --surface:     #FFFFFF;
+    --text:        #0D1220;
+    --text-muted:  #5A6478;
+    --border:      #D0DCF0;
+  }
+
+  @media (prefers-color-scheme: dark) {
     :root {
-      --navy:        #0C447C;
-      --blue:        #185FA5;
-      --light-blue:  #E6F1FB;
-      --green:       #1D6B37;
-      --light-green: #E8F5E9;
-      --amber:       #BA7517;
-      --light-amber: #FAEEDA;
-      --red:         #8B2020;
-      --light-red:   #FDECEC;
-      --teal:        #006064;
-      --gray-1:      #F5F7FA;
-      --gray-2:      #E8ECF0;
-      --gray-3:      #B0BAC6;
-      --gray-4:      #6B7A8D;
-      --gray-5:      #3A4556;
-      --text:        #1A2332;
-      --text-light:  #5A6A7E;
-      --white:       #FFFFFF;
-      --radius-sm:   8px;
-      --radius-md:   14px;
-      --radius-lg:   20px;
-      --shadow-sm:   0 1px 4px rgba(12,68,124,.08);
-      --shadow-md:   0 4px 16px rgba(12,68,124,.12);
-      --shadow-lg:   0 8px 32px rgba(12,68,124,.18);
-      --safe-top:    env(safe-area-inset-top, 0px);
-      --safe-bot:    env(safe-area-inset-bottom, 0px);
-      --tab-h:       64px;
-      --header-h:    56px;
-      --font:        -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      --bg:         #0D1220;
+      --surface:    #161E30;
+      --text:       #E8EEF8;
+      --text-muted: #7A8BAA;
+      --border:     #253050;
+      --light-blue: #1A2D4A;
+      --light-amber:#2A1E00;
+      --light-green:#0F2318;
+      --light-red:  #2A0D0D;
     }
+  }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --gray-1:    #0F1923;
-        --gray-2:    #1A2535;
-        --gray-3:    #2D3E52;
-        --gray-4:    #8A9AB0;
-        --gray-5:    #C5D0DC;
-        --text:      #E8EEF5;
-        --text-light:#8A9AB0;
-        --white:     #1A2535;
-        --light-blue:#0D2640;
-        --light-green:#0D2A18;
-        --light-amber:#2A1E08;
-        --light-red: #2A1010;
-        --shadow-sm: 0 1px 4px rgba(0,0,0,.3);
-        --shadow-md: 0 4px 16px rgba(0,0,0,.4);
-        --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
-      }
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    min-height: 100%;
+    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
 
-    html, body {
-      height: 100%;
-      font-family: var(--font);
-      background: var(--gray-1);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      overscroll-behavior: none;
-    }
+  /* ─── HEADER ─── */
+  #header {
+    background: var(--navy);
+    padding: env(safe-area-inset-top) 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
 
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      max-width: 768px;
-      margin: 0 auto;
-      position: relative;
-      background: var(--gray-1);
-    }
+  /* motif géo en fond */
+  #header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 50%, rgba(24,95,165,0.45) 0%, transparent 60%),
+      radial-gradient(circle at 10% 80%, rgba(0,96,100,0.3) 0%, transparent 50%);
+    pointer-events: none;
+  }
 
-    #header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: calc(var(--header-h) + var(--safe-top));
-      padding-top: var(--safe-top);
-      background: var(--navy);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-inline: 20px;
-      box-shadow: var(--shadow-md);
-    }
+  /* grille subtile */
+  #header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
 
-    #header-logo { display: flex; align-items: center; gap: 10px; }
-    #header-logo svg { width: 30px; height: 30px; }
-    #header-title { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: .3px; }
-    #header-subtitle { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .5px; text-transform: uppercase; }
-    #header-right { display: flex; align-items: center; gap: 8px; }
+  .header-inner {
+    position: relative;
+    z-index: 1;
+    padding: 24px 0 28px;
+  }
 
-    .header-icon-btn {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.12);
-      border: none;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 18px;
-      cursor: pointer;
-      transition: background .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .header-icon-btn:active { background: rgba(255,255,255,.22); }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
 
-    #offline-banner {
-      display: none;
-      background: var(--amber);
-      color: white;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px;
-      letter-spacing: .3px;
-    }
-    body.offline #offline-banner { display: block; }
+  #header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  #header h1 span { color: #7EB8F7; }
 
-    #main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .header-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 6px;
+    font-weight: 500;
+  }
 
-    .screen {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-      display: none;
-      flex-direction: column;
-      min-height: 100%;
-      animation: fadeIn .25s ease;
-    }
-    .screen.active { display: flex; }
+  /* ─── PILOT CARD ─── */
+  .pilot-strip {
+    background: rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .pilot-avatar {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.25);
+  }
+  .pilot-info { flex: 1; min-width: 0; }
+  .pilot-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .pilot-id   { font-size: 11px; color: rgba(255,255,255,0.55); font-family: 'SF Mono', monospace; margin-top: 1px; }
+  .pilot-cats {
+    background: rgba(29,107,55,0.35);
+    border: 1px solid rgba(29,107,55,0.5);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6FD492;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+  /* ─── CONTENT ─── */
+  #content {
+    padding: 20px 16px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-    /* ── TAB BAR — 5 boutons ── */
-    #tab-bar {
-      position: sticky;
-      bottom: 0;
-      z-index: 100;
-      height: calc(var(--tab-h) + var(--safe-bot));
-      padding-bottom: var(--safe-bot);
-      background: var(--white);
-      border-top: 1px solid var(--gray-2);
-      display: flex;
-      align-items: stretch;
-      box-shadow: 0 -2px 12px rgba(12,68,124,.08);
-    }
+  /* ─── SECTION TITLE ─── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
 
-    .tab-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: opacity .15s;
-      padding: 0;
-      position: relative;
-    }
-    .tab-btn:active { opacity: .7; }
-    .tab-icon  { font-size: 22px; line-height: 1; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
-    .tab-label { font-size: 10px; font-weight: 600; color: var(--gray-3); letter-spacing: .3px; transition: color .15s; }
-    .tab-btn.active .tab-icon  { transform: scale(1.15); }
-    .tab-btn.active .tab-label { color: var(--navy); }
-    .tab-indicator {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 28px; height: 3px; border-radius: 0 0 3px 3px;
-      background: var(--navy); opacity: 0; transition: opacity .2s;
-    }
-    .tab-btn.active .tab-indicator { opacity: 1; }
+  /* ─── MODULE GRID ─── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .modules-grid.wide { grid-template-columns: 1fr; }
 
-    /* ── ACCUEIL ── */
-    #screen-accueil { padding: 0 0 24px; }
+  /* ─── MODULE CARD ─── */
+  .mod-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 14px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+    animation: fadeUp 0.4s both;
+  }
 
-    .exploitant-banner {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-      padding: 20px 20px 24px;
-      position: relative;
-      overflow: visible;
-    }
-    .exploitant-banner::before {
-      content: '';
-      position: absolute; right: -30px; top: -30px;
-      width: 160px; height: 160px; border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
-    .exploitant-banner::after {
-      content: '';
-      position: absolute; right: 20px; bottom: -50px;
-      width: 120px; height: 120px; border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
+  .mod-card:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
 
-    .exp-row { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
-    .exp-avatar {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
-    }
-    .exp-info { flex: 1; min-width: 0; }
-    .exp-name        { font-size: 18px; font-weight: 700; color: white; letter-spacing: -.3px; }
-    .exp-alphatango  { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; }
-    .exp-uas-row     { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
-    .exp-uas-badge   {
-      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2);
-      border-radius: 20px; padding: 3px 10px; font-size: 11px;
-      color: rgba(255,255,255,.9); font-weight: 600; letter-spacing: .3px;
-    }
+  /* accent strip gauche */
+  .mod-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 12px; bottom: 12px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--accent, var(--blue));
+  }
 
-    .validity-section { padding: 16px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .validity-card    { border-radius: var(--radius-md); padding: 14px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
-    .validity-card.valid   { background: var(--light-green); border: 1.5px solid #A5D6B2; }
-    .validity-card.warning { background: var(--light-amber); border: 1.5px solid #E8C97A; }
-    .validity-card.expired { background: var(--light-red);   border: 1.5px solid #E8A0A0; }
-    .validity-icon  { font-size: 20px; margin-bottom: 6px; }
-    .validity-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-light); }
-    .validity-date  { font-size: 14px; font-weight: 700; margin-top: 3px; }
-    .validity-card.valid   .validity-date { color: var(--green); }
-    .validity-card.warning .validity-date { color: var(--amber); }
-    .validity-card.expired .validity-date { color: var(--red); }
-    .validity-remain { font-size: 11px; font-weight: 600; margin-top: 2px; }
-    .validity-card.valid   .validity-remain { color: #2E7D4F; }
-    .validity-card.warning .validity-remain { color: var(--amber); }
-    .validity-card.expired .validity-remain { color: var(--red); }
-    .validity-status-dot {
-      position: absolute; top: 12px; right: 12px;
-      width: 8px; height: 8px; border-radius: 50%;
-      animation: pulse-dot 2s infinite;
-    }
-    .valid   .validity-status-dot { background: var(--green); }
-    .warning .validity-status-dot { background: var(--amber); }
-    .expired .validity-status-dot { background: var(--red); animation: none; }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: .6; transform: scale(1.3); }
-    }
+  /* glow de fond */
+  .mod-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 15%, var(--glow, transparent) 0%, transparent 60%);
+    pointer-events: none;
+  }
 
-    .section-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 16px 10px; }
-    .section-title  { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-light); }
-    .section-link   { font-size: 13px; color: var(--blue); font-weight: 600; text-decoration: none; cursor: pointer; }
+  .mod-icon {
+    font-size: 26px;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
 
-    .kpi-grid { padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .kpi-card {
-      background: var(--white); border-radius: var(--radius-md); padding: 14px 10px;
-      text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-2);
-      cursor: pointer; transition: transform .15s, box-shadow .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .kpi-card:active { transform: scale(.97); }
-    .kpi-icon  { font-size: 22px; margin-bottom: 6px; }
-    .kpi-value { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; letter-spacing: -1px; }
-    .kpi-label { font-size: 10px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; margin-top: 4px; line-height: 1.2; }
-    .kpi-card.incidents .kpi-value { color: var(--red); }
-    .kpi-card.incidents[data-zero="true"] .kpi-value { color: var(--green); }
+  .mod-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+    line-height: 1.2;
+  }
 
-    .nav-rapide-grid { padding: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .nav-btn {
-      background: var(--white); border: 1.5px solid var(--gray-2); border-radius: var(--radius-md);
-      padding: 16px 14px; display: flex; align-items: center; gap: 12px;
-      cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .15s; text-align: left;
-    }
-    .nav-btn:active { transform: scale(.97); background: var(--light-blue); border-color: var(--blue); }
-    .nav-btn.wide   { grid-column: 1 / -1; }
-    .nav-btn-icon   { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .nav-btn-info   { flex: 1; min-width: 0; }
-    .nav-btn-label  { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -.1px; }
-    .nav-btn-desc   { font-size: 11px; color: var(--text-light); margin-top: 2px; }
-    .nav-btn-arrow  { color: var(--gray-3); font-size: 14px; flex-shrink: 0; }
-    .nb-blue   .nav-btn-icon { background: var(--light-blue); }
-    .nb-green  .nav-btn-icon { background: var(--light-green); }
-    .nb-amber  .nav-btn-icon { background: var(--light-amber); }
-    .nb-red    .nav-btn-icon { background: var(--light-red); }
-    .nb-teal   .nav-btn-icon { background: #E0F2F1; }
-    .nb-purple .nav-btn-icon { background: #EDE7F6; }
+  .mod-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+    line-height: 1.35;
+  }
 
-    .app-footer {
-      margin: 20px 16px 0; padding: 14px 16px;
-      background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--gray-2);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .footer-version { font-size: 11px; color: var(--text-light); font-weight: 600; }
-    .footer-sync    { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
-    .footer-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .mod-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    align-self: flex-start;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.3px;
+  }
+  .mod-status.ready {
+    background: var(--light-green);
+    color: var(--green);
+  }
+  .mod-status.wip {
+    background: var(--light-amber);
+    color: var(--amber);
+  }
+  .mod-status.planned {
+    background: var(--light-blue);
+    color: var(--blue);
+  }
 
-    .placeholder-screen {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 16px; padding: 40px; text-align: center;
-    }
-    .placeholder-icon  { font-size: 56px; opacity: .4; }
-    .placeholder-title { font-size: 20px; font-weight: 700; color: var(--text); }
-    .placeholder-text  { font-size: 14px; color: var(--text-light); line-height: 1.5; }
-    .placeholder-badge { background: var(--light-blue); color: var(--blue); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: .5px; }
+  /* disabled */
+  .mod-card.disabled {
+    opacity: 0.55;
+    cursor: default;
+    pointer-events: none;
+  }
 
-    #toast {
-      position: fixed;
-      bottom: calc(var(--tab-h) + var(--safe-bot) + 16px);
-      left: 50%; transform: translateX(-50%) translateY(20px);
-      background: var(--gray-5); color: white;
-      padding: 10px 20px; border-radius: 20px;
-      font-size: 13px; font-weight: 600;
-      opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap; pointer-events: none; z-index: 999;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* couleurs par module */
+  .mod-card.c-blue   { --accent: var(--blue);  --glow: rgba(24,95,165,0.06); }
+  .mod-card.c-green  { --accent: var(--green); --glow: rgba(29,107,55,0.06); }
+  .mod-card.c-amber  { --accent: var(--amber); --glow: rgba(186,117,23,0.06); }
+  .mod-card.c-red    { --accent: var(--red);   --glow: rgba(139,32,32,0.06); }
+  .mod-card.c-teal   { --accent: var(--teal);  --glow: rgba(0,96,100,0.06); }
+  .mod-card.c-navy   { --accent: var(--navy);  --glow: rgba(12,68,124,0.06); }
 
-    #install-banner {
-      display: none; position: fixed;
-      bottom: calc(var(--tab-h) + var(--safe-bot) + 12px);
-      left: 12px; right: 12px;
-      background: var(--navy); color: white;
-      border-radius: var(--radius-md); padding: 14px 16px;
-      box-shadow: var(--shadow-lg); z-index: 500;
-      animation: slideUp .3s ease;
-    }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .install-row  { display: flex; align-items: center; gap: 12px; }
-    .install-text { flex: 1; }
-    .install-title { font-size: 14px; font-weight: 700; }
-    .install-sub   { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
-    .install-btns  { display: flex; gap: 8px; margin-top: 10px; }
-    .btn-install   { background: white; color: var(--navy); border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
-    .btn-dismiss   { background: rgba(255,255,255,.15); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  /* animation stagger */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .mod-card:nth-child(1) { animation-delay: 0.05s; }
+  .mod-card:nth-child(2) { animation-delay: 0.10s; }
+  .mod-card:nth-child(3) { animation-delay: 0.15s; }
+  .mod-card:nth-child(4) { animation-delay: 0.20s; }
+  .mod-card:nth-child(5) { animation-delay: 0.25s; }
+  .mod-card:nth-child(6) { animation-delay: 0.30s; }
+  .mod-card:nth-child(7) { animation-delay: 0.35s; }
+  .mod-card:nth-child(8) { animation-delay: 0.40s; }
 
-    @media (min-width: 768px) {
-      .kpi-grid { gap: 14px; }
-      .nav-rapide-grid { grid-template-columns: repeat(3, 1fr); }
-      .nav-btn.wide { grid-column: auto; }
-      .validity-section { grid-template-columns: repeat(4, 1fr); gap: 12px; }
-      .kpi-card { padding: 20px 14px; }
-      .kpi-value { font-size: 32px; }
-    }
-  </style>
+  /* ─── WIDE CARD (1 colonne) ─── */
+  .mod-card.wide {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+  .mod-card.wide .mod-icon { font-size: 28px; flex-shrink: 0; }
+  .mod-card.wide .mod-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+  /* ─── INFO STRIP ─── */
+  .info-strip {
+    background: var(--light-blue);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .info-item { }
+  .info-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .info-val   { font-size: 12px; font-weight: 700; color: var(--navy); margin-top: 2px; font-family: 'SF Mono', monospace; }
+  @media (prefers-color-scheme: dark) { .info-val { color: #7EB8F7; } }
+
+  /* ─── VERSION ─── */
+  .version-line {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 24px;
+    padding-bottom: 8px;
+  }
+
+  /* ─── RESPONSIVE iPad ─── */
+  @media (min-width: 600px) {
+    .modules-grid { grid-template-columns: 1fr 1fr 1fr; }
+    #content { padding: 24px 24px; }
+  }
+</style>
 </head>
 <body>
 
-<div id="app">
-
-  <header id="header">
-    <div id="header-logo">
-      <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="15" cy="15" r="4" fill="#E6F1FB"></circle>
-        <line x1="3" y1="15" x2="27" y2="15" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
-        <line x1="15" y1="3" x2="15" y2="27" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
-        <circle cx="6.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
-        <circle cx="23.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
-        <circle cx="6.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
-        <circle cx="23.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
-      </svg>
-      <div>
-        <div id="header-title">UAS Manager</div>
-        <div id="header-subtitle">TABLEAU DE BORD</div>
-      </div>
+<!-- HEADER -->
+<header id="header">
+  <div class="header-inner" style="padding-left:20px; padding-right:20px;">
+    <div class="header-badge">🛸 UAS Manager · PWA</div>
+    <h1>Tableau de<br><span>bord opérateur</span></h1>
+    <p class="header-sub">Gestion des vols UAS · Scénarios PDRA-S01 / PDRA-S02</p>
+  </div>
+  <div class="pilot-strip">
+    <div class="pilot-avatar">👨‍✈️</div>
+    <div class="pilot-info">
+      <div class="pilot-name">Philippe CONTE</div>
+      <div class="pilot-id">FRAjqq48j12nfy4c · DJI Mavic 4 Pro</div>
     </div>
-    <div id="header-right">
-      <!-- Config accessible uniquement via ce bouton header -->
-      <button class="header-icon-btn" onclick="navigateTo(&#39;config&#39;)" title="Configuration">⚙️</button>
+    <div class="pilot-cats">✅ CATS valide</div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div id="content">
+
+  <!-- MODULES PRINCIPAUX -->
+  <div class="section-title">Modules opérationnels</div>
+  <div class="modules-grid">
+
+    <a class="mod-card c-blue disabled" href="file:///Users/contephilippe/Downloads/flights.html">
+      <div class="mod-icon">✈️</div>
+      <div class="mod-label">Carnet de vol</div>
+      <div class="mod-desc">Enregistrement et suivi des vols</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-green disabled" href="file:///Users/contephilippe/Downloads/maintenance.html">
+      <div class="mod-icon">🔧</div>
+      <div class="mod-label">Maintenance</div>
+      <div class="mod-desc">Suivi des interventions UAS</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-amber disabled" href="file:///Users/contephilippe/Downloads/checklist.html">
+      <div class="mod-icon">☑️</div>
+      <div class="mod-label">Check-list</div>
+      <div class="mod-desc">Pré-vol / Post-vol / Urgence</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-red disabled" href="file:///Users/contephilippe/Downloads/incidents.html">
+      <div class="mod-icon">⚠️</div>
+      <div class="mod-label">REX / Incidents</div>
+      <div class="mod-desc">Retours d'expérience</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-teal disabled" href="file:///Users/contephilippe/Downloads/weather.html">
+      <div class="mod-icon">🌦</div>
+      <div class="mod-label">Météo &amp; NOTAM</div>
+      <div class="mod-desc">METAR · TAF · Briefing SIA</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/adsb.html">
+      <div class="mod-icon">📡</div>
+      <div class="mod-label">ADS-B Trafic</div>
+      <div class="mod-desc">Carte aéronefs temps réel</div>
+      <div class="mod-status ready">✅ Disponible</div>
+    </a>
+
+  </div>
+
+  <!-- BILANS & RAPPORTS -->
+  <div class="section-title">Bilans &amp; rapports</div>
+  <div class="modules-grid">
+
+    <a class="mod-card c-blue disabled" href="file:///Users/contephilippe/Downloads/bilan-mensuel.html">
+      <div class="mod-icon">📅</div>
+      <div class="mod-label">Bilan mensuel</div>
+      <div class="mod-desc">Synthèse par mois</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-navy disabled" href="file:///Users/contephilippe/Downloads/bilan-annuel.html">
+      <div class="mod-icon">📊</div>
+      <div class="mod-label">Bilan annuel</div>
+      <div class="mod-desc">Statistiques annuelles</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+    <a class="mod-card c-green disabled" href="file:///Users/contephilippe/Downloads/formations.html">
+      <div class="mod-icon">🎓</div>
+      <div class="mod-label">Formations</div>
+      <div class="mod-desc">Suivi des qualifications</div>
+      <div class="mod-status planned">📋 À venir</div>
+    </a>
+
+  </div>
+
+  <!-- INFOS EXPLOITANT -->
+  <div class="section-title">Informations exploitant</div>
+  <div class="info-strip">
+    <div class="info-item">
+      <div class="info-label">AlphaTango</div>
+      <div class="info-val">FRAjqq48j12nfy4c</div>
     </div>
-  </header>
-
-  <div id="offline-banner">📡 Mode hors-ligne — Données locales</div>
-
-  <main id="main">
-
-    <!-- ACCUEIL -->
-    <section id="screen-accueil" class="screen active">
-
-      <div class="exploitant-banner">
-        <div class="exp-row">
-          <div class="exp-avatar">👨‍✈️</div>
-          <div class="exp-info">
-            <div class="exp-name">CONTE Philippe</div>
-            <div class="exp-alphatango">FRAjqq48j12nfy4c</div>
-            <div class="exp-uas-row">
-              <span class="exp-uas-badge">✈️ DJI Mavic 4 Pro</span>
-              <span class="exp-uas-badge">UAS-FR-517804</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="validity-section" id="validity-section"><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">CATS</div><div class="validity-date">15/09/2029</div><div class="validity-remain">Valide — 1235 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">NLD-RP-q99cvjjh51fz</div></div><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">Assurance COVERDRONE</div><div class="validity-date">10/04/2027</div><div class="validity-remain">Valide — 346 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">CDA22411846EUR</div></div></div>
-
-      <div class="section-header">
-        <span class="section-title">Ce mois-ci</span>
-        <span class="section-link" onclick="navigateTo(&#39;vols&#39;)">Voir tout →</span>
-      </div>
-
-      <div class="kpi-grid">
-        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
-          <div class="kpi-icon">✈️</div>
-          <div class="kpi-value" id="kpi-vols">0</div>
-          <div class="kpi-label">Vols ce mois</div>
-        </div>
-        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
-          <div class="kpi-icon">⏱️</div>
-          <div class="kpi-value" id="kpi-heures">0h</div>
-          <div class="kpi-label">Heures de vol</div>
-        </div>
-        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo(&#39;maint&#39;)">
-          <div class="kpi-icon">⚠️</div>
-          <div class="kpi-value" id="kpi-incidents">0</div>
-          <div class="kpi-label">Incidents REX</div>
-        </div>
-      </div>
-
-      <div class="section-header">
-        <span class="section-title">Navigation rapide</span>
-      </div>
-
-      <div class="nav-rapide-grid">
-
-        <button class="nav-btn nb-blue" onclick="navigateTo(&#39;vols&#39;)">
-          <div class="nav-btn-icon">✈️</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Carnet de Vol</div>
-            <div class="nav-btn-desc">Saisir · Historique</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-green" onclick="navigateTo(&#39;maint&#39;)">
-          <div class="nav-btn-icon">🔧</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Maintenance</div>
-            <div class="nav-btn-desc">Suivi · REX</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-amber" onclick="navigateTo(&#39;meteo&#39;)">
-          <div class="nav-btn-icon">🌦️</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Météo &amp; NOTAM</div>
-            <div class="nav-btn-desc">METAR · TAF · ADS-B</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-teal" onclick="window.location.href=&#39;checklist.html&#39;">
-          <div class="nav-btn-icon">✅</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Check-list</div>
-            <div class="nav-btn-desc">Pré-vol · Post-vol</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-purple" onclick="window.location.href=&#39;formations.html&#39;">
-          <div class="nav-btn-icon">🎓</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Formations</div>
-            <div class="nav-btn-desc">Certificats · Habilitations</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-teal" onclick="window.location.href=&#39;dji_logs.html&#39;">
-          <div class="nav-btn-icon">🎮</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Logs DJI</div>
-            <div class="nav-btn-desc">Import · Analyse</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <!-- ✅ Rapports & Bilans — lien direct vers bilans.html -->
-        <button class="nav-btn nb-red wide" onclick="window.location.href=&#39;bilans.html&#39;">
-          <div class="nav-btn-icon">📊</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Rapports &amp; Bilans</div>
-            <div class="nav-btn-desc">Mensuel · Annuel · Export PDF</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-      </div>
-
-      <div class="app-footer">
-        <div class="footer-version">UAS Manager v1.0.0</div>
-        <div class="footer-sync">
-          <div class="footer-sync-dot" id="sync-dot" style="background: var(--green);"></div>
-          <span id="sync-label">Sync 29/04 21:00</span>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- VOLS -->
-    <section id="screen-vols" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">✈️</div>
-        <div class="placeholder-title">Carnet de Vol</div>
-        <div class="placeholder-text">Ouverture du carnet de vol…</div>
-      </div>
-    </section>
-
-    <!-- MAINTENANCE -->
-    <section id="screen-maint" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">🔧</div>
-        <div class="placeholder-title">Maintenance &amp; REX</div>
-        <div class="placeholder-text">Ouverture du module maintenance…</div>
-      </div>
-    </section>
-
-    <!-- MÉTÉO -->
-    <section id="screen-meteo" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">🌦️</div>
-        <div class="placeholder-title">Météo &amp; NOTAM</div>
-        <div class="placeholder-text">METAR/TAF CheckWX · Météo OpenWeather · ADS-B OpenSky · Liens SOFIA</div>
-        <div class="placeholder-badge">MODULE — À VENIR</div>
-      </div>
-    </section>
-
-    <!-- CONFIG -->
-    <section id="screen-config" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">⚙️</div>
-        <div class="placeholder-title">Configuration</div>
-        <div class="placeholder-text">Clés API · Profil exploitant · Paramètres UAS</div>
-        <div class="placeholder-badge">MODULE — À VENIR</div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ✅ TAB BAR — 5 boutons : Config retiré (header ⚙️), Bilans ajouté -->
-  <nav id="tab-bar">
-    <button class="tab-btn active" onclick="navigateTo(&#39;accueil&#39;)" id="tab-accueil">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🏠</span>
-      <span class="tab-label">Accueil</span>
-    </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;vols&#39;)" id="tab-vols">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">✈️</span>
-      <span class="tab-label">Vols</span>
-    </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;maint&#39;)" id="tab-maint">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🔧</span>
-      <span class="tab-label">Maint.</span>
-    </button>
-    <button class="tab-btn" onclick="window.location.href=&#39;checklist.html&#39;" id="tab-checklist">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">✅</span>
-      <span class="tab-label">Check-list</span>
-    </button>
-    <button class="tab-btn" onclick="window.location.href=&#39;meteo.html&#39;" id="tab-meteo">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🌦️</span>
-      <span class="tab-label">Météo</span>
-    </button>
-  </nav>
-
-</div>
-
-<div id="toast"></div>
-
-<div id="install-banner">
-  <div class="install-row">
-    <div style="font-size:32px">📱</div>
-    <div class="install-text">
-      <div class="install-title">Installer UAS Manager</div>
-      <div class="install-sub">Accès hors-ligne · Icône sur l'écran d'accueil</div>
+    <div class="info-item">
+      <div class="info-label">UAS enregistré</div>
+      <div class="info-val">UAS-FR-517804</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">CATS</div>
+      <div class="info-val">NLD-RP-q99cvjjh51fz</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Exp. CATS</div>
+      <div class="info-val">15/09/2029</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Assurance</div>
+      <div class="info-val">CDA22411846EUR</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">Exp. assurance</div>
+      <div class="info-val">10/04/2027</div>
     </div>
   </div>
-  <div class="install-btns">
-    <button class="btn-install" onclick="triggerInstall()">Installer</button>
-    <button class="btn-dismiss" onclick="dismissInstall()">Plus tard</button>
-  </div>
+
+  <div class="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
 </div>
-
-<script>
-var EXPLOITANT = {
-  nom: 'CONTE Philippe',
-  alphatango: 'FRAjqq48j12nfy4c',
-  uas: 'DJI Mavic 4 Pro',
-  uas_reg: 'UAS-FR-517804',
-  cats:      { label: 'CATS',                expire: '2029-09-15', ref: 'NLD-RP-q99cvjjh51fz' },
-  assurance: { label: 'Assurance COVERDRONE', expire: '2027-04-10', ref: 'CDA22411846EUR'      }
-};
-
-var APP_VERSION  = '1.0.0';
-var WARN_DAYS    = 30;
-var currentScreen = 'accueil';
-
-function navigateTo(screenId) {
-  if (screenId === 'vols')  { window.location.href = 'vols.html'; return; }
-  if (screenId === 'maint') { window.location.href = 'maintenance.html'; return; }
-  if (screenId === 'meteo') { window.location.href = 'meteo.html'; return; }
-
-  var screens = document.querySelectorAll('.screen');
-  var tabs    = document.querySelectorAll('.tab-btn');
-  var i;
-  for (i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
-  for (i = 0; i < tabs.length; i++)    { tabs[i].classList.remove('active'); }
-
-  var screen = document.getElementById('screen-' + screenId);
-  var tab    = document.getElementById('tab-' + screenId);
-  if (screen) screen.classList.add('active');
-  if (tab)    tab.classList.add('active');
-  currentScreen = screenId;
-
-  var subtitles = {
-    accueil: 'TABLEAU DE BORD',
-    vols:    'CARNET DE VOL',
-    maint:   'MAINTENANCE & REX',
-    meteo:   'MÉTÉO & NOTAM',
-    config:  'CONFIGURATION'
-  };
-  document.getElementById('header-subtitle').textContent = subtitles[screenId] || '';
-}
-
-function daysBetween(dateStr) {
-  var today  = new Date(); today.setHours(0,0,0,0);
-  var target = new Date(dateStr); target.setHours(0,0,0,0);
-  return Math.round((target - today) / 86400000);
-}
-
-function formatDate(dateStr) {
-  var p = dateStr.split('-');
-  return p[2] + '/' + p[1] + '/' + p[0];
-}
-
-function getValidityClass(days) {
-  if (days < 0)          return 'expired';
-  if (days <= WARN_DAYS) return 'warning';
-  return 'valid';
-}
-
-function getValidityIcon(days) {
-  if (days < 0)          return '🔴';
-  if (days <= WARN_DAYS) return '🟡';
-  return '🟢';
-}
-
-function getValidityRemain(days) {
-  if (days < 0)          return 'Expiré depuis ' + Math.abs(days) + ' j';
-  if (days === 0)        return "Expire aujourd'hui !";
-  if (days <= WARN_DAYS) return 'Expire dans ' + days + ' j';
-  return 'Valide — ' + days + ' j restants';
-}
-
-function renderValidity() {
-  var container = document.getElementById('validity-section');
-  var items = [EXPLOITANT.cats, EXPLOITANT.assurance];
-  var html  = '';
-  var i, item, days, cls;
-  for (i = 0; i < items.length; i++) {
-    item = items[i];
-    days = daysBetween(item.expire);
-    cls  = getValidityClass(days);
-    html += '<div class="validity-card ' + cls + '">';
-    html += '<div class="validity-status-dot"></div>';
-    html += '<div class="validity-icon">' + getValidityIcon(days) + '</div>';
-    html += '<div class="validity-label">' + item.label + '</div>';
-    html += '<div class="validity-date">' + formatDate(item.expire) + '</div>';
-    html += '<div class="validity-remain">' + getValidityRemain(days) + '</div>';
-    html += '<div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">' + item.ref + '</div>';
-    html += '</div>';
-  }
-  container.innerHTML = html;
-}
-
-function loadKPIs() {
-  var now      = new Date();
-  var monthKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  var volsData = null;
-  try { volsData = JSON.parse(localStorage.getItem('uas_vols_' + monthKey)); } catch(e) {}
-  var incidents = 0;
-  try { incidents = parseInt(localStorage.getItem('uas_incidents_total') || '0', 10); } catch(e) {}
-  var volsCount = volsData ? volsData.count  : 0;
-  var heures    = volsData ? volsData.heures : 0;
-  document.getElementById('kpi-vols').textContent     = volsCount;
-  document.getElementById('kpi-heures').textContent   = heures > 0 ? (heures.toFixed(1) + 'h') : '0h';
-  document.getElementById('kpi-incidents').textContent = incidents;
-  document.getElementById('kpi-card-incidents').dataset.zero = incidents === 0 ? 'true' : 'false';
-}
-
-function updateSyncLabel() {
-  var lastSync = null;
-  try { lastSync = localStorage.getItem('uas_last_sync'); } catch(e) {}
-  var label = document.getElementById('sync-label');
-  var dot   = document.getElementById('sync-dot');
-  if (!lastSync) {
-    label.textContent    = 'Jamais synchronisé';
-    dot.style.background = 'var(--amber)';
-    return;
-  }
-  var d = new Date(parseInt(lastSync));
-  label.textContent    = 'Sync ' + d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
-  dot.style.background = 'var(--green)';
-  try { localStorage.setItem('uas_last_sync', Date.now().toString()); } catch(e) {}
-}
-
-var toastTimer;
-function showToast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2800);
-}
-
-function registerSW() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/UAS-MANAGER/sw.js').catch(function(err) {
-      console.warn('[App] SW non enregistré:', err);
-    });
-  }
-}
-
-var deferredPrompt;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  var dismissed = false;
-  try { dismissed = !!localStorage.getItem('uas_install_dismissed'); } catch(e2) {}
-  if (!dismissed) {
-    setTimeout(function() { document.getElementById('install-banner').style.display = 'block'; }, 3000);
-  }
-});
-
-function triggerInstall() {
-  document.getElementById('install-banner').style.display = 'none';
-  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-}
-function dismissInstall() {
-  document.getElementById('install-banner').style.display = 'none';
-  try { localStorage.setItem('uas_install_dismissed', '1'); } catch(e) {}
-}
-
-function updateOnlineStatus() {
-  document.body.classList.toggle('offline', !navigator.onLine);
-  if (!navigator.onLine) { showToast('📡 Mode hors-ligne activé'); }
-}
-window.addEventListener('online',  updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-document.addEventListener('DOMContentLoaded', function() {
-  renderValidity();
-  loadKPIs();
-  updateSyncLabel();
-  updateOnlineStatus();
-  registerSW();
-  try {
-    if (!localStorage.getItem('uas_last_sync')) {
-      localStorage.setItem('uas_last_sync', Date.now().toString());
-    }
-  } catch(e) {}
-});
-
-window.addEventListener('popstate', function() {
-  if (currentScreen !== 'accueil') { navigateTo('accueil'); }
-});
-</script>
 
 
 
