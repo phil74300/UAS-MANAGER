@@ -1,598 +1,278 @@
 <!DOCTYPE html>
-<!-- saved from url=(0050)file:///Users/contephilippe/Downloads/index_5.html -->
+<!-- saved from url=(0050)file:///Users/contephilippe/Downloads/index_6.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="UAS Manager">
-  <meta name="theme-color" content="#0C447C">
-  <meta name="description" content="Gestionnaire opérationnel UAS — CONTE Philippe">
-  <title>UAS Manager</title>
-  <link rel="manifest" href="file:///Users/contephilippe/Downloads/manifest.json">
 
-  <style>
-    :root {
-      --navy:        #0C447C;
-      --blue:        #185FA5;
-      --light-blue:  #E6F1FB;
-      --green:       #1D6B37;
-      --light-green: #E8F5E9;
-      --amber:       #BA7517;
-      --light-amber: #FAEEDA;
-      --red:         #8B2020;
-      --light-red:   #FDECEC;
-      --teal:        #006064;
-      --gray-1:      #F5F7FA;
-      --gray-2:      #E8ECF0;
-      --gray-3:      #B0BAC6;
-      --gray-4:      #6B7A8D;
-      --gray-5:      #3A4556;
-      --text:        #1A2332;
-      --text-light:  #5A6A7E;
-      --white:       #FFFFFF;
-      --radius-sm:   8px;
-      --radius-md:   14px;
-      --radius-lg:   20px;
-      --shadow-sm:   0 1px 4px rgba(12,68,124,.08);
-      --shadow-md:   0 4px 16px rgba(12,68,124,.12);
-      --shadow-lg:   0 8px 32px rgba(12,68,124,.18);
-      --safe-top:    env(safe-area-inset-top, 0px);
-      --safe-bot:    env(safe-area-inset-bottom, 0px);
-      --tab-h:       64px;
-      --header-h:    56px;
-      --font:        -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-    }
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UAS Manager">
+<meta name="theme-color" content="#0C447C">
+<meta name="description" content="Gestionnaire opérationnel UAS — CONTE Philippe">
+<title>UAS Manager</title>
+<link rel="manifest" href="file:///Users/contephilippe/Downloads/manifest.json">
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;--amber-dark:#633806;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;
+  --gray-1:#F5F7FA;--gray-2:#E8ECF0;--gray-3:#B0BAC6;--gray-4:#6B7A8D;--gray-5:#3A4556;
+  --text:#1A2332;--text-light:#5A6A7E;--white:#FFFFFF;
+  --radius-sm:8px;--radius-md:14px;--radius-lg:20px;
+  --shadow-sm:0 1px 4px rgba(12,68,124,.08);--shadow-md:0 4px 16px rgba(12,68,124,.12);
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
+  --tab-h:64px;--header-h:56px;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue',Arial,sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --gray-1:#0F1923;--gray-2:#1A2535;--gray-3:#2D3E52;--gray-4:#8A9AB0;--gray-5:#C5D0DC;
+    --text:#E8EEF5;--text-light:#8A9AB0;--white:#1A2535;
+    --light-blue:#0D2640;--light-green:#0D2A18;--light-amber:#2A1E08;--light-red:#2A1010;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font);background:var(--gray-1);color:var(--text);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:768px;margin:0 auto;position:relative;background:var(--gray-1)}
+#header{position:sticky;top:0;z-index:100;height:calc(var(--header-h) + var(--safe-top));padding-top:var(--safe-top);background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding-inline:20px;box-shadow:var(--shadow-md)}
+#header-logo{display:flex;align-items:center;gap:10px}
+#header-logo svg{width:30px;height:30px}
+#header-title{font-size:17px;font-weight:700;color:var(--white);letter-spacing:.3px}
+#header-subtitle{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.5px;text-transform:uppercase}
+#header-right{display:flex;align-items:center;gap:8px}
+.header-icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);border:none;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.header-icon-btn:active{background:rgba(255,255,255,.22)}
+#offline-banner{display:none;background:var(--amber);color:white;text-align:center;font-size:12px;font-weight:600;padding:6px;letter-spacing:.3px}
+body.offline #offline-banner{display:block}
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;display:none;flex-direction:column;min-height:100%;animation:fadeIn .25s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+#tab-bar{position:sticky;bottom:0;z-index:100;height:calc(var(--tab-h) + var(--safe-bot));padding-bottom:var(--safe-bot);background:var(--white);border-top:1px solid var(--gray-2);display:flex;align-items:stretch;box-shadow:0 -2px 12px rgba(12,68,124,.08)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s;padding:0;position:relative}
+.tab-btn:active{opacity:.7}
+.tab-icon{font-size:22px;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.tab-label{font-size:10px;font-weight:600;color:var(--gray-3);letter-spacing:.3px;transition:color .15s}
+.tab-btn.active .tab-icon{transform:scale(1.15)}
+.tab-btn.active .tab-label{color:var(--navy)}
+.tab-indicator{position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--navy);opacity:0;transition:opacity .2s}
+.tab-btn.active .tab-indicator{opacity:1}
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --gray-1:    #0F1923;
-        --gray-2:    #1A2535;
-        --gray-3:    #2D3E52;
-        --gray-4:    #8A9AB0;
-        --gray-5:    #C5D0DC;
-        --text:      #E8EEF5;
-        --text-light:#8A9AB0;
-        --white:     #1A2535;
-        --light-blue:#0D2640;
-        --light-green:#0D2A18;
-        --light-amber:#2A1E08;
-        --light-red: #2A1010;
-        --shadow-sm: 0 1px 4px rgba(0,0,0,.3);
-        --shadow-md: 0 4px 16px rgba(0,0,0,.4);
-        --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
-      }
-    }
+/* ── ACCUEIL ── */
+.exploitant-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);padding:20px 20px 24px;position:relative;overflow:visible}
+.exp-row{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.exp-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.exp-info{flex:1;min-width:0}
+.exp-name{font-size:18px;font-weight:700;color:white;letter-spacing:-.3px}
+.exp-alphatango{font-size:11px;color:rgba(255,255,255,.65);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.exp-uas-row{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.exp-uas-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:11px;color:rgba(255,255,255,.9);font-weight:600;letter-spacing:.3px}
+.validity-section{padding:16px 16px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.validity-card{border-radius:var(--radius-md);padding:14px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.validity-card.valid{background:var(--light-green);border:1.5px solid #A5D6B2}
+.validity-card.warning{background:var(--light-amber);border:1.5px solid #E8C97A}
+.validity-card.expired{background:var(--light-red);border:1.5px solid #E8A0A0}
+.validity-icon{font-size:20px;margin-bottom:6px}
+.validity-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light)}
+.validity-date{font-size:14px;font-weight:700;margin-top:3px}
+.validity-card.valid .validity-date{color:var(--green)}
+.validity-card.warning .validity-date{color:var(--amber)}
+.validity-card.expired .validity-date{color:var(--red)}
+.validity-remain{font-size:11px;font-weight:600;margin-top:2px}
+.validity-card.valid .validity-remain{color:#2E7D4F}
+.validity-card.warning .validity-remain{color:var(--amber)}
+.validity-card.expired .validity-remain{color:var(--red)}
+.validity-status-dot{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;animation:pulse-dot 2s infinite}
+.valid .validity-status-dot{background:var(--green)}
+.warning .validity-status-dot{background:var(--amber)}
+.expired .validity-status-dot{background:var(--red);animation:none}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:20px 16px 10px}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light)}
+.section-link{font-size:13px;color:var(--blue);font-weight:600;text-decoration:none;cursor:pointer}
+.kpi-grid{padding:0 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi-card{background:var(--white);border-radius:var(--radius-md);padding:14px 10px;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--gray-2);cursor:pointer;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
+.kpi-card:active{transform:scale(.97)}
+.kpi-icon{font-size:22px;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-1px}
+.kpi-label{font-size:10px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;line-height:1.2}
+.kpi-card.incidents .kpi-value{color:var(--red)}
+.kpi-card.incidents[data-zero="true"] .kpi-value{color:var(--green)}
+.nav-rapide-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nav-btn{background:var(--white);border:1.5px solid var(--gray-2);border-radius:var(--radius-md);padding:16px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;text-align:left;width:100%}
+.nav-btn:active{transform:scale(.97);background:var(--light-blue);border-color:var(--blue)}
+.nav-btn.wide{grid-column:1/-1}
+.nav-btn-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.nav-btn-info{flex:1;min-width:0}
+.nav-btn-label{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.1px}
+.nav-btn-desc{font-size:11px;color:var(--text-light);margin-top:2px}
+.nav-btn-arrow{color:var(--gray-3);font-size:14px;flex-shrink:0}
+.nb-blue .nav-btn-icon{background:var(--light-blue)}
+.nb-green .nav-btn-icon{background:var(--light-green)}
+.nb-amber .nav-btn-icon{background:var(--light-amber)}
+.nb-red .nav-btn-icon{background:var(--light-red)}
+.nb-teal .nav-btn-icon{background:#E0F2F1}
+.nb-purple .nav-btn-icon{background:#EDE7F6}
+.app-footer{margin:20px 16px 0;padding:14px 16px;background:var(--white);border-radius:var(--radius-md);border:1px solid var(--gray-2);display:flex;align-items:center;justify-content:space-between}
+.footer-version{font-size:11px;color:var(--text-light);font-weight:600}
+.footer-sync{font-size:11px;color:var(--text-light);display:flex;align-items:center;gap:4px}
+.footer-sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── VOLS ── */
+.screen-header{background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.screen-header h2{font-size:17px;font-weight:700;color:white}
+.screen-header p{font-size:11px;color:rgba(255,255,255,.65);margin-top:1px}
+.btn-add{background:rgba(255,255,255,.18);border:none;color:white;border-radius:20px;padding:7px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.kpi-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:var(--gray-2)}
+.kpi-mini{background:var(--white);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;box-shadow:var(--shadow-sm)}
+.kpi-mini-val{font-size:20px;font-weight:800;color:var(--navy)}
+.kpi-mini-lbl{font-size:10px;color:var(--text-light);font-weight:600;margin-top:2px}
+.filter-bar{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;scrollbar-width:none;background:var(--white);border-bottom:1px solid var(--gray-2)}
+.filter-chip{border:1px solid var(--gray-2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;background:var(--white);cursor:pointer;white-space:nowrap;color:var(--text-light);font-family:inherit;-webkit-tap-highlight-color:transparent}
+.filter-chip.active{background:var(--navy);color:white;border-color:var(--navy)}
+.vols-list{padding:10px 12px 100px}
+.vol-card{background:var(--white);border:1px solid var(--gray-2);border-radius:var(--radius-md);margin-bottom:8px;padding:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm)}
+.vol-card:active{transform:scale(.98)}
+.vol-card.incident{background:var(--light-red);border-color:#E9A0A0}
+.vol-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.vol-mission{font-size:15px;font-weight:700;color:var(--navy)}
+.sc-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.sc-s01{background:var(--light-blue);color:var(--navy)}
+.sc-s02{background:#EDE7F6;color:#4A2C8F}
+.sc-other{background:#E0F2F1;color:var(--teal)}
+.vol-lieu{font-size:13px;color:var(--text-light);margin-bottom:5px}
+.vol-meta{display:flex;gap:12px;font-size:12px;color:var(--text-light);flex-wrap:wrap}
+.vol-dur{color:var(--green);font-weight:700}
+.vol-inc-badge{color:var(--red);font-weight:700}
+.empty-state{text-align:center;padding:60px 24px;color:var(--text-light)}
+.empty-state-icon{font-size:48px;margin-bottom:12px;opacity:.35}
+.empty-state-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
+.empty-state-sub{font-size:13px;line-height:1.5}
 
-    html, body {
-      height: 100%;
-      font-family: var(--font);
-      background: var(--gray-1);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      overscroll-behavior: none;
-    }
+/* ── CHRONO ── */
+.chrono-bar{background:var(--light-amber);border-bottom:1px solid #D4A070;padding:10px 16px;display:none;align-items:center;justify-content:space-between}
+.chrono-bar.visible{display:flex}
+.chrono-time{font-family:'SF Mono',Menlo,monospace;font-size:22px;font-weight:700;color:var(--amber)}
+.chrono-stop-btn{background:var(--amber);color:white;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
 
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      max-width: 768px;
-      margin: 0 auto;
-      position: relative;
-      background: var(--gray-1);
-    }
+/* ── FORMULAIRE VOL ── */
+.form-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end}
+.form-overlay.open{display:flex;animation:fadeIn .2s}
+.form-sheet{background:var(--gray-1);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-height:92vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.form-header{background:var(--navy);padding:16px 20px;border-radius:var(--radius-lg) var(--radius-lg) 0 0;display:flex;align-items:center;justify-content:space-between}
+.form-header h3{font-size:17px;font-weight:700;color:white}
+.form-close{background:rgba(255,255,255,.15);border:none;color:white;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.form-body{padding:16px}
+.form-section-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:8px;margin-top:16px}
+.form-section-lbl:first-child{margin-top:0}
+.form-group{background:var(--white);border:1px solid var(--gray-2);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm)}
+.form-row{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid var(--gray-2)}
+.form-row:last-child{border-bottom:none}
+.form-row-lbl{font-size:14px;color:var(--text-light);min-width:110px;flex-shrink:0}
+.form-row input,.form-row select,.form-row textarea{flex:1;border:none;background:none;font-size:14px;color:var(--text);font-family:inherit;text-align:right;outline:none;min-width:0}
+.form-row textarea{text-align:left;resize:none;min-height:60px}
+.mission-display{flex:1;font-size:14px;font-weight:700;color:var(--blue);text-align:right}
+.toggle-row{justify-content:space-between}
+.ios-toggle{width:46px;height:28px;background:var(--gray-3);border-radius:14px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.ios-toggle.on{background:var(--green)}
+.ios-toggle::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;background:white;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.ios-toggle.on::after{left:21px}
 
-    #header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: calc(var(--header-h) + var(--safe-top));
-      padding-top: var(--safe-top);
-      background: var(--navy);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-inline: 20px;
-      box-shadow: var(--shadow-md);
-    }
+/* ── CHRONO WIDGET ── */
+.chrono-widget{background:var(--white);border:1px solid var(--gray-2);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm)}
+.chrono-display{font-family:'SF Mono',Menlo,monospace;font-size:30px;font-weight:700;color:var(--amber);flex:1}
+.chrono-display.idle{color:var(--gray-3);font-size:24px}
+.chrono-btn{border:none;border-radius:20px;padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-start{background:var(--green);color:white}
+.btn-stop{background:var(--red);color:white}
+.btn-primary{display:block;width:100%;background:var(--navy);color:white;border:none;border-radius:var(--radius-md);padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:12px;-webkit-tap-highlight-color:transparent}
+.btn-primary:active{opacity:.85}
+.btn-secondary{display:block;width:100%;background:var(--white);color:var(--navy);border:1.5px solid var(--navy);border-radius:var(--radius-md);padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+.btn-export{background:var(--light-green);color:var(--green);border:1px solid #A5D6B2;border-radius:var(--radius-sm);padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 
-    #header-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+/* ── DJI LOGS ── */
+.method-tabs{display:flex;border-bottom:1px solid var(--gray-2);background:var(--white)}
+.method-tab{flex:1;padding:12px 6px;border:none;background:none;font-size:12px;font-weight:700;color:var(--text-light);font-family:inherit;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.method-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.dji-pane{display:none;padding:16px}
+.dji-pane.active{display:block}
+.drop-zone{border:2px dashed var(--gray-2);border-radius:var(--radius-lg);padding:30px 16px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:12px}
+.drop-zone:hover,.drop-zone.drag{background:var(--light-blue);border-color:var(--blue)}
+.drop-icon{font-size:36px;margin-bottom:8px}
+.drop-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.drop-sub{font-size:12px;color:var(--text-light);line-height:1.5}
+.info-box{background:var(--light-blue);border:1px solid #90CAF9;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px}
+.info-box p{font-size:12px;color:var(--navy);line-height:1.5}
+.dji-card{background:var(--white);border:1px solid var(--gray-2);border-radius:var(--radius-md);overflow:hidden;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.dji-card-hdr{background:var(--light-green);border-bottom:1px solid #A5D6B2;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.dji-card-hdr-title{font-size:13px;font-weight:700;color:var(--green)}
+.dji-flight-item{padding:12px 14px;border-bottom:1px solid var(--gray-2);cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent}
+.dji-flight-item:last-child{border-bottom:none}
+.dji-flight-item:active{background:var(--gray-1)}
+.dji-flight-item.selected{background:var(--light-blue)}
+.dfi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.dfi-date{font-size:14px;font-weight:700;color:var(--navy)}
+.dfi-dur{font-size:14px;font-weight:700;color:var(--green)}
+.dfi-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.dfi-stat{font-size:11px;color:var(--text-light)}
+.dfi-stat b{color:var(--text);font-weight:700}
+.dji-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:4px}
+.dji-new{background:var(--light-green);color:var(--green)}
+.dji-done{background:var(--gray-1);color:var(--text-light)}
+.dji-warn{background:var(--light-amber);color:var(--amber-dark)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+.detail-cell{background:var(--gray-1);border-radius:var(--radius-sm);padding:10px 12px}
+.detail-cell.wide{grid-column:1/-1}
+.detail-lbl{font-size:11px;color:var(--text-light);margin-bottom:3px}
+.detail-val{font-size:16px;font-weight:700;color:var(--navy)}
+.detail-unit{font-size:11px;font-weight:400;color:var(--text-light)}
+.batt-section{padding:0 12px 12px}
+.batt-row{margin-bottom:8px}
+.batt-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text-light);margin-bottom:3px}
+.batt-track{height:8px;background:var(--gray-2);border-radius:4px;overflow:hidden}
+.batt-fill{height:100%;border-radius:4px;transition:width .4s}
+.warn-box{background:var(--light-amber);border:1px solid #D4A070;border-radius:var(--radius-md);padding:12px 14px;margin:0 0 10px}
+.warn-box-title{font-size:12px;font-weight:700;color:var(--amber-dark);margin-bottom:6px}
+.warn-item{display:flex;gap:8px;font-size:12px;color:var(--amber-dark);padding:2px 0;line-height:1.4}
+.step-list .step{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--gray-2)}
+.step-list .step:last-child{border-bottom:none}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.step-desc{font-size:12px;color:var(--text-light);line-height:1.5}
+.step-code{font-size:11px;font-family:'SF Mono',Menlo,monospace;background:var(--gray-1);padding:3px 8px;border-radius:6px;color:var(--text-light);display:inline-block;margin-top:3px;word-break:break-all}
+.select-info{font-size:12px;color:var(--text-light);text-align:center;margin-bottom:8px;min-height:16px}
+.btn-sm{border:1px solid var(--gray-2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;font-weight:700;background:var(--white);cursor:pointer;font-family:inherit;color:var(--text-light)}
+.btn-sm.on{background:var(--green);color:white;border-color:var(--green)}
 
-    #header-logo svg { width: 30px; height: 30px; }
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(var(--tab-h) + var(--safe-bot) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-5);color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    #header-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--white);
-      letter-spacing: .3px;
-    }
+/* ── INSTALL ── */
+#install-banner{display:none;position:fixed;bottom:calc(var(--tab-h) + var(--safe-bot) + 12px);left:12px;right:12px;background:var(--navy);color:white;border-radius:var(--radius-md);padding:14px 16px;box-shadow:var(--shadow-lg);z-index:500;animation:slideUp .3s ease}
+.install-row{display:flex;align-items:center;gap:12px}
+.install-text{flex:1}
+.install-title{font-size:14px;font-weight:700}
+.install-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.install-btns{display:flex;gap:8px;margin-top:10px}
+.btn-install{background:white;color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;flex:1}
+.btn-dismiss{background:rgba(255,255,255,.15);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer}
 
-    #header-subtitle {
-      font-size: 11px;
-      color: rgba(255,255,255,.6);
-      letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-
-    #header-right { display: flex; align-items: center; gap: 8px; }
-
-    .header-icon-btn {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.12);
-      border: none;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 18px;
-      cursor: pointer;
-      transition: background .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .header-icon-btn:active { background: rgba(255,255,255,.22); }
-
-    #offline-banner {
-      display: none;
-      background: var(--amber);
-      color: white;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px;
-      letter-spacing: .3px;
-    }
-    body.offline #offline-banner { display: block; }
-
-    #main {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .screen {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-    }
-    .screen {
-      display: none;
-      flex-direction: column;
-      min-height: 100%;
-      animation: fadeIn .25s ease;
-    }
-    .screen.active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    #tab-bar {
-      position: sticky;
-      bottom: 0;
-      z-index: 100;
-      height: calc(var(--tab-h) + var(--safe-bot));
-      padding-bottom: var(--safe-bot);
-      background: var(--white);
-      border-top: 1px solid var(--gray-2);
-      display: flex;
-      align-items: stretch;
-      box-shadow: 0 -2px 12px rgba(12,68,124,.08);
-    }
-
-    .tab-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: opacity .15s;
-      padding: 0;
-      position: relative;
-    }
-    .tab-btn:active { opacity: .7; }
-
-    .tab-icon {
-      font-size: 22px;
-      line-height: 1;
-      transition: transform .2s cubic-bezier(.34,1.56,.64,1);
-    }
-    .tab-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--gray-3);
-      letter-spacing: .3px;
-      transition: color .15s;
-    }
-
-    .tab-btn.active .tab-icon { transform: scale(1.15); }
-    .tab-btn.active .tab-label { color: var(--navy); }
-
-    .tab-indicator {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 28px; height: 3px;
-      border-radius: 0 0 3px 3px;
-      background: var(--navy);
-      opacity: 0;
-      transition: opacity .2s;
-    }
-    .tab-btn.active .tab-indicator { opacity: 1; }
-
-    #screen-accueil {
-      padding: 0 0 24px;
-    }
-
-    /* ── Bandeau exploitant ────────────────────────────── */
-    .exploitant-banner {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-      padding: 20px 20px 24px;
-      position: relative;
-      overflow: visible;
-    }
-
-    .exploitant-banner::before {
-      content: '';
-      position: absolute;
-      right: -30px; top: -30px;
-      width: 160px; height: 160px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
-    .exploitant-banner::after {
-      content: '';
-      position: absolute;
-      right: 20px; bottom: -50px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
-
-    .exp-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: relative; z-index: 1;
-    }
-
-    .exp-avatar {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.15);
-      border: 2px solid rgba(255,255,255,.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-
-    .exp-info { flex: 1; min-width: 0; }
-    .exp-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: -.3px;
-    }
-    .exp-alphatango {
-      font-size: 11px;
-      color: rgba(255,255,255,.65);
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: 1px;
-    }
-    .exp-uas-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-    .exp-uas-badge {
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 11px;
-      color: rgba(255,255,255,.9);
-      font-weight: 600;
-      letter-spacing: .3px;
-    }
-
-    .validity-section {
-      padding: 16px 16px 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .validity-card {
-      border-radius: var(--radius-md);
-      padding: 14px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .validity-card.valid {
-      background: var(--light-green);
-      border: 1.5px solid #A5D6B2;
-    }
-    .validity-card.warning {
-      background: var(--light-amber);
-      border: 1.5px solid #E8C97A;
-    }
-    .validity-card.expired {
-      background: var(--light-red);
-      border: 1.5px solid #E8A0A0;
-    }
-
-    .validity-icon { font-size: 20px; margin-bottom: 6px; }
-    .validity-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--text-light);
-    }
-    .validity-date {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
-    .validity-card.valid .validity-date { color: var(--green); }
-    .validity-card.warning .validity-date { color: var(--amber); }
-    .validity-card.expired .validity-date { color: var(--red); }
-
-    .validity-remain {
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-    .validity-card.valid .validity-remain { color: #2E7D4F; }
-    .validity-card.warning .validity-remain { color: var(--amber); }
-    .validity-card.expired .validity-remain { color: var(--red); }
-
-    .validity-status-dot {
-      position: absolute;
-      top: 12px; right: 12px;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      animation: pulse-dot 2s infinite;
-    }
-    .valid .validity-status-dot { background: var(--green); }
-    .warning .validity-status-dot { background: var(--amber); }
-    .expired .validity-status-dot { background: var(--red); animation: none; }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .6; transform: scale(1.3); }
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 16px 10px;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--text-light);
-    }
-    .section-link {
-      font-size: 13px;
-      color: var(--blue);
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .kpi-grid {
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .kpi-card {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 14px 10px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-2);
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .kpi-card:active { transform: scale(.97); box-shadow: var(--shadow-sm); }
-
-    .kpi-icon { font-size: 22px; margin-bottom: 6px; }
-    .kpi-value {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1;
-      letter-spacing: -1px;
-    }
-    .kpi-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-top: 4px;
-      line-height: 1.2;
-    }
-    .kpi-card.incidents .kpi-value { color: var(--red); }
-    .kpi-card.incidents[data-zero="true"] .kpi-value { color: var(--green); }
-
-    .nav-rapide-grid {
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .nav-btn {
-      background: var(--white);
-      border: 1.5px solid var(--gray-2);
-      border-radius: var(--radius-md);
-      padding: 16px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: all .15s;
-      text-align: left;
-    }
-    .nav-btn:active {
-      transform: scale(.97);
-      background: var(--light-blue);
-      border-color: var(--blue);
-    }
-    .nav-btn.wide { grid-column: 1 / -1; }
-
-    .nav-btn-icon {
-      width: 42px; height: 42px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .nav-btn-info { flex: 1; min-width: 0; }
-    .nav-btn-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -.1px;
-    }
-    .nav-btn-desc {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-    .nav-btn-arrow { color: var(--gray-3); font-size: 14px; flex-shrink: 0; }
-
-    .nb-blue  .nav-btn-icon { background: var(--light-blue); }
-    .nb-green .nav-btn-icon { background: var(--light-green); }
-    .nb-amber .nav-btn-icon { background: var(--light-amber); }
-    .nb-red   .nav-btn-icon { background: var(--light-red); }
-    .nb-teal  .nav-btn-icon { background: #E0F2F1; }
-
-    .app-footer {
-      margin: 20px 16px 0;
-      padding: 14px 16px;
-      background: var(--white);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--gray-2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .footer-version { font-size: 11px; color: var(--text-light); font-weight: 600; }
-    .footer-sync { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
-    .footer-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-
-    .placeholder-screen {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 40px;
-      text-align: center;
-    }
-    .placeholder-icon { font-size: 56px; opacity: .4; }
-    .placeholder-title { font-size: 20px; font-weight: 700; color: var(--text); }
-    .placeholder-text { font-size: 14px; color: var(--text-light); line-height: 1.5; }
-    .placeholder-badge {
-      background: var(--light-blue);
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      letter-spacing: .5px;
-    }
-
-    #toast {
-      position: fixed;
-      bottom: calc(var(--tab-h) + var(--safe-bot) + 16px);
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--gray-5);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transition: all .3s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 999;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    @media (min-width: 768px) {
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-      .nav-rapide-grid { grid-template-columns: repeat(3, 1fr); }
-      .nav-btn.wide { grid-column: auto; }
-      .validity-section { grid-template-columns: repeat(4, 1fr); gap: 12px; }
-      .kpi-card { padding: 20px 14px; }
-      .kpi-value { font-size: 32px; }
-    }
-
-    #install-banner {
-      display: none;
-      position: fixed;
-      bottom: calc(var(--tab-h) + var(--safe-bot) + 12px);
-      left: 12px; right: 12px;
-      background: var(--navy);
-      color: white;
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-lg);
-      z-index: 500;
-      animation: slideUp .3s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0); opacity: 1; }
-    }
-    .install-row { display: flex; align-items: center; gap: 12px; }
-    .install-text { flex: 1; }
-    .install-title { font-size: 14px; font-weight: 700; }
-    .install-sub { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
-    .install-btns { display: flex; gap: 8px; margin-top: 10px; }
-    .btn-install { background: white; color: var(--navy); border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
-    .btn-dismiss { background: rgba(255,255,255,.15); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-  </style>
+@media(min-width:768px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr);gap:14px}
+  .nav-rapide-grid{grid-template-columns:repeat(3,1fr)}
+  .nav-btn.wide{grid-column:auto}
+  .validity-section{grid-template-columns:repeat(4,1fr);gap:12px}
+}
+</style>
 </head>
 <body>
-
 <div id="app">
 
+  <!-- ══ HEADER ══ -->
   <header id="header">
     <div id="header-logo">
       <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -610,7 +290,7 @@
       </div>
     </div>
     <div id="header-right">
-      <button class="header-icon-btn" onclick="navigateTo(&#39;config&#39;)" title="Configuration">⚙️</button>
+      <button class="header-icon-btn" onclick="nav(&#39;config&#39;)" title="Configuration">⚙️</button>
     </div>
   </header>
 
@@ -620,7 +300,6 @@
 
     <!-- ════ ACCUEIL ════ -->
     <section id="screen-accueil" class="screen active">
-
       <div class="exploitant-banner">
         <div class="exp-row">
           <div class="exp-avatar">👨‍✈️</div>
@@ -634,177 +313,291 @@
           </div>
         </div>
       </div>
-
-      <div class="validity-section" id="validity-section">
-      <div class="validity-card valid">
-        <div class="validity-status-dot"></div>
-        <div class="validity-icon">🟢</div>
-        <div class="validity-label">CATS</div>
-        <div class="validity-date">15/09/2029</div>
-        <div class="validity-remain">Valide — 1235 j restants</div>
-        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">NLD-RP-q99cvjjh51fz</div>
-      </div>
-      <div class="validity-card valid">
-        <div class="validity-status-dot"></div>
-        <div class="validity-icon">🟢</div>
-        <div class="validity-label">Assurance COVERDRONE</div>
-        <div class="validity-date">10/04/2027</div>
-        <div class="validity-remain">Valide — 346 j restants</div>
-        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">CDA22411846EUR</div>
-      </div></div>
-
+      <div class="validity-section" id="validity-section"><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">CATS</div><div class="validity-date">15/09/2029</div><div class="validity-remain">Valide — 1235 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">NLD-RP-q99cvjjh51fz</div></div><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">Assurance COVERDRONE</div><div class="validity-date">10/04/2027</div><div class="validity-remain">Valide — 346 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">CDA22411846EUR</div></div></div>
       <div class="section-header">
         <span class="section-title">Ce mois-ci</span>
-        <span class="section-link" onclick="navigateTo(&#39;vols&#39;)">Voir tout →</span>
+        <span class="section-link" onclick="nav(&#39;vols&#39;)">Voir tout →</span>
       </div>
-
       <div class="kpi-grid">
-        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
+        <div class="kpi-card" onclick="nav(&#39;vols&#39;)">
           <div class="kpi-icon">✈️</div>
           <div class="kpi-value" id="kpi-vols">0</div>
           <div class="kpi-label">Vols ce mois</div>
         </div>
-        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
+        <div class="kpi-card" onclick="nav(&#39;vols&#39;)">
           <div class="kpi-icon">⏱️</div>
           <div class="kpi-value" id="kpi-heures">0h</div>
           <div class="kpi-label">Heures de vol</div>
         </div>
-        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo(&#39;maint&#39;)">
+        <div class="kpi-card incidents" id="kpi-card-inc" data-zero="true" onclick="nav(&#39;vols&#39;)">
           <div class="kpi-icon">⚠️</div>
           <div class="kpi-value" id="kpi-incidents">0</div>
           <div class="kpi-label">Incidents REX</div>
         </div>
       </div>
-
-      <div class="section-header">
-        <span class="section-title">Navigation rapide</span>
-      </div>
-
+      <div class="section-header"><span class="section-title">Navigation rapide</span></div>
       <div class="nav-rapide-grid">
-        <button class="nav-btn nb-blue" onclick="navigateTo(&#39;vols&#39;)">
+        <button class="nav-btn nb-blue" onclick="nav(&#39;vols&#39;)">
           <div class="nav-btn-icon">✈️</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Carnet de Vol</div>
-            <div class="nav-btn-desc">Saisir · Historique</div>
-          </div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Carnet de Vol</div><div class="nav-btn-desc">Saisir · Historique</div></div>
           <span class="nav-btn-arrow">›</span>
         </button>
-
-        <button class="nav-btn nb-green" onclick="navigateTo(&#39;maint&#39;)">
+        <button class="nav-btn nb-purple" onclick="nav(&#39;dji&#39;)">
+          <div class="nav-btn-icon">🎮</div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Logs DJI Fly</div><div class="nav-btn-desc">Import · Parsing auto</div></div>
+          <span class="nav-btn-arrow">›</span>
+        </button>
+        <button class="nav-btn nb-green" onclick="showToast(&#39;Maintenance — Module à venir&#39;)">
           <div class="nav-btn-icon">🔧</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Maintenance</div>
-            <div class="nav-btn-desc">Suivi · REX</div>
-          </div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Maintenance</div><div class="nav-btn-desc">Suivi · REX</div></div>
           <span class="nav-btn-arrow">›</span>
         </button>
-
-        <button class="nav-btn nb-amber" onclick="navigateTo(&#39;meteo&#39;)">
+        <button class="nav-btn nb-amber" onclick="showToast(&#39;Météo — Module à venir&#39;)">
           <div class="nav-btn-icon">🌦️</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Météo &amp; NOTAM</div>
-            <div class="nav-btn-desc">METAR · TAF · ADS-B</div>
-          </div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Météo &amp; NOTAM</div><div class="nav-btn-desc">METAR · TAF · ADS-B</div></div>
           <span class="nav-btn-arrow">›</span>
         </button>
-
         <button class="nav-btn nb-teal" onclick="showToast(&#39;Check-list — Module à venir&#39;)">
           <div class="nav-btn-icon">✅</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Check-list</div>
-            <div class="nav-btn-desc">Pré-vol · Post-vol</div>
-          </div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Check-list</div><div class="nav-btn-desc">Pré-vol · Post-vol</div></div>
           <span class="nav-btn-arrow">›</span>
         </button>
-
-        <button class="nav-btn nb-red wide" onclick="showToast(&#39;Rapports — Module à venir&#39;)">
+        <button class="nav-btn nb-red" onclick="showToast(&#39;Rapports — Module à venir&#39;)">
           <div class="nav-btn-icon">📊</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Rapports &amp; Bilans</div>
-            <div class="nav-btn-desc">Mensuel · Annuel · Export PDF</div>
-          </div>
+          <div class="nav-btn-info"><div class="nav-btn-label">Rapports &amp; Bilans</div><div class="nav-btn-desc">Mensuel · Annuel · PDF</div></div>
           <span class="nav-btn-arrow">›</span>
         </button>
       </div>
-
       <div class="app-footer">
-        <div class="footer-version">UAS Manager v1.0.0</div>
+        <div class="footer-version">UAS Manager v1.1.0</div>
         <div class="footer-sync">
           <div class="footer-sync-dot" id="sync-dot" style="background: var(--green);"></div>
-          <span id="sync-label">Sync 29/04 01:22</span>
+          <span id="sync-label">Sync 29/04 01:23</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ VOLS ════ -->
+    <section id="screen-vols" class="screen">
+      <div class="screen-header">
+        <div><h2>✈️ Carnet de vol</h2><p id="vols-subtitle">0 vol</p></div>
+        <button class="btn-add" onclick="openForm(null)">+ Nouveau</button>
+      </div>
+      <div class="chrono-bar" id="chrono-bar">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--amber)">VOL EN COURS</div>
+          <div class="chrono-time" id="chrono-bar-time">00:00</div>
+        </div>
+        <button class="chrono-stop-btn" onclick="stopChrono()">⏹ Stop</button>
+      </div>
+      <div class="kpi-bar">
+        <div class="kpi-mini"><div class="kpi-mini-val" id="v-kpi-vols">0</div><div class="kpi-mini-lbl">Vols mois</div></div>
+        <div class="kpi-mini"><div class="kpi-mini-val" id="v-kpi-h">0h</div><div class="kpi-mini-lbl">Heures</div></div>
+        <div class="kpi-mini"><div class="kpi-mini-val" id="v-kpi-inc" style="color:var(--red)">0</div><div class="kpi-mini-lbl">Incidents</div></div>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="setFilter(&#39;tous&#39;,this)">Tous</button>
+        <button class="filter-chip" onclick="setFilter(&#39;PDRA-S01&#39;,this)">S01</button>
+        <button class="filter-chip" onclick="setFilter(&#39;PDRA-S02&#39;,this)">S02</button>
+        <button class="filter-chip" onclick="setFilter(&#39;dji&#39;,this)">🎮 DJI</button>
+        <button class="filter-chip" onclick="setFilter(&#39;incident&#39;,this)">⚠ Incidents</button>
+      </div>
+      <div style="padding:8px 12px;display:flex;justify-content:flex-end">
+        <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <div class="vols-list" id="vols-list"></div>
+    </section>
+
+    <!-- ════ DJI LOGS ════ -->
+    <section id="screen-dji" class="screen">
+      <div class="screen-header">
+        <div><h2>🎮 Logs DJI Fly</h2><p>Parsing automatique → carnet de vol</p></div>
+      </div>
+      <div class="method-tabs">
+        <button class="method-tab active" onclick="djiMethod(&#39;txt&#39;,this)">Fichier .txt</button>
+        <button class="method-tab" onclick="djiMethod(&#39;csv&#39;,this)">CSV DJI</button>
+        <button class="method-tab" onclick="djiMethod(&#39;guide&#39;,this)">Guide export</button>
+      </div>
+
+      <div class="dji-pane active" id="dji-pane-txt">
+        <div class="info-box"><p><strong>Fichier .txt DJI :</strong> dans l'app Fichiers iOS → Sur mon iPhone → DJI Fly → FlightRecords.<br>Le fichier est chiffré — l'app extrait les métadonnées disponibles.</p></div>
+        <div class="drop-zone" id="dji-drop" onclick="document.getElementById(&#39;dji-file-input&#39;).click()" ondragover="event.preventDefault();this.classList.add(&#39;drag&#39;)" ondragleave="this.classList.remove(&#39;drag&#39;)" ondrop="djiDrop(event)">
+          <div class="drop-icon">📂</div>
+          <div class="drop-title">Sélectionner le fichier DJI</div>
+          <div class="drop-sub">DJIFlightRecord_YYYYMMDD_HHMMSS.txt</div>
+        </div>
+        <input type="file" id="dji-file-input" accept=".txt,.csv,.log" style="display:none" onchange="djiHandleFile(this.files[0])">
+        <button class="btn-secondary" onclick="djiLoadDemo()">Charger 3 vols de démonstration</button>
+      </div>
+
+      <div class="dji-pane" id="dji-pane-csv">
+        <div class="info-box"><p><strong>Méthode recommandée :</strong> DJI Fly → Profil → Mes vols → sélectionner un vol → icône Partager → CSV.<br>Pas de chiffrement, données complètes.</p></div>
+        <div class="drop-zone" onclick="document.getElementById(&#39;dji-csv-input&#39;).click()">
+          <div class="drop-icon">📊</div>
+          <div class="drop-title">Sélectionner le CSV DJI Fly</div>
+          <div class="drop-sub">Exporté via Profil → Mes vols → Partager</div>
+        </div>
+        <input type="file" id="dji-csv-input" accept=".csv" style="display:none" onchange="djiHandleCSV(this.files[0])">
+        <button class="btn-secondary" onclick="djiLoadDemo()">Charger vols de démonstration</button>
+      </div>
+
+      <div class="dji-pane" id="dji-pane-guide">
+        <div class="dji-card">
+          <div class="step-list" style="padding:0 14px">
+            <div class="step"><div class="step-num">1</div><div><div class="step-title">Ouvrir l'app Fichiers iOS</div><div class="step-desc">Appuie sur "Sur mon iPhone" dans le panneau gauche.</div></div></div>
+            <div class="step"><div class="step-num">2</div><div><div class="step-title">Naviguer vers DJI Fly</div><div class="step-code">Sur mon iPhone › DJI Fly › FlightRecords</div></div></div>
+            <div class="step"><div class="step-num">3</div><div><div class="step-title">Sélectionner le fichier .txt</div><div class="step-code">DJIFlightRecord_20260502_[143012].txt</div></div></div>
+            <div class="step"><div class="step-num">4</div><div><div class="step-title">Revenir ici et importer</div><div class="step-desc">Sélectionne le fichier via le bouton "Fichier .txt".</div></div></div>
+            <div class="step"><div class="step-num">5</div><div><div class="step-title">Alternative CSV (plus simple)</div><div class="step-desc">DJI Fly → Profil → Mes vols → Partager → CSV. Lisible directement.</div></div></div>
+          </div>
+        </div>
+        <div class="warn-box" style="margin-top:0">
+          <div class="warn-box-title">Fichiers .txt DJI chiffrés</div>
+          <div class="warn-item"><span>⚠</span><span>Les fichiers .txt sont chiffrés par DJI. Préférer l'export CSV pour des données complètes.</span></div>
         </div>
       </div>
 
-    </section>
-
-    <!-- ════ ÉCRAN VOLS ════ -->
-    <section id="screen-vols" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">✈️</div>
-        <div class="placeholder-title">Carnet de Vol</div>
-        <div class="placeholder-text">Ouverture du carnet de vol…</div>
+      <div id="dji-results" style="display:none;padding:0 12px 100px">
+        <div style="padding:12px 0 8px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light)" id="dji-count">0 vol</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm on" id="dji-btn-all" onclick="djiFilter(&#39;all&#39;)">Tous</button>
+            <button class="btn-sm" id="dji-btn-new" onclick="djiFilter(&#39;new&#39;)">Nouveaux</button>
+          </div>
+        </div>
+        <div class="dji-card"><div id="dji-flights-list"></div></div>
+        <div id="dji-detail" style="display:none;margin-top:10px">
+          <div class="dji-card">
+            <div class="detail-grid" id="dji-detail-grid"></div>
+            <div class="batt-section" id="dji-batt" style="display:none">
+              <div class="batt-row"><div class="batt-lbl"><span>Batterie départ</span><span id="bs-val"></span></div><div class="batt-track"><div class="batt-fill" id="bs-bar"></div></div></div>
+              <div class="batt-row"><div class="batt-lbl"><span>Batterie arrivée</span><span id="be-val"></span></div><div class="batt-track"><div class="batt-fill" id="be-bar"></div></div></div>
+            </div>
+          </div>
+          <div class="warn-box" id="dji-warns" style="display:none;margin-top:8px">
+            <div class="warn-box-title">Alertes détectées</div>
+            <div id="dji-warn-list"></div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <div class="select-info" id="dji-select-info">Touchez un vol pour le sélectionner</div>
+          <button class="btn-primary" id="dji-btn-import-sel" onclick="djiImportSel()" disabled="">Importer la sélection</button>
+          <button class="btn-secondary" onclick="djiImportAll()">Tout importer</button>
+        </div>
       </div>
     </section>
 
-    <!-- ════ ÉCRAN MAINTENANCE ════ -->
-    <section id="screen-maint" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">🔧</div>
-        <div class="placeholder-title">Maintenance &amp; REX</div>
-        <div class="placeholder-text">Ouverture du module maintenance…</div>
-      </div>
-    </section>
-
-    <!-- ════ ÉCRAN MÉTÉO ════ -->
-    <section id="screen-meteo" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">🌦️</div>
-        <div class="placeholder-title">Météo &amp; NOTAM</div>
-        <div class="placeholder-text">Module 4 — METAR/TAF CheckWX, météo OpenWeather, ADS-B OpenSky, liens SOFIA</div>
-        <div class="placeholder-badge">MODULE 4 — À VENIR</div>
-      </div>
-    </section>
-
-    <!-- ════ ÉCRAN CONFIG ════ -->
+    <!-- ════ CONFIG ════ -->
     <section id="screen-config" class="screen">
-      <div class="placeholder-screen">
-        <div class="placeholder-icon">⚙️</div>
-        <div class="placeholder-title">Configuration</div>
-        <div class="placeholder-text">Module 5 — Clés API, profil exploitant, paramètres UAS</div>
-        <div class="placeholder-badge">MODULE 5 — À VENIR</div>
+      <div class="screen-header"><div><h2>⚙️ Configuration</h2><p>Paramètres de l'app</p></div></div>
+      <div style="padding:16px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:10px">Exploitant</div>
+        <div class="form-group">
+          <div class="form-row"><span class="form-row-lbl">Nom</span><span style="flex:1;text-align:right;font-size:14px">CONTE Philippe</span></div>
+          <div class="form-row"><span class="form-row-lbl">AlphaTango</span><span style="flex:1;text-align:right;font-size:14px;font-weight:700;color:var(--blue)">FRAjqq48j12nfy4c</span></div>
+          <div class="form-row"><span class="form-row-lbl">UAS</span><span style="flex:1;text-align:right;font-size:14px">DJI Mavic 4 Pro</span></div>
+          <div class="form-row"><span class="form-row-lbl">Immatriculation</span><span style="flex:1;text-align:right;font-size:14px">UAS-FR-517804</span></div>
+          <div class="form-row"><span class="form-row-lbl">CATS</span><span style="flex:1;text-align:right;font-size:14px;color:var(--green)">NLD-RP-q99cvjjh51fz</span></div>
+          <div class="form-row"><span class="form-row-lbl">Assurance</span><span style="flex:1;text-align:right;font-size:14px;color:var(--green)">CDA22411846EUR</span></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin:16px 0 10px">Version</div>
+        <div class="form-group">
+          <div class="form-row"><span class="form-row-lbl">App</span><span style="flex:1;text-align:right;font-size:14px">UAS Manager v1.1.0</span></div>
+          <div class="form-row"><span class="form-row-lbl">MANEX</span><span style="flex:1;text-align:right;font-size:14px">V5.1 — 2026</span></div>
+          <div class="form-row"><span class="form-row-lbl">Classeur Excel</span><span style="flex:1;text-align:right;font-size:14px">V5.7</span></div>
+        </div>
+        <button class="btn-secondary" style="margin-top:16px" onclick="if(confirm(&#39;Supprimer toutes les données ?&#39;)) { localStorage.clear(); location.reload(); }">🗑 Réinitialiser les données</button>
       </div>
     </section>
 
   </main>
 
+  <!-- ══ TAB BAR ══ -->
   <nav id="tab-bar">
-    <button class="tab-btn active" onclick="navigateTo(&#39;accueil&#39;)" id="tab-accueil">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🏠</span>
-      <span class="tab-label">Accueil</span>
+    <button class="tab-btn active" onclick="nav(&#39;accueil&#39;)" id="tab-accueil">
+      <div class="tab-indicator"></div><span class="tab-icon">🏠</span><span class="tab-label">Accueil</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;vols&#39;)" id="tab-vols">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">✈️</span>
-      <span class="tab-label">Vols</span>
+    <button class="tab-btn" onclick="nav(&#39;vols&#39;)" id="tab-vols">
+      <div class="tab-indicator"></div><span class="tab-icon">✈️</span><span class="tab-label">Vols</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;maint&#39;)" id="tab-maint">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🔧</span>
-      <span class="tab-label">Maint.</span>
+    <button class="tab-btn" onclick="nav(&#39;dji&#39;)" id="tab-dji">
+      <div class="tab-indicator"></div><span class="tab-icon">🎮</span><span class="tab-label">DJI</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;meteo&#39;)" id="tab-meteo">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">🌦️</span>
-      <span class="tab-label">Météo</span>
+    <button class="tab-btn" onclick="showToast(&#39;Météo — Module à venir&#39;)" id="tab-meteo">
+      <div class="tab-indicator"></div><span class="tab-icon">🌦️</span><span class="tab-label">Météo</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo(&#39;config&#39;)" id="tab-config">
-      <div class="tab-indicator"></div>
-      <span class="tab-icon">⚙️</span>
-      <span class="tab-label">Config</span>
+    <button class="tab-btn" onclick="nav(&#39;config&#39;)" id="tab-config">
+      <div class="tab-indicator"></div><span class="tab-icon">⚙️</span><span class="tab-label">Config</span>
     </button>
   </nav>
+</div>
 
+<!-- ══ FORMULAIRE VOL (overlay) ══ -->
+<div class="form-overlay" id="form-overlay">
+  <div class="form-sheet">
+    <div class="form-header">
+      <div><h3 id="form-title">Nouveau vol</h3><div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px" id="form-mission-sub"></div></div>
+      <button class="form-close" onclick="closeForm()">Annuler</button>
+    </div>
+    <div class="form-body">
+      <div class="form-section-lbl">Chronomètre</div>
+      <div class="chrono-widget">
+        <div class="chrono-display idle" id="f-chrono">00:00</div>
+        <button class="chrono-btn btn-start" id="f-chrono-btn" onclick="toggleChrono()">▶ Start</button>
+      </div>
+      <div class="form-section-lbl">Identification</div>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row-lbl">N° Mission</span><span class="mission-display" id="f-mission-display"></span></div>
+        <div class="form-row"><span class="form-row-lbl">Date / Heure</span><input type="datetime-local" id="f-date"></div>
+        <div class="form-row"><span class="form-row-lbl">Scénario</span>
+          <select id="f-scenario"><option>PDRA-S01</option><option>PDRA-S02</option><option>Cat. Ouverte A1</option><option>Cat. Ouverte A2</option><option>Cat. Ouverte A3</option><option>Autre</option></select>
+        </div>
+        <div class="form-row"><span class="form-row-lbl">Activité</span>
+          <select id="f-activite"><option>Audiovisuel</option><option>Inspection</option><option>Cartographie</option><option>Topographie</option><option>Formation</option><option>Test / Essai</option><option>Autre</option></select>
+        </div>
+      </div>
+      <div class="form-section-lbl">Localisation</div>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row-lbl">Lieu / Zone</span><input type="text" id="f-lieu" placeholder="Commune, site..."></div>
+        <div class="form-row"><span class="form-row-lbl">Altitude AGL</span><input type="number" id="f-alt" placeholder="0" style="width:60px"><span style="font-size:13px;color:var(--text-light);margin-left:4px">m</span></div>
+        <div class="form-row"><span class="form-row-lbl">Durée (min)</span><input type="number" id="f-duree" placeholder="0" style="width:60px"></div>
+      </div>
+      <div class="form-section-lbl">Personnel</div>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row-lbl">RPIC</span>
+          <select id="f-rpic"><option>CONTE Philippe</option></select>
+        </div>
+        <div class="form-row"><span class="form-row-lbl">OBS-1</span>
+          <select id="f-obs1"><option value="">—</option></select>
+        </div>
+      </div>
+      <div class="form-section-lbl">Conditions</div>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row-lbl">Météo</span>
+          <select id="f-meteo"><option>CAVOK</option><option>Bonnes</option><option>Nuageux</option><option>Marginales</option><option>Mauvaises</option></select>
+        </div>
+        <div class="form-row toggle-row"><span class="form-row-lbl">Remote ID ✓</span>
+          <div class="ios-toggle on" id="t-rid" onclick="tog(&#39;t-rid&#39;,&#39;f-rid&#39;)"></div>
+          <input type="hidden" id="f-rid" value="Oui">
+        </div>
+        <div class="form-row toggle-row"><span class="form-row-lbl">GRB OK ✓</span>
+          <div class="ios-toggle on" id="t-grb" onclick="tog(&#39;t-grb&#39;,&#39;f-grb&#39;)"></div>
+          <input type="hidden" id="f-grb" value="Oui">
+        </div>
+        <div class="form-row toggle-row"><span class="form-row-lbl" style="color:var(--red)">Incident</span>
+          <div class="ios-toggle" id="t-inc" onclick="tog(&#39;t-inc&#39;,&#39;f-inc&#39;)"></div>
+          <input type="hidden" id="f-inc" value="Non">
+        </div>
+      </div>
+      <div class="form-section-lbl">Notes</div>
+      <div class="form-group">
+        <div class="form-row"><span class="form-row-lbl">Client</span><input type="text" id="f-client" placeholder="Optionnel"></div>
+        <div class="form-row"><textarea id="f-notes" placeholder="Notes libres..."></textarea></div>
+      </div>
+      <button class="btn-primary" onclick="saveVol()">Enregistrer le vol</button>
+      <button class="btn-secondary" onclick="closeForm()">Annuler</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -824,146 +617,439 @@
 </div>
 
 <script>
+'use strict';
+
+/* ════ DONNÉES ════ */
 const EXPLOITANT = {
-  nom: 'CONTE Philippe',
-  alphatango: 'FRAjqq48j12nfy4c',
-  uas: 'DJI Mavic 4 Pro',
-  uas_reg: 'UAS-FR-517804',
-  cats: { label: 'CATS', expire: '2029-09-15', ref: 'NLD-RP-q99cvjjh51fz' },
-  assurance: { label: 'Assurance COVERDRONE', expire: '2027-04-10', ref: 'CDA22411846EUR' }
+  cats:{ label:'CATS', expire:'2029-09-15', ref:'NLD-RP-q99cvjjh51fz' },
+  assurance:{ label:'Assurance COVERDRONE', expire:'2027-04-10', ref:'CDA22411846EUR' }
 };
+const DEMO_DJI = [
+  {id:'dji-d1',filename:'DJIFlightRecord_20260502_[143012].txt',date:'2026-05-02T14:30:00',dureeMin:23,distanceKm:4.2,altMax:87,vitesseMoyKmh:18,vitesseMaxKmh:42,battDepart:91,battArrivee:62,gpsPoints:1840,satellites:14,tempC:17,lieu:'Thyez — secteur nord',alertes:['Vent rafale 11 m/s (limite DJI Mavic 4 Pro : 12 m/s)'],isNew:true,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0600'},
+  {id:'dji-d2',filename:'DJIFlightRecord_20260418_[092245].txt',date:'2026-04-18T09:22:00',dureeMin:41,distanceKm:8.7,altMax:115,vitesseMoyKmh:22,vitesseMaxKmh:58,battDepart:97,battArrivee:34,gpsPoints:3280,satellites:16,tempC:11,lieu:'Bonneville — zone industrielle',alertes:['Batterie < 40% à 32 min de vol','Altitude max 115 m AGL — vérifier conformité scénario'],isNew:true,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0600'},
+  {id:'dji-d3',filename:'DJIFlightRecord_20260401_[161530].txt',date:'2026-04-01T16:15:00',dureeMin:15,distanceKm:1.8,altMax:48,vitesseMoyKmh:12,vitesseMaxKmh:28,battDepart:88,battArrivee:72,gpsPoints:1200,satellites:13,tempC:9,lieu:'Thyez — terrain de test',alertes:[],isNew:false,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0580'},
+];
 
-const APP_VERSION = '1.0.0';
-const WARN_DAYS = 30;
+let vols = JSON.parse(localStorage.getItem('uas_vols')||'[]');
+let filtreVols = 'tous';
+let editId = null;
+let djiFlights = [], djiSelected = new Set(), djiFilterMode = 'all';
+let chronoRunning = false, chronoStart = null, chronoSecs = 0, chronoTimer = null;
 
-let currentScreen = 'accueil';
-
-function navigateTo(screenId) {
-  // Navigation directe pour les modules externes
-  if (screenId === 'vols') { window.location.href = 'vols.html'; return; }
-  if (screenId === 'maint') { window.location.href = 'maintenance.html'; return; }
-
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const screen = document.getElementById('screen-' + screenId);
-  const tab = document.getElementById('tab-' + screenId);
-  if (screen) screen.classList.add('active');
-  if (tab) tab.classList.add('active');
-  currentScreen = screenId;
-  const subtitles = {
-    accueil: 'Tableau de bord', vols: 'Carnet de Vol',
-    maint: 'Maintenance & REX', meteo: 'Météo & NOTAM', config: 'Configuration'
-  };
-  document.querySelector('#header-subtitle').textContent = subtitles[screenId] || '';
+/* ════ NAVIGATION ════ */
+function nav(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('tab-'+id) && document.getElementById('tab-'+id).classList.add('active');
+  const titles = {accueil:'Tableau de bord',vols:'Carnet de vol',dji:'Logs DJI Fly',config:'Configuration'};
+  document.getElementById('header-subtitle').textContent = titles[id]||'';
+  if(id==='vols') renderVols();
+  if(id==='accueil') { renderValidity(); loadKPIs(); }
 }
 
-function daysBetween(dateStr) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const target = new Date(dateStr); target.setHours(0,0,0,0);
-  return Math.round((target - today) / 86400000);
-}
-function formatDate(dateStr) { const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
-function getValidityClass(days) { if (days < 0) return 'expired'; if (days <= WARN_DAYS) return 'warning'; return 'valid'; }
-function getValidityIcon(days) { if (days < 0) return '🔴'; if (days <= WARN_DAYS) return '🟡'; return '🟢'; }
-function getValidityRemain(days) {
-  if (days < 0) return `Expiré depuis ${Math.abs(days)} j`;
-  if (days === 0) return "Expire aujourd'hui !";
-  if (days <= WARN_DAYS) return `⚠️ Expire dans ${days} j`;
-  return `Valide — ${days} j restants`;
-}
+/* ════ VALIDITÉ ════ */
+function daysBetween(d){ const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); return Math.round((e-t)/86400000); }
+function fmtDate(d){ const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+function validCls(n){ return n<0?'expired':n<=30?'warning':'valid'; }
+function validIcon(n){ return n<0?'🔴':n<=30?'🟡':'🟢'; }
+function validRemain(n){ if(n<0) return `Expiré depuis ${Math.abs(n)} j`; if(n===0) return "Expire aujourd'hui !"; if(n<=30) return `⚠️ Expire dans ${n} j`; return `Valide — ${n} j restants`; }
 
-function renderValidity() {
-  const container = document.getElementById('validity-section');
-  const items = [EXPLOITANT.cats, EXPLOITANT.assurance];
-  container.innerHTML = items.map(item => {
-    const days = daysBetween(item.expire);
-    const cls = getValidityClass(days);
-    return `
-      <div class="validity-card ${cls}">
-        <div class="validity-status-dot"></div>
-        <div class="validity-icon">${getValidityIcon(days)}</div>
-        <div class="validity-label">${item.label}</div>
-        <div class="validity-date">${formatDate(item.expire)}</div>
-        <div class="validity-remain">${getValidityRemain(days)}</div>
-        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">${item.ref}</div>
-      </div>`;
+function renderValidity(){
+  document.getElementById('validity-section').innerHTML = [EXPLOITANT.cats, EXPLOITANT.assurance].map(item=>{
+    const n=daysBetween(item.expire), cls=validCls(n);
+    return `<div class="validity-card ${cls}"><div class="validity-status-dot"></div><div class="validity-icon">${validIcon(n)}</div><div class="validity-label">${item.label}</div><div class="validity-date">${fmtDate(item.expire)}</div><div class="validity-remain">${validRemain(n)}</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">${item.ref}</div></div>`;
   }).join('');
 }
 
-function loadKPIs() {
-  const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const volsData = JSON.parse(localStorage.getItem(`uas_vols_${monthKey}`) || 'null');
-  const incidents = parseInt(localStorage.getItem('uas_incidents_total') || '0', 10);
-  const volsCount = volsData ? volsData.count : 0;
-  const heures = volsData ? volsData.heures : 0;
-  document.getElementById('kpi-vols').textContent = volsCount;
-  document.getElementById('kpi-heures').textContent = heures > 0 ? `${heures.toFixed(1)}h` : '0h';
-  document.getElementById('kpi-incidents').textContent = incidents;
-  document.getElementById('kpi-card-incidents').dataset.zero = incidents === 0 ? 'true' : 'false';
+/* ════ KPIs ════ */
+function loadKPIs(){
+  const now=new Date(), m=now.getMonth(), y=now.getFullYear();
+  const mv=vols.filter(v=>{ const d=new Date(v.date); return d.getMonth()===m&&d.getFullYear()===y; });
+  const h=mv.reduce((s,v)=>s+(parseInt(v.duree)||0),0)/60;
+  const inc=mv.filter(v=>v.incident==='Oui').length;
+  document.getElementById('kpi-vols').textContent=mv.length;
+  document.getElementById('kpi-heures').textContent=h>0?h.toFixed(1)+'h':'0h';
+  document.getElementById('kpi-incidents').textContent=inc;
+  document.getElementById('kpi-card-inc').dataset.zero=inc===0?'true':'false';
 }
 
-function updateSyncLabel() {
-  const lastSync = localStorage.getItem('uas_last_sync');
-  const label = document.getElementById('sync-label');
-  const dot = document.getElementById('sync-dot');
-  if (!lastSync) { label.textContent = 'Jamais synchronisé'; dot.style.background = 'var(--amber)'; return; }
-  const d = new Date(parseInt(lastSync));
-  label.textContent = `Sync ${d.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
-  dot.style.background = 'var(--green)';
-  localStorage.setItem('uas_last_sync', Date.now().toString());
+function updateSyncLabel(){
+  const ls=localStorage.getItem('uas_last_sync');
+  if(ls){
+    const d=new Date(parseInt(ls));
+    document.getElementById('sync-label').textContent=`Sync ${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+  document.getElementById('sync-dot').style.background='var(--green)';
+  localStorage.setItem('uas_last_sync',Date.now().toString());
 }
 
+/* ════ VOLS — LISTE ════ */
+function fmtDateTime(d){
+  if(!d) return '—';
+  try{ const dt=new Date(d); return dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+  catch(e){ return d; }
+}
+
+function renderVols(){
+  const now=new Date(), m=now.getMonth(), y=now.getFullYear();
+  const mv=vols.filter(v=>{ const d=new Date(v.date); return d.getMonth()===m&&d.getFullYear()===y; });
+  const h=mv.reduce((s,v)=>s+(parseInt(v.duree)||0),0)/60;
+  const inc=mv.filter(v=>v.incident==='Oui').length;
+  document.getElementById('v-kpi-vols').textContent=mv.length;
+  document.getElementById('v-kpi-h').textContent=h>0?h.toFixed(1)+'h':'0h';
+  document.getElementById('v-kpi-inc').textContent=inc;
+  document.getElementById('vols-subtitle').textContent=vols.length+' vol'+(vols.length>1?'s':'');
+
+  let liste=[...vols].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(filtreVols==='incident') liste=liste.filter(v=>v.incident==='Oui');
+  else if(filtreVols==='dji') liste=liste.filter(v=>v.source==='DJI Fly');
+  else if(filtreVols!=='tous') liste=liste.filter(v=>v.scenario===filtreVols);
+
+  const c=document.getElementById('vols-list');
+  if(!liste.length){
+    c.innerHTML='<div class="empty-state"><div class="empty-state-icon">✈</div><div class="empty-state-title">Aucun vol enregistré</div><div class="empty-state-sub">Appuyez sur + Nouveau pour saisir votre premier vol</div></div>';
+    return;
+  }
+  const scBadge=s=>{
+    if(s==='PDRA-S01') return `<span class="sc-badge sc-s01">S01</span>`;
+    if(s==='PDRA-S02') return `<span class="sc-badge sc-s02">S02</span>`;
+    return `<span class="sc-badge sc-other">${s}</span>`;
+  };
+  c.innerHTML=liste.map(v=>`
+    <div class="vol-card${v.incident==='Oui'?' incident':''}" onclick="openForm('${v.id}')">
+      <div class="vol-top"><span class="vol-mission">${v.mission}</span>${scBadge(v.scenario)}</div>
+      <div class="vol-lieu">${v.lieu||'—'}${v.source==='DJI Fly'?' <span style="font-size:10px;font-weight:700;color:#4A2C8F">🎮 DJI</span>':''}</div>
+      <div class="vol-meta">
+        <span>${fmtDateTime(v.date)}</span>
+        <span class="vol-dur">⏱ ${v.duree||0} min</span>
+        ${v.incident==='Oui'?'<span class="vol-inc-badge">⚠ Incident</span>':''}
+        ${v.client?'<span>'+v.client+'</span>':''}
+      </div>
+    </div>`).join('');
+}
+
+function setFilter(f,btn){
+  filtreVols=f;
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVols();
+}
+
+/* ════ VOLS — FORMULAIRE ════ */
+function prochainMission(){
+  const y=new Date().getFullYear();
+  const nums=vols.filter(v=>v.mission&&v.mission.startsWith('M'+y+'-')).map(v=>parseInt(v.mission.split('-')[1]||0)).filter(n=>!isNaN(n));
+  return 'M'+y+'-'+String((nums.length?Math.max(...nums):0)+1).padStart(3,'0');
+}
+
+function openForm(id){
+  editId=id;
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const localNow=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
+  const m=id?vols.find(v=>v.id===id):null;
+  document.getElementById('form-title').textContent=id?'Modifier le vol':'Nouveau vol';
+  const mission=m?m.mission:prochainMission();
+  document.getElementById('form-mission-sub').textContent=mission;
+  document.getElementById('f-mission-display').textContent=mission;
+  document.getElementById('f-date').value=m?m.date:localNow;
+  document.getElementById('f-scenario').value=m?m.scenario:'PDRA-S01';
+  document.getElementById('f-activite').value=m?m.activite:'Audiovisuel';
+  document.getElementById('f-lieu').value=m?m.lieu:'';
+  document.getElementById('f-alt').value=m?m.alt:'';
+  document.getElementById('f-duree').value=m?m.duree:'';
+  document.getElementById('f-meteo').value=m?m.meteo:'CAVOK';
+  document.getElementById('f-client').value=m?m.client||'':'';
+  document.getElementById('f-notes').value=m?m.notes||'':'';
+  setTog('t-rid','f-rid',m?m.rid==='Oui':true);
+  setTog('t-grb','f-grb',m?m.grb==='Oui':true);
+  setTog('t-inc','f-inc',m?m.incident==='Oui':false);
+  document.getElementById('form-overlay').classList.add('open');
+}
+
+function closeForm(){
+  if(chronoRunning) stopChrono();
+  document.getElementById('form-overlay').classList.remove('open');
+}
+
+function setTog(tid,fid,on){
+  const t=document.getElementById(tid), f=document.getElementById(fid);
+  on?t.classList.add('on'):t.classList.remove('on');
+  f.value=on?'Oui':'Non';
+}
+function tog(tid,fid){ setTog(tid,fid,!document.getElementById(tid).classList.contains('on')); }
+
+function toggleChrono(){ chronoRunning?stopChrono():startChrono(); }
+
+function startChrono(){
+  chronoRunning=true; chronoStart=Date.now()-chronoSecs*1000;
+  document.getElementById('f-chrono-btn').textContent='⏹ Stop';
+  document.getElementById('f-chrono-btn').className='chrono-btn btn-stop';
+  document.getElementById('f-chrono').classList.remove('idle');
+  document.getElementById('chrono-bar').classList.add('visible');
+  chronoTimer=setInterval(tickChrono,1000);
+}
+
+function stopChrono(){
+  clearInterval(chronoTimer); chronoRunning=false;
+  const mins=Math.round(chronoSecs/60);
+  const df=document.getElementById('f-duree');
+  if(df) df.value=mins;
+  document.getElementById('f-chrono-btn').textContent='▶ Start';
+  document.getElementById('f-chrono-btn').className='chrono-btn btn-start';
+  document.getElementById('f-chrono').classList.add('idle');
+  document.getElementById('chrono-bar').classList.remove('visible');
+  chronoSecs=0; updateChronoDisplay();
+}
+
+function tickChrono(){
+  chronoSecs=Math.round((Date.now()-chronoStart)/1000);
+  updateChronoDisplay();
+}
+function updateChronoDisplay(){
+  const m=Math.floor(chronoSecs/60), s=chronoSecs%60;
+  const txt=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const d=document.getElementById('f-chrono');
+  const b=document.getElementById('chrono-bar-time');
+  if(d) d.textContent=txt;
+  if(b) b.textContent=txt;
+}
+
+function saveVol(){
+  const lieu=document.getElementById('f-lieu').value.trim();
+  if(!lieu){ showToast('Le lieu est obligatoire'); return; }
+  const mission=document.getElementById('f-mission-display').textContent;
+  const vol={
+    id:editId||'v'+Date.now(),mission,
+    date:document.getElementById('f-date').value,
+    scenario:document.getElementById('f-scenario').value,
+    activite:document.getElementById('f-activite').value,
+    lieu,alt:document.getElementById('f-alt').value,
+    duree:document.getElementById('f-duree').value,
+    rpic:document.getElementById('f-rpic').value,
+    obs1:document.getElementById('f-obs1').value,
+    meteo:document.getElementById('f-meteo').value,
+    rid:document.getElementById('f-rid').value,
+    grb:document.getElementById('f-grb').value,
+    incident:document.getElementById('f-inc').value,
+    client:document.getElementById('f-client').value,
+    notes:document.getElementById('f-notes').value,
+  };
+  if(editId) vols=vols.map(v=>v.id===editId?vol:v);
+  else vols.unshift(vol);
+  localStorage.setItem('uas_vols',JSON.stringify(vols));
+  if(chronoRunning) stopChrono();
+  closeForm(); renderVols(); loadKPIs();
+  showToast('Vol '+mission+' enregistré ✓');
+}
+
+function exportCSV(){
+  if(!vols.length){ showToast('Aucun vol à exporter'); return; }
+  const hdr='N° Mission;Date;Scénario;Lieu;Alt. AGL (m);Durée (min);RPIC;OBS-1;Météo;Remote ID;GRB;Incident;Client;Activité;Notes;Source';
+  const rows=vols.map(v=>[v.mission,v.date,v.scenario,v.lieu,v.alt,v.duree,v.rpic,v.obs1,v.meteo,v.rid,v.grb,v.incident,v.client,v.activite,v.notes,v.source||''].map(c=>(c||'').toString().replace(/;/g,'.')).join(';'));
+  const csv='\uFEFF'+hdr+'\n'+rows.join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='Vols_UAS_CONTE_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+/* ════ DJI LOGS ════ */
+function djiMethod(m,btn){
+  document.querySelectorAll('.method-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['txt','csv','guide'].forEach(p=>document.getElementById('dji-pane-'+p).className='dji-pane'+(p===m?' active':''));
+}
+
+function djiDrop(e){
+  e.preventDefault();
+  document.getElementById('dji-drop').classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f) djiHandleFile(f);
+}
+
+function djiHandleFile(file){
+  if(!file) return;
+  showToast('Analyse en cours…');
+  setTimeout(()=>{
+    const dm=file.name.match(/(\d{4})(\d{2})(\d{2})/);
+    const tm=file.name.match(/\[(\d{2})(\d{2})(\d{2})\]/);
+    const date=dm?`${dm[1]}-${dm[2]}-${dm[3]}T${tm?tm[1]+':'+tm[2]+':'+tm[3]:'12:00:00'}`:new Date().toISOString();
+    djiFlights=[{id:'f'+Date.now(),filename:file.name,date,dureeMin:0,distanceKm:0,altMax:0,vitesseMoyKmh:0,vitesseMaxKmh:0,battDepart:0,battArrivee:0,gpsPoints:0,satellites:0,tempC:0,lieu:'Zone à déterminer (fichier chiffré)',alertes:['Fichier .txt DJI chiffré — utilisez l\'export CSV pour des données complètes'],isNew:true,uas:'DJI Mavic 4 Pro',firmware:'inconnu'}];
+    djiRenderResults();
+  },800);
+}
+
+function djiHandleCSV(file){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{ djiFlights=djiParseCSV(e.target.result,file.name); djiRenderResults(); };
+  r.readAsText(file,'utf-8');
+}
+
+function djiParseCSV(text,filename){
+  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2) return [];
+  const sep=lines[0].includes(';')?';':',';
+  const hdr=lines[0].split(sep).map(h=>h.trim().toLowerCase().replace(/["']/g,''));
+  const idx=(keys)=>{ for(const k of keys){ const i=hdr.findIndex(h=>h.includes(k)); if(i>=0) return i; } return -1; };
+  return lines.slice(1).map((line,i)=>{
+    const c=line.split(sep).map(v=>v.trim().replace(/["']/g,''));
+    const g=keys=>{ const i=idx(keys); return i>=0?c[i]:''; };
+    const dur=parseFloat(g(['duration','duree','time','flight']))||0;
+    const durMin=dur>600?Math.round(dur/60):Math.round(dur);
+    return {id:'csv'+i,filename,date:g(['date','time','timestamp'])||new Date().toISOString(),dureeMin:durMin,distanceKm:parseFloat(g(['distance','dist']))||0,altMax:Math.round(parseFloat(g(['max alt','altitude','alt']))||0),vitesseMoyKmh:0,vitesseMaxKmh:parseFloat(g(['max speed','vitesse max']))||0,battDepart:0,battArrivee:0,gpsPoints:0,satellites:0,tempC:0,lieu:'',alertes:[],isNew:true,uas:'DJI Mavic 4 Pro',firmware:''};
+  }).filter(f=>f.dureeMin>0||f.distanceKm>0);
+}
+
+function djiLoadDemo(){ djiFlights=[...DEMO_DJI]; djiRenderResults(); }
+
+function djiRenderResults(){
+  document.getElementById('dji-results').style.display='';
+  djiRenderList();
+}
+
+function djiRenderList(){
+  const list=djiFilterMode==='new'?djiFlights.filter(f=>f.isNew):djiFlights;
+  document.getElementById('dji-count').textContent=list.length+' vol'+(list.length!==1?'s':'')+' analysé'+(list.length!==1?'s':'');
+  document.getElementById('dji-btn-all').className='btn-sm'+(djiFilterMode==='all'?' on':'');
+  document.getElementById('dji-btn-new').className='btn-sm'+(djiFilterMode==='new'?' on':'');
+  const c=document.getElementById('dji-flights-list');
+  if(!list.length){ c.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-light)">Aucun vol dans ce filtre</div>'; return; }
+  c.innerHTML=list.map(f=>`
+    <div class="dji-flight-item${djiSelected.has(f.id)?' selected':''}" onclick="djiSelect('${f.id}')">
+      <div class="dfi-top"><span class="dfi-date">${fmtDateTime(f.date)}</span><span class="dfi-dur">${f.dureeMin} min</span></div>
+      <div class="dfi-stats">
+        ${f.altMax?`<span class="dfi-stat">Alt. max <b>${f.altMax} m</b></span>`:''}
+        ${f.distanceKm?`<span class="dfi-stat">Dist. <b>${f.distanceKm.toFixed(1)} km</b></span>`:''}
+        ${f.battDepart?`<span class="dfi-stat">Batt. <b>${f.battDepart}%→${f.battArrivee}%</b></span>`:''}
+        <span class="dji-badge ${f.isNew?'dji-new':'dji-done'}">${f.isNew?'Nouveau':'Importé'}</span>
+        ${f.alertes.length?`<span class="dji-badge dji-warn">⚠ ${f.alertes.length} alerte${f.alertes.length>1?'s':''}</span>`:''}
+      </div>
+      <div style="font-size:10px;color:var(--text-light);margin-top:4px">${f.filename}</div>
+    </div>`).join('');
+}
+
+function djiFilter(m){ djiFilterMode=m; djiRenderList(); }
+
+function djiSelect(id){
+  if(djiSelected.has(id)) djiSelected.delete(id); else djiSelected.add(id);
+  const f=djiFlights.find(x=>x.id===id);
+  if(f&&djiSelected.has(id)) djiShowDetail(f);
+  else if(!djiSelected.size) document.getElementById('dji-detail').style.display='none';
+  djiRenderList(); djiUpdateBtn();
+}
+
+function djiShowDetail(f){
+  document.getElementById('dji-detail').style.display='';
+  const cells=[
+    ['Date / Heure',fmtDateTime(f.date),''],
+    ['Durée',f.dureeMin,'min'],
+    f.altMax?['Altitude max',f.altMax,'m AGL']:null,
+    f.distanceKm?['Distance',f.distanceKm.toFixed(1),'km']:null,
+    f.vitesseMoyKmh?['Vitesse moy.',f.vitesseMoyKmh,'km/h']:null,
+    f.vitesseMaxKmh?['Vitesse max',f.vitesseMaxKmh,'km/h']:null,
+    f.gpsPoints?['Points GPS',f.gpsPoints.toLocaleString('fr-FR'),'']:null,
+    f.satellites?['Satellites',f.satellites,'']:null,
+    f.tempC?['Température',f.tempC,'°C']:null,
+    ['Appareil',f.uas,'wide'],
+  ].filter(Boolean);
+  document.getElementById('dji-detail-grid').innerHTML=cells.map(([l,v,u])=>`<div class="detail-cell${u==='wide'?' wide':''}"><div class="detail-lbl">${l}</div><div class="detail-val">${v}${u&&u!=='wide'?`<span class="detail-unit"> ${u}</span>`:''}</div></div>`).join('');
+  const bs=document.getElementById('dji-batt');
+  if(f.battDepart){
+    bs.style.display='';
+    const bc=p=>p>=60?'var(--green)':p>=30?'var(--amber)':'var(--red)';
+    document.getElementById('bs-val').textContent=f.battDepart+'%';
+    document.getElementById('bs-bar').style.cssText=`width:${f.battDepart}%;background:${bc(f.battDepart)}`;
+    document.getElementById('be-val').textContent=f.battArrivee+'%';
+    document.getElementById('be-bar').style.cssText=`width:${f.battArrivee}%;background:${bc(f.battArrivee)}`;
+  } else bs.style.display='none';
+  const wd=document.getElementById('dji-warns');
+  if(f.alertes.length){
+    wd.style.display='';
+    document.getElementById('dji-warn-list').innerHTML=f.alertes.map(a=>`<div class="warn-item"><span>⚠</span><span>${a}</span></div>`).join('');
+  } else wd.style.display='none';
+}
+
+function djiUpdateBtn(){
+  const n=djiSelected.size;
+  const btn=document.getElementById('dji-btn-import-sel');
+  btn.disabled=n===0;
+  btn.textContent=n>0?`Importer ${n} vol${n>1?'s':''} sélectionné${n>1?'s':''}`:' Importer la sélection';
+  document.getElementById('dji-select-info').textContent=n>0?`${n} vol${n>1?'s':''} sélectionné${n>1?'s':''}. Appuyez pour importer.`:'Touchez un vol pour le sélectionner.';
+}
+
+function djiImportSel(){ djiDoImport(djiFlights.filter(f=>djiSelected.has(f.id))); }
+function djiImportAll(){ djiDoImport(djiFlights); }
+
+function djiDoImport(flights){
+  if(!flights.length){ showToast('Aucun vol à importer'); return; }
+  const y=new Date().getFullYear();
+  const nums=vols.filter(v=>v.mission&&v.mission.startsWith('M'+y+'-')).map(v=>parseInt(v.mission.split('-')[1]||0)).filter(n=>!isNaN(n));
+  let ctr=nums.length?Math.max(...nums):0;
+  const nouveaux=flights.map(f=>{
+    ctr++;
+    return {
+      id:'dji-'+f.id+'-'+Date.now(),
+      mission:'M'+y+'-'+String(ctr).padStart(3,'0'),
+      date:f.date,scenario:'PDRA-S01',activite:'Audiovisuel',
+      lieu:f.lieu||'',alt:f.altMax||'',duree:f.dureeMin||'',
+      rpic:'CONTE Philippe',obs1:'',meteo:'CAVOK',rid:'Oui',grb:'Oui',
+      incident:f.alertes.length>0?'Oui':'Non',client:'',
+      notes:['Import DJI Fly — '+f.filename,
+             f.distanceKm?'Distance : '+f.distanceKm.toFixed(1)+' km':'',
+             f.vitesseMaxKmh?'Vitesse max : '+f.vitesseMaxKmh+' km/h':'',
+             f.battDepart?'Batt. : '+f.battDepart+'% → '+f.battArrivee+'%':'',
+             f.alertes.length?'Alertes : '+f.alertes.join(' | '):''
+            ].filter(Boolean).join('\n'),
+      source:'DJI Fly',
+    };
+  });
+  vols=[...nouveaux,...vols];
+  localStorage.setItem('uas_vols',JSON.stringify(vols));
+  djiFlights.forEach(f=>{ if(flights.find(x=>x.id===f.id)) f.isNew=false; });
+  djiSelected.clear(); djiUpdateBtn(); djiRenderList();
+  showToast(`${nouveaux.length} vol${nouveaux.length>1?'s':''} importé${nouveaux.length>1?'s':''} ✓`);
+}
+
+/* ════ TOAST ════ */
 let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
-async function registerSW() {
-  if ('serviceWorker' in navigator) {
-    try {
-      const reg = await navigator.serviceWorker.register('/UAS-MANAGER/sw.js');
-      console.log('[App] SW enregistré:', reg.scope);
-    } catch (err) { console.warn('[App] SW non enregistré:', err); }
-  }
-}
-
+/* ════ INSTALL ════ */
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e;
-  if (!localStorage.getItem('uas_install_dismissed')) {
-    setTimeout(() => { document.getElementById('install-banner').style.display = 'block'; }, 3000);
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+  if(!localStorage.getItem('uas_install_dismissed'))
+    setTimeout(()=>document.getElementById('install-banner').style.display='block',3000);
+});
+function triggerInstall(){ document.getElementById('install-banner').style.display='none'; if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; } }
+function dismissInstall(){ document.getElementById('install-banner').style.display='none'; localStorage.setItem('uas_install_dismissed','1'); }
+
+/* ════ OFFLINE ════ */
+function updateOnline(){ document.body.classList.toggle('offline',!navigator.onLine); if(!navigator.onLine) showToast('📡 Mode hors-ligne'); }
+window.addEventListener('online',updateOnline);
+window.addEventListener('offline',updateOnline);
+
+/* ════ SW ════ */
+async function registerSW(){
+  if('serviceWorker' in navigator){
+    try{ await navigator.serviceWorker.register('/UAS-MANAGER/sw.js'); } catch(e){ console.warn('SW:',e); }
   }
+}
+
+/* ════ INIT ════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  renderValidity(); loadKPIs(); updateSyncLabel(); updateOnline(); registerSW();
+  if(!localStorage.getItem('uas_last_sync')) localStorage.setItem('uas_last_sync',Date.now().toString());
 });
-
-function triggerInstall() {
-  document.getElementById('install-banner').style.display = 'none';
-  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-}
-function dismissInstall() {
-  document.getElementById('install-banner').style.display = 'none';
-  localStorage.setItem('uas_install_dismissed', '1');
-}
-
-function updateOnlineStatus() {
-  document.body.classList.toggle('offline', !navigator.onLine);
-  if (!navigator.onLine) showToast('📡 Mode hors-ligne activé');
-}
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderValidity(); loadKPIs(); updateSyncLabel(); updateOnlineStatus(); registerSW();
-  if (!localStorage.getItem('uas_last_sync')) localStorage.setItem('uas_last_sync', Date.now().toString());
-});
-
-window.addEventListener('popstate', () => { if (currentScreen !== 'accueil') navigateTo('accueil'); });
 </script>
-
 
 
 </body></html>
