@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0C447C">
+<title>UAS Manager — Bilans</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* ===== CSS VARIABLES ===== */
+  :root {
+    --navy:        #0C447C;
+    --blue:        #185FA5;
+    --light-blue:  #E6F1FB;
+    --green:       #1D6B37;
+    --light-green: #E8F5E9;
+    --amber:       #BA7517;
+    --light-amber: #FAEEDA;
+    --red:         #8B2020;
+    --light-red:   #FDECEC;
+    --teal:        #006064;
+    --purple:      #5C3D8F;
+    --bg:          #F4F7FB;
+    --surface:     #FFFFFF;
+    --border:      #D0DFF0;
+    --text:        #1A2940;
+    --text-muted:  #5A708A;
+    --radius:      12px;
+    --shadow:      0 2px 12px rgba(12,68,124,0.10);
+    --tab-height:  64px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:         #0D1B2A;
+      --surface:    #162232;
+      --border:     #1E3A5C;
+      --text:       #E8F1FB;
+      --text-muted: #7A9EC0;
+      --light-blue: #0E2A45;
+      --light-green:#0E2518;
+      --light-amber:#2C1E08;
+      --light-red:  #2A0E0E;
+    }
+  }
+
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== LAYOUT ===== */
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 16px 10px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .header-title .icon { font-size: 20px; }
+
+  .header-subtitle {
+    font-size: 11px;
+    opacity: 0.65;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== PERIOD SELECTOR ===== */
+  .period-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: calc(60px + env(safe-area-inset-top, 0px));
+    z-index: 90;
+  }
+
+  .period-bar select {
+    flex: 1;
+    min-width: 110px;
+    height: 36px;
+    background: var(--light-blue);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230C447C' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .period-bar select {
+      color: var(--text);
+      background-color: var(--light-blue);
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn-annual {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  .btn-annual.active {
+    background: var(--blue);
+    box-shadow: 0 0 0 2px var(--light-blue);
+  }
+
+  .btn-pdf {
+    background: var(--red);
+    color: #fff;
+    margin-left: auto;
+  }
+
+  .btn:active { transform: scale(0.96); opacity: 0.88; }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    flex: 1;
+    padding: 16px;
+    padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+    overflow-y: auto;
+  }
+
+  /* ===== PERIOD LABEL ===== */
+  .period-label {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .period-label { color: var(--light-blue); }
+  }
+
+  /* ===== KPI CARDS ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 600px) {
+    .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--blue);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .kpi-card.green  { border-color: var(--green); }
+  .kpi-card.amber  { border-color: var(--amber); }
+  .kpi-card.teal   { border-color: var(--teal);  }
+
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .kpi-card.green  .kpi-value { color: var(--green);  }
+  .kpi-card.amber  .kpi-value { color: var(--amber);  }
+  .kpi-card.teal   .kpi-value { color: var(--teal);   }
+
+  @media (prefers-color-scheme: dark) {
+    .kpi-value { color: #7FC3FF; }
+    .kpi-card.green .kpi-value  { color: #5DBB78; }
+    .kpi-card.amber .kpi-value  { color: #F0B44A; }
+    .kpi-card.teal  .kpi-value  { color: #40B8C0; }
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ===== CHART CARDS ===== */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chart-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    height: 220px;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .empty-state .icon { font-size: 56px; opacity: 0.4; }
+
+  .empty-state p {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 260px;
+    line-height: 1.5;
+  }
+
+  /* ===== TABLE SECTION ===== */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin: 20px 0 10px;
+  }
+
+  .data-table {
+    width: 100%;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    border-collapse: collapse;
+  }
+
+  .data-table th {
+    background: var(--navy);
+    color: #fff;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .data-table tr:nth-child(even) td { background: var(--light-blue); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-s01 { background: var(--light-blue);  color: var(--blue);   }
+  .badge-s02 { background: var(--light-green); color: var(--green);  }
+  .badge-sts { background: #EDE7F6;            color: var(--purple); }
+
+  /* ===== BOTTOM TAB BAR ===== */
+  .tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    height: calc(var(--tab-height) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding-top: 8px;
+    z-index: 200;
+    box-shadow: 0 -2px 12px rgba(12,68,124,0.08);
+  }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    min-width: 48px;
+    transition: color 0.15s;
+  }
+
+  .tab-item .tab-icon { font-size: 22px; line-height: 1; }
+
+  .tab-item.active {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    .tab-bar, .period-bar .btn-pdf, .header .btn { display: none !important; }
+    .period-bar { position: static !important; box-shadow: none; border: none; }
+    .header { position: static !important; }
+    .main { padding: 0 !important; }
+    body, .app { background: #fff !important; color: #000 !important; }
+    .surface, .chart-card, .kpi-card { background: #fff !important; box-shadow: none !important; }
+    .charts-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; }
+    canvas { max-height: 200px !important; }
+    @page { margin: 15mm; size: A4 portrait; }
+    .chart-card { break-inside: avoid; }
+    .kpi-card { break-inside: avoid; }
+    .header { background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .data-table th { background: var(--navy) !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tab-bar { display: none !important; }
+    .main { padding-bottom: 0 !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-title">
+          <span class="icon">📊</span>
+          <span>Bilans</span>
+        </div>
+        <div class="header-subtitle">UAS Manager · CONTE Philippe</div>
+      </div>
+      <button class="btn btn-pdf" onclick="window.print()">🖨️ Exporter PDF</button>
+    </div>
+  </header>
+
+  <!-- PERIOD SELECTOR -->
+  <div class="period-bar">
+    <select id="selectMois" onchange="onPeriodChange()">
+      <option value="0">Janvier</option>
+      <option value="1">Février</option>
+      <option value="2">Mars</option>
+      <option value="3">Avril</option>
+      <option value="4">Mai</option>
+      <option value="5">Juin</option>
+      <option value="6">Juillet</option>
+      <option value="7">Août</option>
+      <option value="8">Septembre</option>
+      <option value="9">Octobre</option>
+      <option value="10">Novembre</option>
+      <option value="11">Décembre</option>
+    </select>
+    <select id="selectAnnee" onchange="onPeriodChange()"></select>
+    <button id="btnAnnuel" class="btn btn-annual" onclick="toggleAnnuel()">📅 Annuel</button>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <!-- Injected by JS -->
+  </main>
+
+</div>
+
+<!-- BOTTOM TAB BAR -->
+<nav class="tab-bar">
+  <a class="tab-item" href="#"><span class="tab-icon">🏠</span>Accueil</a>
+  <a class="tab-item" href="#"><span class="tab-icon">✈️</span>Vols</a>
+  <a class="tab-item" href="#"><span class="tab-icon">🔧</span>Maint.</a>
+  <a class="tab-item" href="#"><span class="tab-icon">🌦</span>Météo</a>
+  <a class="tab-item active" href="#"><span class="tab-icon">📊</span>Bilans</a>
+</nav>
+
+<script>
+/* ============================================================
+   UAS MANAGER — MODULE 5 : BILANS MENSUEL + ANNUEL
+   Exploitant : CONTE Philippe · FRAjqq48j12nfy4c
+   ============================================================ */
+
+// ── ÉTAT ──────────────────────────────────────────────────────
+let modeAnnuel = false;
+let charts = {};
+
+const MOIS_LABELS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+const MOIS_FULL   = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initSelectors();
+  // Mois courant par défaut
+  const now = new Date();
+  document.getElementById('selectMois').value = now.getMonth();
+  document.getElementById('selectAnnee').value = now.getFullYear();
+  renderBilan();
+});
+
+function initSelectors() {
+  const selAnnee = document.getElementById('selectAnnee');
+  const now = new Date();
+  for (let y = now.getFullYear(); y >= 2022; y--) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    selAnnee.appendChild(opt);
+  }
+}
+
+// ── TOGGLE MODE ───────────────────────────────────────────────
+function toggleAnnuel() {
+  modeAnnuel = !modeAnnuel;
+  document.getElementById('btnAnnuel').classList.toggle('active', modeAnnuel);
+  document.getElementById('selectMois').disabled = modeAnnuel;
+  document.getElementById('selectMois').style.opacity = modeAnnuel ? '0.4' : '1';
+  renderBilan();
+}
+
+function onPeriodChange() {
+  if (modeAnnuel) return;
+  renderBilan();
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────
+function loadVols() {
+  try {
+    const raw = localStorage.getItem('uas_vols');
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch (e) { return []; }
+}
+
+function getSelectedPeriod() {
+  return {
+    mois: parseInt(document.getElementById('selectMois').value),
+    annee: parseInt(document.getElementById('selectAnnee').value)
+  };
+}
+
+function filterVols(vols, annee, mois = null) {
+  return vols.filter(v => {
+    const d = parseDate(v.date);
+    if (!d) return false;
+    if (d.getFullYear() !== annee) return false;
+    if (mois !== null && d.getMonth() !== mois) return false;
+    return true;
+  });
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  // Formats possibles: YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY
+  let d;
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    d = new Date(str);
+  } else if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+    const [day,mon,yr] = str.split('/');
+    d = new Date(`${yr}-${mon}-${day}`);
+  } else {
+    d = new Date(str);
+  }
+  return isNaN(d) ? null : d;
+}
+
+// ── CALCULS ───────────────────────────────────────────────────
+function parseDuration(val) {
+  // Accepte: "1:30", "1h30", "1.5", 90 (minutes), "90"
+  if (!val) return 0;
+  const s = String(val).trim();
+  const hm = s.match(/^(\d+)[h:](\d+)/i);
+  if (hm) return parseInt(hm[1]) * 60 + parseInt(hm[2]);
+  const dec = parseFloat(s);
+  if (!isNaN(dec)) return dec < 20 ? dec * 60 : dec; // si < 20, on suppose des heures
+  return 0;
+}
+
+function formatDuration(totalMin) {
+  const h = Math.floor(totalMin / 60);
+  const m = Math.round(totalMin % 60);
+  return h > 0 ? `${h}h${m > 0 ? m.toString().padStart(2,'0') : ''}` : `${m}min`;
+}
+
+function computeStats(vols) {
+  const nbVols = vols.length;
+  let totalMin = 0;
+  const scenarios = {};
+  const activites = {};
+  const rpics = {};
+  const parMois = Array(12).fill(0);
+
+  vols.forEach(v => {
+    // Durée
+    const dur = parseDuration(v.duree || v.duration || v.duree_vol || 0);
+    totalMin += dur;
+
+    // Scénarios
+    const sc = v.scenario || v.type || 'Non spécifié';
+    scenarios[sc] = (scenarios[sc] || 0) + 1;
+
+    // Activités
+    const act = v.activite || v.mission || v.type_vol || 'Autre';
+    activites[act] = (activites[act] || 0) + dur;
+
+    // RPIC
+    const rpic = v.rpic || v.pilote || v.operateur || 'CONTE Philippe';
+    rpics[rpic] = (rpics[rpic] || 0) + 1;
+
+    // Par mois
+    const d = parseDate(v.date);
+    if (d) parMois[d.getMonth()]++;
+  });
+
+  return { nbVols, totalMin, scenarios, activites, rpics, parMois };
+}
+
+// ── RENDER PRINCIPAL ──────────────────────────────────────────
+function renderBilan() {
+  const { mois, annee } = getSelectedPeriod();
+  const allVols = loadVols();
+  const vols = modeAnnuel ? filterVols(allVols, annee) : filterVols(allVols, annee, mois);
+
+  destroyCharts();
+
+  const main = document.getElementById('mainContent');
+  const labelPeriode = modeAnnuel ? `Bilan annuel ${annee}` : `Bilan — ${MOIS_FULL[mois]} ${annee}`;
+
+  if (vols.length === 0) {
+    main.innerHTML = `
+      <div class="period-label">${labelPeriode}</div>
+      <div class="empty-state">
+        <div class="icon">🛸</div>
+        <p>Aucun vol enregistré pour cette période.</p>
+      </div>`;
+    return;
+  }
+
+  const stats = computeStats(vols);
+
+  main.innerHTML = `
+    <div class="period-label">${labelPeriode}</div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">✈️ Vols</div>
+        <div class="kpi-value">${stats.nbVols}</div>
+        <div class="kpi-sub">opérations</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">⏱ Durée totale</div>
+        <div class="kpi-value">${formatDuration(stats.totalMin)}</div>
+        <div class="kpi-sub">temps de vol</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">🎯 Scénarios</div>
+        <div class="kpi-value">${Object.keys(stats.scenarios).length}</div>
+        <div class="kpi-sub">types distincts</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-label">👤 RPIC</div>
+        <div class="kpi-value">${Object.keys(stats.rpics).length}</div>
+        <div class="kpi-sub">pilotes actifs</div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUES -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--blue)"></span>
+          Vols par mois
+        </div>
+        <div class="chart-wrapper"><canvas id="chartMois"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--navy)"></span>
+          Répartition scénarios
+        </div>
+        <div class="chart-wrapper"><canvas id="chartScenarios"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--green)"></span>
+          Heures par activité
+        </div>
+        <div class="chart-wrapper"><canvas id="chartActivites"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="dot" style="background:var(--amber)"></span>
+          Vols par RPIC
+        </div>
+        <div class="chart-wrapper"><canvas id="chartRPIC"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABLE DÉTAIL VOLS -->
+    <div class="section-title">Détail des vols</div>
+    ${buildTable(vols)}
+  `;
+
+  // Rendu des charts après injection DOM
+  requestAnimationFrame(() => {
+    buildChartMois(stats, modeAnnuel ? null : mois);
+    buildChartScenarios(stats);
+    buildChartActivites(stats);
+    buildChartRPIC(stats);
+  });
+}
+
+// ── GRAPHIQUES ────────────────────────────────────────────────
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { font: { size: 11 }, boxWidth: 12 } } }
+};
+
+// 1. Bar — vols par mois
+function buildChartMois(stats, moisActif) {
+  const labels = modeAnnuel ? MOIS_LABELS : MOIS_LABELS;
+  const data   = modeAnnuel ? stats.parMois : stats.parMois;
+  const colors = labels.map((_, i) =>
+    (!modeAnnuel && i === moisActif) ? '#185FA5' : 'rgba(24,95,165,0.4)'
+  );
+
+  charts.mois = new Chart(document.getElementById('chartMois'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Nb vols',
+        data,
+        backgroundColor: modeAnnuel ? '#185FA5' : colors,
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      plugins: { ...chartDefaults.plugins, legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// 2. Doughnut — scénarios
+function buildChartScenarios(stats) {
+  const labels = Object.keys(stats.scenarios);
+  const data   = Object.values(stats.scenarios);
+  const palette = ['#0C447C','#5C3D8F','#006064','#185FA5','#1D6B37','#BA7517'];
+
+  charts.scenarios = new Chart(document.getElementById('chartScenarios'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: labels.map((_, i) => palette[i % palette.length]),
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12, boxWidth: 12 } }
+      }
+    }
+  });
+}
+
+// 3. Horizontal bar — heures par activité
+function buildChartActivites(stats) {
+  const labels = Object.keys(stats.activites);
+  const data   = labels.map(k => Math.round(stats.activites[k]));
+
+  charts.activites = new Chart(document.getElementById('chartActivites'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Minutes',
+        data,
+        backgroundColor: '#1D6B37',
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      indexAxis: 'y',
+      plugins: { ...chartDefaults.plugins, legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// 4. Bar — vols par RPIC
+function buildChartRPIC(stats) {
+  const labels = Object.keys(stats.rpics);
+  const data   = Object.values(stats.rpics);
+
+  charts.rpic = new Chart(document.getElementById('chartRPIC'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Nb vols',
+        data,
+        backgroundColor: '#BA7517',
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      plugins: { ...chartDefaults.plugins, legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+        x: { ticks: { font: { size: 10 }, maxRotation: 30 }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function destroyCharts() {
+  Object.values(charts).forEach(c => { try { c.destroy(); } catch(e) {} });
+  charts = {};
+}
+
+// ── TABLE DÉTAIL ──────────────────────────────────────────────
+function buildTable(vols) {
+  const rows = vols.slice().sort((a,b) => {
+    const da = parseDate(a.date), db = parseDate(b.date);
+    return (db || 0) - (da || 0);
+  }).map(v => {
+    const sc = v.scenario || v.type || '—';
+    const badgeClass = sc.includes('S01') ? 'badge-s01' :
+                       sc.includes('S02') ? 'badge-s02' : 'badge-sts';
+    const dur = parseDuration(v.duree || v.duration || 0);
+    return `
+      <tr>
+        <td>${formatDate(v.date)}</td>
+        <td><span class="badge ${badgeClass}">${sc}</span></td>
+        <td>${v.lieu || v.site || '—'}</td>
+        <td>${formatDuration(dur)}</td>
+        <td>${v.rpic || v.pilote || 'CONTE Philippe'}</td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Scénario</th>
+          <th>Lieu</th>
+          <th>Durée</th>
+          <th>RPIC</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function formatDate(str) {
+  const d = parseDate(str);
+  if (!d) return str || '—';
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+/* ─── DONNÉES DE DÉMONSTRATION ──────────────────────────────
+   Si localStorage 'uas_vols' est vide, injecte des données
+   de test pour illustrer les graphiques.
+─────────────────────────────────────────────────────────── */
+(function injectDemoDataIfEmpty() {
+  const raw = localStorage.getItem('uas_vols');
+  if (raw && JSON.parse(raw).length > 0) return;
+
+  const now = new Date();
+  const yr = now.getFullYear();
+  const demo = [
+    { date:`${yr}-01-08`, scenario:'PDRA-S01', lieu:'Sallanches', duree:'0:45', activite:'Inspection', rpic:'CONTE Philippe' },
+    { date:`${yr}-01-15`, scenario:'PDRA-S01', lieu:'Thyez ZI',   duree:'1:10', activite:'Cartographie', rpic:'CONTE Philippe' },
+    { date:`${yr}-02-03`, scenario:'PDRA-S02', lieu:'Cluses',     duree:'0:55', activite:'Photographie', rpic:'CONTE Philippe' },
+    { date:`${yr}-02-20`, scenario:'PDRA-S01', lieu:'Sallanches', duree:'1:30', activite:'Inspection',   rpic:'CONTE Philippe' },
+    { date:`${yr}-03-10`, scenario:'PDRA-S02', lieu:'Bonneville', duree:'0:40', activite:'Cartographie', rpic:'CONTE Philippe' },
+    { date:`${yr}-03-22`, scenario:'PDRA-S01', lieu:'Thyez',      duree:'1:00', activite:'Photographie', rpic:'CONTE Philippe' },
+    { date:`${yr}-04-05`, scenario:'PDRA-S01', lieu:'Marnaz',     duree:'0:50', activite:'Inspection',   rpic:'CONTE Philippe' },
+    { date:`${yr}-04-14`, scenario:'PDRA-S02', lieu:'Cluses',     duree:'1:15', activite:'Cartographie', rpic:'CONTE Philippe' },
+    { date:`${yr}-04-18`, scenario:'PDRA-S01', lieu:'Sallanches', duree:'0:35', activite:'Inspection',   rpic:'CONTE Philippe' },
+    { date:`${yr}-04-25`, scenario:'PDRA-S02', lieu:'Thyez ZI',   duree:'1:20', activite:'Photographie', rpic:'CONTE Philippe' },
+  ];
+  localStorage.setItem('uas_vols', JSON.stringify(demo));
+})();
+</script>
+</body>
+</html>
