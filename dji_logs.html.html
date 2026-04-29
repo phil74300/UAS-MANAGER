@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0C447C">
+<title>DJI Logs — UAS Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C447C;--blue:#185FA5;--lblue:#E6F1FB;
+  --green:#1D6B37;--lgreen:#E8F5E9;
+  --amber:#BA7517;--lamber:#FAEEDA;--amber-dark:#633806;
+  --red:#8B2020;--lred:#FDECEC;
+  --teal:#006064;--lteal:#E0F7FA;
+  --gray1:#F5F5F5;--subtxt:#5F5E5A;--border:#E0E0E0;
+  --bg:#FFFFFF;--bg2:#F5F5F5;--txt:#1A1A1A;--txt2:#5F5E5A;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1C1C1E;--bg2:#2C2C2E;--txt:#F5F5F5;--txt2:#AEAEB2;--border:#3A3A3C;
+        --lblue:#0C2340;--lgreen:#0A2015;--lamber:#2A1A00;--lred:#2A0808;}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;
+     color:var(--txt);background:var(--bg);min-height:100vh;
+     padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+
+/* ── Header ── */
+.header{background:var(--navy);color:#fff;
+        padding:calc(env(safe-area-inset-top)+12px) 16px 12px;
+        display:flex;align-items:center;justify-content:space-between}
+.header-left h1{font-size:17px;font-weight:600;margin:0}
+.header-left p{font-size:12px;opacity:.7;margin:2px 0 0}
+.header-btn{background:rgba(255,255,255,.18);border:none;color:#fff;
+            border-radius:20px;padding:6px 14px;font-size:14px;cursor:pointer;
+            font-family:inherit;-webkit-tap-highlight-color:transparent}
+
+/* ── Tabs méthode ── */
+.method-tabs{display:flex;gap:0;border-bottom:0.5px solid var(--border);
+             background:var(--bg);overflow-x:auto;scrollbar-width:none}
+.method-tab{flex:1;min-width:100px;padding:11px 8px;border:none;background:none;
+            cursor:pointer;font-size:13px;font-weight:500;color:var(--txt2);
+            font-family:inherit;border-bottom:2px solid transparent;white-space:nowrap}
+.method-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+
+/* ── Contenu ── */
+.pane{display:none;padding:16px}
+.pane.active{display:block}
+.section-label{font-size:11px;font-weight:600;color:var(--txt2);
+               text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+
+/* ── Drop zone ── */
+.drop-zone{border:2px dashed var(--border);border-radius:16px;padding:32px 16px;
+           text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px}
+.drop-zone:hover,.drop-zone.drag{background:var(--lblue);border-color:var(--blue)}
+.drop-icon{font-size:40px;margin-bottom:10px}
+.drop-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.drop-sub{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* ── Carte ── */
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:16px;
+      overflow:hidden;margin-bottom:12px}
+.card-header{background:var(--lgreen);border-bottom:0.5px solid #A5D6A7;
+             padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.card-header-title{font-size:14px;font-weight:600;color:var(--green)}
+
+/* ── Item vol ── */
+.flight-item{padding:14px 16px;border-bottom:0.5px solid var(--border);
+             cursor:pointer;transition:background .1s;-webkit-tap-highlight-color:transparent}
+.flight-item:last-child{border-bottom:none}
+.flight-item:active{background:var(--bg2)}
+.flight-item.selected{background:var(--lblue)}
+.fi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.fi-date{font-size:15px;font-weight:600;color:var(--navy)}
+.fi-dur{font-size:14px;font-weight:600;color:var(--green)}
+.fi-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.fi-stat{font-size:12px;color:var(--txt2)}
+.fi-stat b{color:var(--txt);font-weight:600}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;
+       border-radius:20px;margin-right:4px}
+.badge-new{background:var(--lgreen);color:var(--green)}
+.badge-done{background:var(--gray1);color:var(--subtxt)}
+.badge-warn{background:var(--lamber);color:var(--amber-dark)}
+
+/* ── Détail ── */
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:14px}
+.detail-card{background:var(--bg2);border-radius:10px;padding:10px 12px}
+.detail-lbl{font-size:11px;color:var(--txt2);margin-bottom:3px}
+.detail-val{font-size:17px;font-weight:600;color:var(--navy)}
+.detail-unit{font-size:12px;font-weight:400;color:var(--txt2)}
+.detail-wide{grid-column:1/-1}
+
+/* ── Batterie ── */
+.batt-section{padding:0 14px 14px}
+.batt-row{margin-bottom:10px}
+.batt-label{display:flex;justify-content:space-between;font-size:12px;
+            color:var(--txt2);margin-bottom:4px}
+.batt-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.batt-fill{height:100%;border-radius:4px;transition:width .4s}
+
+/* ── Alertes ── */
+.warn-box{background:var(--lamber);border:0.5px solid #D4A070;border-radius:12px;
+          padding:12px 14px;margin:0 16px 12px}
+.warn-title{font-size:12px;font-weight:600;color:var(--amber-dark);margin-bottom:6px}
+.warn-item{display:flex;gap:8px;font-size:12px;color:var(--amber-dark);
+           padding:3px 0;line-height:1.4}
+
+/* ── Info box ── */
+.info-box{background:var(--lblue);border:0.5px solid #90CAF9;border-radius:12px;
+          padding:12px 14px;margin-bottom:12px}
+.info-box p{font-size:12px;color:var(--navy);line-height:1.5}
+.info-box strong{font-weight:600}
+
+/* ── Guide étapes ── */
+.step{display:flex;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;
+          font-size:13px;font-weight:700;display:flex;align-items:center;
+          justify-content:center;flex-shrink:0;margin-top:1px}
+.step-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.step-desc{font-size:13px;color:var(--txt2);line-height:1.5}
+.step-code{font-size:11px;font-family:'SF Mono',Menlo,monospace;background:var(--bg2);
+           padding:4px 8px;border-radius:6px;color:var(--txt2);
+           display:inline-block;margin-top:4px;word-break:break-all}
+
+/* ── Boutons ── */
+.btn-primary{display:block;width:100%;background:var(--navy);color:#fff;border:none;
+             border-radius:14px;padding:15px;font-size:16px;font-weight:600;
+             cursor:pointer;font-family:inherit;margin-bottom:10px;
+             -webkit-tap-highlight-color:transparent}
+.btn-primary:disabled{opacity:.45;cursor:default}
+.btn-primary:active:not(:disabled){opacity:.85}
+.btn-secondary{display:block;width:100%;background:var(--bg);color:var(--navy);
+               border:1.5px solid var(--navy);border-radius:14px;padding:15px;
+               font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;
+               margin-bottom:10px;-webkit-tap-highlight-color:transparent}
+.btn-secondary:active{opacity:.85}
+.btn-small{border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;
+           font-size:12px;font-weight:500;background:var(--bg);cursor:pointer;
+           font-family:inherit;color:var(--txt2)}
+.btn-small.on{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:8px;padding:12px 16px;border-bottom:0.5px solid var(--border)}
+
+/* ── Sélection info ── */
+.select-info{font-size:12px;color:var(--txt2);text-align:center;
+             margin-bottom:8px;min-height:18px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));
+       left:16px;right:16px;
+       background:var(--green);color:#fff;padding:12px 16px;
+       border-radius:12px;font-size:14px;font-weight:600;text-align:center;
+       display:none;z-index:100}
+.toast.show{display:block}
+.toast.warn{background:var(--amber)}
+
+/* ── Bottom nav ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;
+            display:flex;border-top:0.5px solid var(--border);
+            background:var(--bg);
+            padding-bottom:env(safe-area-inset-bottom);
+            z-index:200}
+.nav-btn{flex:1;padding:8px 4px 6px;border:none;background:none;cursor:pointer;
+         display:flex;flex-direction:column;align-items:center;gap:3px;
+         font-size:11px;color:var(--txt2);font-family:inherit;
+         -webkit-tap-highlight-color:transparent}
+.nav-btn.active{color:var(--navy)}
+.nav-icon{font-size:22px}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-left">
+    <h1>DJI Fly — Logs de vol</h1>
+    <p>Parsing automatique → carnet UAS Manager</p>
+  </div>
+  <button class="header-btn" onclick="window.location.href='vols.html'">✈ Vols</button>
+</div>
+
+<!-- ══ ONGLETS MÉTHODE ══ -->
+<div class="method-tabs">
+  <button class="method-tab active" onclick="setMethod('txt',this)">Fichier .txt</button>
+  <button class="method-tab" onclick="setMethod('csv',this)">CSV DJI Fly</button>
+  <button class="method-tab" onclick="setMethod('guide',this)">Guide export</button>
+</div>
+
+<!-- ══ PANE TXT ══ -->
+<div class="pane active" id="pane-txt">
+  <div class="section-label">Importer un FlightRecord DJI</div>
+  <div class="info-box">
+    <p><strong>Fichier .txt DJI :</strong> stocké dans <code>Sur mon iPhone › DJI Fly › FlightRecords</code>.<br>
+    Le fichier est chiffré — l'app extrait les métadonnées disponibles. Pour des données complètes (GPS, vitesse, batterie), utilisez l'export CSV depuis DJI Fly.</p>
+  </div>
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+    <div class="drop-icon">📂</div>
+    <div class="drop-title">Sélectionner le fichier DJI</div>
+    <div class="drop-sub">DJIFlightRecord_YYYYMMDD_HHMMSS.txt<br>ou tout fichier log DJI</div>
+  </div>
+  <input type="file" id="file-input" accept=".txt,.csv,.log" style="display:none" onchange="handleFile(this.files[0])">
+  <button class="btn-secondary" onclick="loadDemo()">Charger 3 vols de démonstration</button>
+</div>
+
+<!-- ══ PANE CSV ══ -->
+<div class="pane" id="pane-csv">
+  <div class="section-label">Export CSV depuis DJI Fly</div>
+  <div class="info-box">
+    <p><strong>Méthode recommandée :</strong> dans DJI Fly → Profil → Mes vols → sélectionner un vol → icône Partager.<br>
+    Le CSV contient : date, durée, distance, altitude max. Pas de chiffrement.</p>
+  </div>
+  <div class="drop-zone" onclick="document.getElementById('csv-input').click()">
+    <div class="drop-icon">📊</div>
+    <div class="drop-title">Sélectionner le CSV DJI Fly</div>
+    <div class="drop-sub">Exporté via Profil → Mes vols → Partager</div>
+  </div>
+  <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(this.files[0])">
+  <button class="btn-secondary" onclick="loadDemoCSV()">Charger CSV de démonstration</button>
+</div>
+
+<!-- ══ PANE GUIDE ══ -->
+<div class="pane" id="pane-guide">
+  <div class="section-label">Exporter depuis DJI Fly sur iPhone</div>
+  <div class="card">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div><div class="step-title">Ouvrir l'app Fichiers</div><div class="step-desc">Appuie sur "Sur mon iPhone" dans le panneau de gauche de l'app Fichiers iOS.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div><div class="step-title">Naviguer vers DJI Fly</div><div class="step-code">Sur mon iPhone › DJI Fly › FlightRecords</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div><div class="step-title">Sélectionner le fichier .txt</div><div class="step-desc">Nom du fichier :</div><div class="step-code">DJIFlightRecord_20260502_[143012].txt</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div><div class="step-title">Partager vers UAS Manager</div><div class="step-desc">Appui long → Partager → UAS Manager.<br>Ou revenir ici et sélectionner le fichier via le bouton "Sélectionner".</div></div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div><div class="step-title">Alternative CSV (plus simple)</div><div class="step-desc">Dans DJI Fly → Profil → Mes vols → sélectionner → Partager → export CSV. Ce fichier est directement lisible, aucun déchiffrement requis.</div></div>
+    </div>
+  </div>
+  <div class="warn-box">
+    <div class="warn-title">Fichiers .txt DJI chiffrés</div>
+    <div class="warn-item"><span>⚠</span><span>Les fichiers .txt DJI Fly sont chiffrés par DJI. Cette app extrait les métadonnées de l'en-tête (date, appareil) sans déchiffrement. Pour les données complètes, préférer l'export CSV ou le service PhantomHelp.</span></div>
+  </div>
+</div>
+
+<!-- ══ RÉSULTATS ══ -->
+<div id="results-section" style="display:none">
+  <div style="padding:12px 16px 0">
+    <div class="section-label" id="results-label">Vols analysés</div>
+  </div>
+  <div class="card" style="margin:0 16px 0">
+    <div class="card-header">
+      <span class="card-header-title" id="parsed-count">0 vol détecté</span>
+      <div style="display:flex;gap:6px">
+        <button class="btn-small on" id="btn-all" onclick="filterFlights('all')">Tous</button>
+        <button class="btn-small" id="btn-new" onclick="filterFlights('new')">Nouveaux</button>
+      </div>
+    </div>
+    <div id="flights-list"></div>
+  </div>
+
+  <div id="detail-section" style="display:none;margin-top:16px">
+    <div style="padding:0 16px 8px"><div class="section-label">Détail du vol sélectionné</div></div>
+    <div class="card" style="margin:0 16px">
+      <div class="detail-grid" id="detail-grid"></div>
+      <div class="batt-section" id="batt-section" style="display:none">
+        <div class="batt-row">
+          <div class="batt-label"><span>Batterie départ</span><span id="batt-s-val"></span></div>
+          <div class="batt-bar"><div class="batt-fill" id="batt-s-bar"></div></div>
+        </div>
+        <div class="batt-row">
+          <div class="batt-label"><span>Batterie arrivée</span><span id="batt-e-val"></span></div>
+          <div class="batt-bar"><div class="batt-fill" id="batt-e-bar"></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="warn-detail" class="warn-box" style="display:none;margin-top:8px">
+      <div class="warn-title">Alertes détectées</div>
+      <div id="warn-list"></div>
+    </div>
+  </div>
+
+  <div style="padding:16px">
+    <div class="select-info" id="select-info">Touchez un vol pour le sélectionner</div>
+    <button class="btn-primary" id="btn-import-sel" onclick="importSelected()" disabled>Importer la sélection dans le carnet</button>
+    <button class="btn-secondary" onclick="importAll()">Tout importer</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<div class="bottom-nav">
+  <button class="nav-btn" onclick="window.location.href='index.html'"><span class="nav-icon">🏠</span>Accueil</button>
+  <button class="nav-btn" onclick="window.location.href='vols.html'"><span class="nav-icon">✈️</span>Vols</button>
+  <button class="nav-btn" onclick="window.location.href='maintenance.html'"><span class="nav-icon">🔧</span>Maint.</button>
+  <button class="nav-btn active"><span class="nav-icon">🎮</span>DJI</button>
+  <button class="nav-btn" onclick="toast('Météo — Module à venir',true,'var(--amber)')"><span class="nav-icon">🌦</span>Météo</button>
+</div>
+
+<script>
+'use strict';
+let parsedFlights = [];
+let selectedIds   = new Set();
+let filterMode    = 'all';
+
+const DEMO = [
+  {id:'d1',filename:'DJIFlightRecord_20260502_[143012].txt',
+   date:'2026-05-02T14:30:00',dureeMin:23,distanceKm:4.2,altMax:87,
+   vitesseMoyKmh:18,vitesseMaxKmh:42,battDepart:91,battArrivee:62,
+   gpsPoints:1840,satellites:14,tempC:17,
+   lieu:'Thyez — secteur nord',
+   alertes:['Vent rafale 11 m/s détecté (limite DJI Mavic 4 Pro : 12 m/s)'],
+   isNew:true,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0600'},
+  {id:'d2',filename:'DJIFlightRecord_20260418_[092245].txt',
+   date:'2026-04-18T09:22:00',dureeMin:41,distanceKm:8.7,altMax:115,
+   vitesseMoyKmh:22,vitesseMaxKmh:58,battDepart:97,battArrivee:34,
+   gpsPoints:3280,satellites:16,tempC:11,
+   lieu:'Bonneville — zone industrielle',
+   alertes:['Batterie < 40% atteinte à 32 min de vol',
+            'Altitude max 115 m AGL — vérifier conformité scénario PDRA-S01 (120 m max)'],
+   isNew:true,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0600'},
+  {id:'d3',filename:'DJIFlightRecord_20260401_[161530].txt',
+   date:'2026-04-01T16:15:00',dureeMin:15,distanceKm:1.8,altMax:48,
+   vitesseMoyKmh:12,vitesseMaxKmh:28,battDepart:88,battArrivee:72,
+   gpsPoints:1200,satellites:13,tempC:9,
+   lieu:'Thyez — terrain de test',alertes:[],
+   isNew:false,uas:'DJI Mavic 4 Pro',firmware:'v01.01.0580'},
+];
+
+function setMethod(m,btn){
+  document.querySelectorAll('.method-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['txt','csv','guide'].forEach(p=>{
+    document.getElementById('pane-'+p).className='pane'+(p===m?' active':'');
+  });
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f) handleFile(f);
+}
+
+function handleFile(file){
+  if(!file) return;
+  toast('Analyse du fichier en cours…',false,'var(--amber)');
+  setTimeout(()=>{
+    parsedFlights=[{
+      id:'f'+Date.now(),filename:file.name,
+      date:extractDateFromFilename(file.name),
+      dureeMin:0,distanceKm:0,altMax:0,
+      vitesseMoyKmh:0,vitesseMaxKmh:0,
+      battDepart:0,battArrivee:0,
+      gpsPoints:0,satellites:0,tempC:0,
+      lieu:'Zone à déterminer (fichier chiffré)',
+      alertes:["Fichier .txt DJI chiffré — métadonnées partielles extraites. Utilisez l'export CSV depuis DJI Fly pour des données complètes."],
+      isNew:true,uas:'DJI Mavic 4 Pro',firmware:'inconnu',
+    }];
+    renderResults();
+  },1000);
+}
+
+function handleCSV(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    parsedFlights=parseCSVContent(e.target.result,file.name);
+    renderResults();
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+function parseCSVContent(text,filename){
+  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2) return [];
+  const sep=lines[0].includes(';')?';':',';
+  const hdr=lines[0].split(sep).map(h=>h.trim().toLowerCase().replace(/["']/g,''));
+  const idx=(keys)=>{ for(const k of keys){ const i=hdr.findIndex(h=>h.includes(k)); if(i>=0) return i; } return -1; };
+  return lines.slice(1).map((line,i)=>{
+    const c=line.split(sep).map(v=>v.trim().replace(/["']/g,''));
+    const g=k=>{ const i=idx(k); return i>=0?c[i]:''; };
+    const dur=parseFloat(g(['duration','duree','time','flight time']))||0;
+    const durMin=dur>600?Math.round(dur/60):Math.round(dur);
+    return {
+      id:'csv'+i,filename,
+      date:g(['date','time','timestamp'])||new Date().toISOString(),
+      dureeMin:durMin,distanceKm:parseFloat(g(['distance','dist']))||0,
+      altMax:Math.round(parseFloat(g(['max alt','altitude','alt max']))||0),
+      vitesseMoyKmh:0,vitesseMaxKmh:parseFloat(g(['max speed','vitesse max']))||0,
+      battDepart:0,battArrivee:0,gpsPoints:0,satellites:0,tempC:0,
+      lieu:'',alertes:[],isNew:true,uas:'DJI Mavic 4 Pro',firmware:'',
+    };
+  }).filter(f=>f.dureeMin>0||f.distanceKm>0);
+}
+
+function extractDateFromFilename(name){
+  const m=name.match(/(\d{4})(\d{2})(\d{2})/);
+  const t=name.match(/\[(\d{2})(\d{2})(\d{2})\]/);
+  if(m) return `${m[1]}-${m[2]}-${m[3]}T${t?t[1]+':'+t[2]+':'+t[3]:'12:00:00'}`;
+  return new Date().toISOString();
+}
+
+function loadDemo(){ parsedFlights=[...DEMO]; renderResults(); }
+function loadDemoCSV(){
+  parsedFlights=DEMO.map(f=>({...f,gpsPoints:0,satellites:0,vitesseMoyKmh:0,tempC:0,firmware:''}));
+  renderResults();
+}
+
+function renderResults(){
+  document.getElementById('results-section').style.display='';
+  renderList();
+}
+
+function renderList(){
+  const list=filterMode==='new'?parsedFlights.filter(f=>f.isNew):parsedFlights;
+  document.getElementById('parsed-count').textContent=
+    list.length+' vol'+(list.length!==1?'s':'')+' analysé'+(list.length!==1?'s':'');
+  document.getElementById('btn-all').className='btn-small'+(filterMode==='all'?' on':'');
+  document.getElementById('btn-new').className='btn-small'+(filterMode==='new'?' on':'');
+  const c=document.getElementById('flights-list');
+  if(!list.length){
+    c.innerHTML='<div style="padding:24px;text-align:center;color:var(--txt2);font-size:14px">Aucun vol dans ce filtre</div>';
+    return;
+  }
+  c.innerHTML=list.map(f=>`
+    <div class="flight-item${selectedIds.has(f.id)?' selected':''}" onclick="selectFlight('${f.id}')">
+      <div class="fi-top">
+        <span class="fi-date">${fmtDate(f.date)}</span>
+        <span class="fi-dur">${f.dureeMin} min</span>
+      </div>
+      <div class="fi-stats">
+        ${f.altMax?`<span class="fi-stat">Alt. max <b>${f.altMax} m</b></span>`:''}
+        ${f.distanceKm?`<span class="fi-stat">Dist. <b>${f.distanceKm.toFixed(1)} km</b></span>`:''}
+        ${f.battDepart?`<span class="fi-stat">Batt. <b>${f.battDepart}%→${f.battArrivee}%</b></span>`:''}
+        <span class="badge ${f.isNew?'badge-new':'badge-done'}">${f.isNew?'Nouveau':'Importé'}</span>
+        ${f.alertes.length?`<span class="badge badge-warn">⚠ ${f.alertes.length} alerte${f.alertes.length>1?'s':''}</span>`:''}
+      </div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:4px">${f.filename}</div>
+    </div>`).join('');
+}
+
+function filterFlights(m){ filterMode=m; renderList(); }
+
+function selectFlight(id){
+  if(selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  const f=parsedFlights.find(x=>x.id===id);
+  if(f&&selectedIds.has(id)) showDetail(f);
+  else if(!selectedIds.size) document.getElementById('detail-section').style.display='none';
+  renderList();
+  updateImportBtn();
+}
+
+function showDetail(f){
+  document.getElementById('detail-section').style.display='';
+  const cols=[
+    ['Date / Heure',fmtDate(f.date),''],
+    ['Durée',f.dureeMin,'min'],
+    f.altMax?['Altitude max',f.altMax,'m AGL']:null,
+    f.distanceKm?['Distance',f.distanceKm.toFixed(1),'km']:null,
+    f.vitesseMoyKmh?['Vitesse moy.',f.vitesseMoyKmh,'km/h']:null,
+    f.vitesseMaxKmh?['Vitesse max',f.vitesseMaxKmh,'km/h']:null,
+    f.gpsPoints?['Points GPS',f.gpsPoints.toLocaleString('fr-FR'),'']:null,
+    f.satellites?['Satellites',f.satellites,'']:null,
+    f.tempC?['Température',f.tempC,'°C']:null,
+    f.uas?['Appareil',f.uas,'wide']:null,
+    f.firmware&&f.firmware!=='inconnu'?['Firmware',f.firmware,'wide']:null,
+  ].filter(Boolean);
+  document.getElementById('detail-grid').innerHTML=cols.map(([l,v,u])=>`
+    <div class="detail-card${u==='wide'?' detail-wide':''}">
+      <div class="detail-lbl">${l}</div>
+      <div class="detail-val">${v}${u&&u!=='wide'?`<span class="detail-unit"> ${u}</span>`:''}</div>
+    </div>`).join('');
+
+  const battS=document.getElementById('batt-section');
+  if(f.battDepart){
+    battS.style.display='';
+    const bc=p=>p>=60?'var(--green)':p>=30?'var(--amber)':'var(--red)';
+    document.getElementById('batt-s-val').textContent=f.battDepart+'%';
+    document.getElementById('batt-s-bar').style.cssText=`width:${f.battDepart}%;background:${bc(f.battDepart)}`;
+    document.getElementById('batt-e-val').textContent=f.battArrivee+'%';
+    document.getElementById('batt-e-bar').style.cssText=`width:${f.battArrivee}%;background:${bc(f.battArrivee)}`;
+  } else battS.style.display='none';
+
+  const wd=document.getElementById('warn-detail');
+  if(f.alertes.length){
+    wd.style.display='';
+    document.getElementById('warn-list').innerHTML=
+      f.alertes.map(a=>`<div class="warn-item"><span>⚠</span><span>${a}</span></div>`).join('');
+  } else wd.style.display='none';
+}
+
+function updateImportBtn(){
+  const n=selectedIds.size;
+  const btn=document.getElementById('btn-import-sel');
+  btn.disabled=n===0;
+  btn.textContent=n>0
+    ?`Importer ${n} vol${n>1?'s':''} sélectionné${n>1?'s':''} dans le carnet`
+    :'Importer la sélection dans le carnet';
+  document.getElementById('select-info').textContent=
+    n>0?`${n} vol${n>1?'s':''} sélectionné${n>1?'s':''}. Appuyez pour importer.`
+       :'Touchez un vol pour le sélectionner.';
+}
+
+function importSelected(){ doImport(parsedFlights.filter(f=>selectedIds.has(f.id))); }
+function importAll(){ doImport(parsedFlights); }
+
+function doImport(flights){
+  if(!flights.length){ toast('Aucun vol à importer.',true); return; }
+  const existing=JSON.parse(localStorage.getItem('uas_vols')||'[]');
+  const annee=new Date().getFullYear();
+  const nums=existing
+    .filter(v=>v.num&&v.num.startsWith('M'+annee+'-'))
+    .map(v=>parseInt((v.num||'').split('-')[1]||0)).filter(n=>!isNaN(n));
+  let ctr=nums.length?Math.max(...nums):0;
+
+  const nouveaux=flights.map(f=>{
+    ctr++;
+    return {
+      id:'dji-'+f.id+'-'+Date.now(),
+      num:'M'+annee+'-'+String(ctr).padStart(3,'0'),
+      date:f.date?f.date.split('T')[0]:new Date().toISOString().split('T')[0],
+      heureDep:f.date&&f.date.includes('T')?f.date.split('T')[1].slice(0,5):'',
+      duree:f.dureeMin||0,
+      scenario:'PDRA-S01',
+      typeMission:'',
+      site:f.lieu||'',
+      dept:'74',
+      lat:'',lon:'',
+      uas:'DJI Mavic 4 Pro',
+      batterie:'',vent:'',visib:'',meteo:'',
+      obs1:'',obs2:'',client:'',
+      incident:f.alertes.some(a=>a.toLowerCase().includes('batterie')||a.toLowerCase().includes('vent')||a.toLowerCase().includes('altitude')),
+      incidentDesc:f.alertes.length?f.alertes.join(' | '):'',
+      remarques:[
+        'Import DJI Fly — '+f.filename,
+        f.distanceKm?'Distance : '+f.distanceKm.toFixed(1)+' km':'',
+        f.vitesseMaxKmh?'Vitesse max : '+f.vitesseMaxKmh+' km/h':'',
+        f.battDepart?'Batterie : '+f.battDepart+'% → '+f.battArrivee+'%':'',
+        f.gpsPoints?'Points GPS : '+f.gpsPoints:'',
+        f.firmware&&f.firmware!=='inconnu'?'Firmware : '+f.firmware:'',
+      ].filter(Boolean).join(' | '),
+      source:'DJI Fly',
+      createdAt:new Date().toISOString(),
+    };
+  });
+
+  localStorage.setItem('uas_vols',JSON.stringify([...nouveaux,...existing]));
+  parsedFlights.forEach(f=>{ if(flights.find(x=>x.id===f.id)) f.isNew=false; });
+  selectedIds.clear();
+  updateImportBtn();
+  renderList();
+  toast(`${nouveaux.length} vol${nouveaux.length>1?'s':''} importé${nouveaux.length>1?'s':''} dans le carnet ✓`);
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  try{
+    const dt=new Date(d);
+    return dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'})
+      +' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){ return d; }
+}
+
+function toast(msg,hide=true,bg=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=bg||'var(--green)';
+  t.className='toast show';
+  if(hide) setTimeout(()=>t.className='toast',3000);
+}
+</script>
+
+</body></html>
