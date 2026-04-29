@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_10.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#0C447C">
   <meta name="description" content="Gestionnaire opérationnel UAS — CONTE Philippe">
   <title>UAS Manager</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="file:///Users/contephilippe/Downloads/manifest.json">
 
   <style>
     :root {
@@ -361,13 +361,13 @@
   <header id="header">
     <div id="header-logo">
       <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="15" cy="15" r="4" fill="#E6F1FB"/>
-        <line x1="3" y1="15" x2="27" y2="15" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"/>
-        <line x1="15" y1="3" x2="15" y2="27" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="6.5" cy="6.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="23.5" cy="6.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="6.5" cy="23.5" r="2.5" fill="#1D6B37"/>
-        <circle cx="23.5" cy="23.5" r="2.5" fill="#1D6B37"/>
+        <circle cx="15" cy="15" r="4" fill="#E6F1FB"></circle>
+        <line x1="3" y1="15" x2="27" y2="15" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
+        <line x1="15" y1="3" x2="15" y2="27" stroke="#E6F1FB" stroke-width="2" stroke-linecap="round"></line>
+        <circle cx="6.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="23.5" cy="6.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="6.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
+        <circle cx="23.5" cy="23.5" r="2.5" fill="#1D6B37"></circle>
       </svg>
       <div>
         <div id="header-title">UAS Manager</div>
@@ -376,7 +376,7 @@
     </div>
     <div id="header-right">
       <!-- Config accessible uniquement via ce bouton header -->
-      <button class="header-icon-btn" onclick="navigateTo('config')" title="Configuration">⚙️</button>
+      <button class="header-icon-btn" onclick="navigateTo(&#39;config&#39;)" title="Configuration">⚙️</button>
     </div>
   </header>
 
@@ -401,25 +401,25 @@
         </div>
       </div>
 
-      <div class="validity-section" id="validity-section"></div>
+      <div class="validity-section" id="validity-section"><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">CATS</div><div class="validity-date">15/09/2029</div><div class="validity-remain">Valide — 1235 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">NLD-RP-q99cvjjh51fz</div></div><div class="validity-card valid"><div class="validity-status-dot"></div><div class="validity-icon">🟢</div><div class="validity-label">Assurance COVERDRONE</div><div class="validity-date">10/04/2027</div><div class="validity-remain">Valide — 346 j restants</div><div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">CDA22411846EUR</div></div></div>
 
       <div class="section-header">
         <span class="section-title">Ce mois-ci</span>
-        <span class="section-link" onclick="navigateTo('vols')">Voir tout →</span>
+        <span class="section-link" onclick="navigateTo(&#39;vols&#39;)">Voir tout →</span>
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi-card" onclick="navigateTo('vols')">
+        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
           <div class="kpi-icon">✈️</div>
           <div class="kpi-value" id="kpi-vols">0</div>
           <div class="kpi-label">Vols ce mois</div>
         </div>
-        <div class="kpi-card" onclick="navigateTo('vols')">
+        <div class="kpi-card" onclick="navigateTo(&#39;vols&#39;)">
           <div class="kpi-icon">⏱️</div>
           <div class="kpi-value" id="kpi-heures">0h</div>
           <div class="kpi-label">Heures de vol</div>
         </div>
-        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo('maint')">
+        <div class="kpi-card incidents" id="kpi-card-incidents" data-zero="true" onclick="navigateTo(&#39;maint&#39;)">
           <div class="kpi-icon">⚠️</div>
           <div class="kpi-value" id="kpi-incidents">0</div>
           <div class="kpi-label">Incidents REX</div>
@@ -432,7 +432,7 @@
 
       <div class="nav-rapide-grid">
 
-        <button class="nav-btn nb-blue" onclick="navigateTo('vols')">
+        <button class="nav-btn nb-blue" onclick="navigateTo(&#39;vols&#39;)">
           <div class="nav-btn-icon">✈️</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Carnet de Vol</div>
@@ -441,7 +441,7 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-green" onclick="navigateTo('maint')">
+        <button class="nav-btn nb-green" onclick="navigateTo(&#39;maint&#39;)">
           <div class="nav-btn-icon">🔧</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Maintenance</div>
@@ -450,16 +450,16 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-amber" onclick="navigateTo('meteo')">
+        <button class="nav-btn nb-amber" onclick="navigateTo(&#39;meteo&#39;)">
           <div class="nav-btn-icon">🌦️</div>
           <div class="nav-btn-info">
-            <div class="nav-btn-label">Météo & NOTAM</div>
+            <div class="nav-btn-label">Météo &amp; NOTAM</div>
             <div class="nav-btn-desc">METAR · TAF · ADS-B</div>
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-teal" onclick="window.location.href='checklist.html'">
+        <button class="nav-btn nb-teal" onclick="window.location.href=&#39;checklist.html&#39;">
           <div class="nav-btn-icon">✅</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Check-list</div>
@@ -468,7 +468,7 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-purple" onclick="window.location.href='formations.html'">
+        <button class="nav-btn nb-purple" onclick="window.location.href=&#39;formations.html&#39;">
           <div class="nav-btn-icon">🎓</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Formations</div>
@@ -477,7 +477,7 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-teal" onclick="window.location.href='dji_logs.html'">
+        <button class="nav-btn nb-teal" onclick="window.location.href=&#39;dji_logs.html&#39;">
           <div class="nav-btn-icon">🎮</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Logs DJI</div>
@@ -487,10 +487,10 @@
         </button>
 
         <!-- ✅ Rapports & Bilans — lien direct vers bilans.html -->
-        <button class="nav-btn nb-red wide" onclick="window.location.href='bilans.html'">
+        <button class="nav-btn nb-red wide" onclick="window.location.href=&#39;bilans.html&#39;">
           <div class="nav-btn-icon">📊</div>
           <div class="nav-btn-info">
-            <div class="nav-btn-label">Rapports & Bilans</div>
+            <div class="nav-btn-label">Rapports &amp; Bilans</div>
             <div class="nav-btn-desc">Mensuel · Annuel · Export PDF</div>
           </div>
           <span class="nav-btn-arrow">›</span>
@@ -501,8 +501,8 @@
       <div class="app-footer">
         <div class="footer-version">UAS Manager v1.0.0</div>
         <div class="footer-sync">
-          <div class="footer-sync-dot" id="sync-dot"></div>
-          <span id="sync-label">Sync —</span>
+          <div class="footer-sync-dot" id="sync-dot" style="background: var(--green);"></div>
+          <span id="sync-label">Sync 29/04 21:00</span>
         </div>
       </div>
 
@@ -521,7 +521,7 @@
     <section id="screen-maint" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">🔧</div>
-        <div class="placeholder-title">Maintenance & REX</div>
+        <div class="placeholder-title">Maintenance &amp; REX</div>
         <div class="placeholder-text">Ouverture du module maintenance…</div>
       </div>
     </section>
@@ -530,7 +530,7 @@
     <section id="screen-meteo" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">🌦️</div>
-        <div class="placeholder-title">Météo & NOTAM</div>
+        <div class="placeholder-title">Météo &amp; NOTAM</div>
         <div class="placeholder-text">METAR/TAF CheckWX · Météo OpenWeather · ADS-B OpenSky · Liens SOFIA</div>
         <div class="placeholder-badge">MODULE — À VENIR</div>
       </div>
@@ -550,30 +550,30 @@
 
   <!-- ✅ TAB BAR — 5 boutons : Config retiré (header ⚙️), Bilans ajouté -->
   <nav id="tab-bar">
-    <button class="tab-btn active" onclick="navigateTo('accueil')" id="tab-accueil">
+    <button class="tab-btn active" onclick="navigateTo(&#39;accueil&#39;)" id="tab-accueil">
       <div class="tab-indicator"></div>
       <span class="tab-icon">🏠</span>
       <span class="tab-label">Accueil</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('vols')" id="tab-vols">
+    <button class="tab-btn" onclick="navigateTo(&#39;vols&#39;)" id="tab-vols">
       <div class="tab-indicator"></div>
       <span class="tab-icon">✈️</span>
       <span class="tab-label">Vols</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('maint')" id="tab-maint">
+    <button class="tab-btn" onclick="navigateTo(&#39;maint&#39;)" id="tab-maint">
       <div class="tab-indicator"></div>
       <span class="tab-icon">🔧</span>
       <span class="tab-label">Maint.</span>
     </button>
-    <button class="tab-btn" onclick="window.location.href='checklist.html'" id="tab-checklist">
+    <button class="tab-btn" onclick="window.location.href=&#39;checklist.html&#39;" id="tab-checklist">
       <div class="tab-indicator"></div>
       <span class="tab-icon">✅</span>
       <span class="tab-label">Check-list</span>
     </button>
-    <button class="tab-btn" onclick="window.location.href='bilans.html'" id="tab-bilans">
+    <button class="tab-btn" onclick="window.location.href=&#39;meteo.html&#39;" id="tab-meteo">
       <div class="tab-indicator"></div>
-      <span class="tab-icon">📊</span>
-      <span class="tab-label">Bilans</span>
+      <span class="tab-icon">🌦️</span>
+      <span class="tab-label">Météo</span>
     </button>
   </nav>
 
@@ -612,6 +612,7 @@ var currentScreen = 'accueil';
 function navigateTo(screenId) {
   if (screenId === 'vols')  { window.location.href = 'vols.html'; return; }
   if (screenId === 'maint') { window.location.href = 'maintenance.html'; return; }
+  if (screenId === 'meteo') { window.location.href = 'meteo.html'; return; }
 
   var screens = document.querySelectorAll('.screen');
   var tabs    = document.querySelectorAll('.tab-btn');
@@ -779,5 +780,6 @@ window.addEventListener('popstate', function() {
 });
 </script>
 
-</body>
-</html>
+
+
+</body></html>
