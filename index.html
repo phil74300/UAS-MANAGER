@@ -99,28 +99,10 @@
       box-shadow: var(--shadow-md);
     }
 
-    #header-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    #header-logo { display: flex; align-items: center; gap: 10px; }
     #header-logo svg { width: 30px; height: 30px; }
-
-    #header-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--white);
-      letter-spacing: .3px;
-    }
-
-    #header-subtitle {
-      font-size: 11px;
-      color: rgba(255,255,255,.6);
-      letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-
+    #header-title { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: .3px; }
+    #header-subtitle { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .5px; text-transform: uppercase; }
     #header-right { display: flex; align-items: center; gap: 8px; }
 
     .header-icon-btn {
@@ -148,20 +130,14 @@
     }
     body.offline #offline-banner { display: block; }
 
-    #main {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+    #main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
     .screen {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
-    }
-    .screen {
       display: none;
       flex-direction: column;
       min-height: 100%;
@@ -203,383 +179,162 @@
       position: relative;
     }
     .tab-btn:active { opacity: .7; }
-
-    .tab-icon {
-      font-size: 22px;
-      line-height: 1;
-      transition: transform .2s cubic-bezier(.34,1.56,.64,1);
-    }
-    .tab-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--gray-3);
-      letter-spacing: .3px;
-      transition: color .15s;
-    }
-
+    .tab-icon { font-size: 22px; line-height: 1; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+    .tab-label { font-size: 10px; font-weight: 600; color: var(--gray-3); letter-spacing: .3px; transition: color .15s; }
     .tab-btn.active .tab-icon { transform: scale(1.15); }
     .tab-btn.active .tab-label { color: var(--navy); }
-
     .tab-indicator {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 28px; height: 3px;
-      border-radius: 0 0 3px 3px;
-      background: var(--navy);
-      opacity: 0;
-      transition: opacity .2s;
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 3px; border-radius: 0 0 3px 3px;
+      background: var(--navy); opacity: 0; transition: opacity .2s;
     }
     .tab-btn.active .tab-indicator { opacity: 1; }
 
-    #screen-accueil {
-      padding: 0 0 24px;
-    }
+    /* ── ACCUEIL ── */
+    #screen-accueil { padding: 0 0 24px; }
 
-    /* ── Bandeau exploitant ────────────────────────────── */
     .exploitant-banner {
       background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
       padding: 20px 20px 24px;
       position: relative;
       overflow: visible;
     }
-
     .exploitant-banner::before {
       content: '';
-      position: absolute;
-      right: -30px; top: -30px;
-      width: 160px; height: 160px;
-      border-radius: 50%;
+      position: absolute; right: -30px; top: -30px;
+      width: 160px; height: 160px; border-radius: 50%;
       background: rgba(255,255,255,.04);
     }
     .exploitant-banner::after {
       content: '';
-      position: absolute;
-      right: 20px; bottom: -50px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
+      position: absolute; right: 20px; bottom: -50px;
+      width: 120px; height: 120px; border-radius: 50%;
       background: rgba(255,255,255,.04);
     }
 
-    .exp-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: relative; z-index: 1;
-    }
-
+    .exp-row { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
     .exp-avatar {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.15);
-      border: 2px solid rgba(255,255,255,.3);
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
+      font-size: 22px; flex-shrink: 0;
     }
-
     .exp-info { flex: 1; min-width: 0; }
-    .exp-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: -.3px;
-    }
-    .exp-alphatango {
-      font-size: 11px;
-      color: rgba(255,255,255,.65);
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: 1px;
-    }
-    .exp-uas-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
+    .exp-name { font-size: 18px; font-weight: 700; color: white; letter-spacing: -.3px; }
+    .exp-alphatango { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; }
+    .exp-uas-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
     .exp-uas-badge {
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 11px;
-      color: rgba(255,255,255,.9);
-      font-weight: 600;
-      letter-spacing: .3px;
+      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px; padding: 3px 10px; font-size: 11px;
+      color: rgba(255,255,255,.9); font-weight: 600; letter-spacing: .3px;
     }
 
-    .validity-section {
-      padding: 16px 16px 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .validity-card {
-      border-radius: var(--radius-md);
-      padding: 14px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .validity-card.valid {
-      background: var(--light-green);
-      border: 1.5px solid #A5D6B2;
-    }
-    .validity-card.warning {
-      background: var(--light-amber);
-      border: 1.5px solid #E8C97A;
-    }
-    .validity-card.expired {
-      background: var(--light-red);
-      border: 1.5px solid #E8A0A0;
-    }
-
+    .validity-section { padding: 16px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .validity-card { border-radius: var(--radius-md); padding: 14px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .validity-card.valid  { background: var(--light-green); border: 1.5px solid #A5D6B2; }
+    .validity-card.warning { background: var(--light-amber); border: 1.5px solid #E8C97A; }
+    .validity-card.expired { background: var(--light-red);   border: 1.5px solid #E8A0A0; }
     .validity-icon { font-size: 20px; margin-bottom: 6px; }
-    .validity-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--text-light);
-    }
-    .validity-date {
-      font-size: 14px;
-      font-weight: 700;
-      margin-top: 3px;
-    }
-    .validity-card.valid .validity-date { color: var(--green); }
+    .validity-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-light); }
+    .validity-date { font-size: 14px; font-weight: 700; margin-top: 3px; }
+    .validity-card.valid   .validity-date { color: var(--green); }
     .validity-card.warning .validity-date { color: var(--amber); }
     .validity-card.expired .validity-date { color: var(--red); }
-
-    .validity-remain {
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-    .validity-card.valid .validity-remain { color: #2E7D4F; }
+    .validity-remain { font-size: 11px; font-weight: 600; margin-top: 2px; }
+    .validity-card.valid   .validity-remain { color: #2E7D4F; }
     .validity-card.warning .validity-remain { color: var(--amber); }
     .validity-card.expired .validity-remain { color: var(--red); }
-
     .validity-status-dot {
-      position: absolute;
-      top: 12px; right: 12px;
-      width: 8px; height: 8px;
-      border-radius: 50%;
+      position: absolute; top: 12px; right: 12px;
+      width: 8px; height: 8px; border-radius: 50%;
       animation: pulse-dot 2s infinite;
     }
-    .valid .validity-status-dot { background: var(--green); }
+    .valid   .validity-status-dot { background: var(--green); }
     .warning .validity-status-dot { background: var(--amber); }
     .expired .validity-status-dot { background: var(--red); animation: none; }
-
     @keyframes pulse-dot {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: .6; transform: scale(1.3); }
     }
 
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 16px 10px;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--text-light);
-    }
-    .section-link {
-      font-size: 13px;
-      color: var(--blue);
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 16px 10px; }
+    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-light); }
+    .section-link { font-size: 13px; color: var(--blue); font-weight: 600; text-decoration: none; cursor: pointer; }
 
-    .kpi-grid {
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
+    .kpi-grid { padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .kpi-card {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 14px 10px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-2);
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
+      background: var(--white); border-radius: var(--radius-md); padding: 14px 10px;
+      text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-2);
+      cursor: pointer; transition: transform .15s, box-shadow .15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .kpi-card:active { transform: scale(.97); box-shadow: var(--shadow-sm); }
-
+    .kpi-card:active { transform: scale(.97); }
     .kpi-icon { font-size: 22px; margin-bottom: 6px; }
-    .kpi-value {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1;
-      letter-spacing: -1px;
-    }
-    .kpi-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-top: 4px;
-      line-height: 1.2;
-    }
+    .kpi-value { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; letter-spacing: -1px; }
+    .kpi-label { font-size: 10px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; margin-top: 4px; line-height: 1.2; }
     .kpi-card.incidents .kpi-value { color: var(--red); }
     .kpi-card.incidents[data-zero="true"] .kpi-value { color: var(--green); }
 
-    .nav-rapide-grid {
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
+    .nav-rapide-grid { padding: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .nav-btn {
-      background: var(--white);
-      border: 1.5px solid var(--gray-2);
-      border-radius: var(--radius-md);
-      padding: 16px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: all .15s;
-      text-align: left;
+      background: var(--white); border: 1.5px solid var(--gray-2); border-radius: var(--radius-md);
+      padding: 16px 14px; display: flex; align-items: center; gap: 12px;
+      cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .15s; text-align: left;
     }
-    .nav-btn:active {
-      transform: scale(.97);
-      background: var(--light-blue);
-      border-color: var(--blue);
-    }
+    .nav-btn:active { transform: scale(.97); background: var(--light-blue); border-color: var(--blue); }
     .nav-btn.wide { grid-column: 1 / -1; }
-
-    .nav-btn-icon {
-      width: 42px; height: 42px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
+    .nav-btn-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
     .nav-btn-info { flex: 1; min-width: 0; }
-    .nav-btn-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -.1px;
-    }
-    .nav-btn-desc {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
+    .nav-btn-label { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -.1px; }
+    .nav-btn-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; }
     .nav-btn-arrow { color: var(--gray-3); font-size: 14px; flex-shrink: 0; }
-
     .nb-blue  .nav-btn-icon { background: var(--light-blue); }
     .nb-green .nav-btn-icon { background: var(--light-green); }
     .nb-amber .nav-btn-icon { background: var(--light-amber); }
     .nb-red   .nav-btn-icon { background: var(--light-red); }
     .nb-teal  .nav-btn-icon { background: #E0F2F1; }
+    .nb-purple .nav-btn-icon { background: #EDE7F6; }
 
     .app-footer {
-      margin: 20px 16px 0;
-      padding: 14px 16px;
-      background: var(--white);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--gray-2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      margin: 20px 16px 0; padding: 14px 16px;
+      background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--gray-2);
+      display: flex; align-items: center; justify-content: space-between;
     }
     .footer-version { font-size: 11px; color: var(--text-light); font-weight: 600; }
     .footer-sync { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
     .footer-sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
     .placeholder-screen {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 40px;
-      text-align: center;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 16px; padding: 40px; text-align: center;
     }
     .placeholder-icon { font-size: 56px; opacity: .4; }
     .placeholder-title { font-size: 20px; font-weight: 700; color: var(--text); }
     .placeholder-text { font-size: 14px; color: var(--text-light); line-height: 1.5; }
-    .placeholder-badge {
-      background: var(--light-blue);
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      letter-spacing: .5px;
-    }
+    .placeholder-badge { background: var(--light-blue); color: var(--blue); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: .5px; }
 
     #toast {
       position: fixed;
       bottom: calc(var(--tab-h) + var(--safe-bot) + 16px);
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--gray-5);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transition: all .3s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 999;
+      left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--gray-5); color: white;
+      padding: 10px 20px; border-radius: 20px;
+      font-size: 13px; font-weight: 600;
+      opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap; pointer-events: none; z-index: 999;
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (min-width: 768px) {
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-      .nav-rapide-grid { grid-template-columns: repeat(3, 1fr); }
-      .nav-btn.wide { grid-column: auto; }
-      .validity-section { grid-template-columns: repeat(4, 1fr); gap: 12px; }
-      .kpi-card { padding: 20px 14px; }
-      .kpi-value { font-size: 32px; }
-    }
-
     #install-banner {
-      display: none;
-      position: fixed;
+      display: none; position: fixed;
       bottom: calc(var(--tab-h) + var(--safe-bot) + 12px);
       left: 12px; right: 12px;
-      background: var(--navy);
-      color: white;
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      box-shadow: var(--shadow-lg);
-      z-index: 500;
+      background: var(--navy); color: white;
+      border-radius: var(--radius-md); padding: 14px 16px;
+      box-shadow: var(--shadow-lg); z-index: 500;
       animation: slideUp .3s ease;
     }
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0); opacity: 1; }
-    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .install-row { display: flex; align-items: center; gap: 12px; }
     .install-text { flex: 1; }
     .install-title { font-size: 14px; font-weight: 700; }
@@ -587,6 +342,15 @@
     .install-btns { display: flex; gap: 8px; margin-top: 10px; }
     .btn-install { background: white; color: var(--navy); border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
     .btn-dismiss { background: rgba(255,255,255,.15); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    @media (min-width: 768px) {
+      .kpi-grid { gap: 14px; }
+      .nav-rapide-grid { grid-template-columns: repeat(3, 1fr); }
+      .nav-btn.wide { grid-column: auto; }
+      .validity-section { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .kpi-card { padding: 20px 14px; }
+      .kpi-value { font-size: 32px; }
+    }
   </style>
 </head>
 <body>
@@ -618,7 +382,7 @@
 
   <main id="main">
 
-    <!-- ════ ACCUEIL ════ -->
+    <!-- ACCUEIL -->
     <section id="screen-accueil" class="screen active">
 
       <div class="exploitant-banner">
@@ -665,6 +429,7 @@
       </div>
 
       <div class="nav-rapide-grid">
+
         <button class="nav-btn nb-blue" onclick="navigateTo('vols')">
           <div class="nav-btn-icon">✈️</div>
           <div class="nav-btn-info">
@@ -682,25 +447,12 @@
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
-<button class="tab-btn" onclick="window.location.href='formations.html'" id="tab-formations">
-  <div class="tab-indicator"></div>
-  <span class="tab-icon">🎓</span>
-  <span class="tab-label">Formations</span>
-</button>
+
         <button class="nav-btn nb-amber" onclick="navigateTo('meteo')">
           <div class="nav-btn-icon">🌦️</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Météo & NOTAM</div>
             <div class="nav-btn-desc">METAR · TAF · ADS-B</div>
-          </div>
-          <span class="nav-btn-arrow">›</span>
-        </button>
-
-        <button class="nav-btn nb-teal" onclick="window.location.href='dji_logs.html'">
-          <div class="nav-btn-icon">🎮</div>
-          <div class="nav-btn-info">
-            <div class="nav-btn-label">Logs DJI</div>
-            <div class="nav-btn-desc">Import · Analyse</div>
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
@@ -714,22 +466,25 @@
           <span class="nav-btn-arrow">›</span>
         </button>
 
-        <button class="nav-btn nb-blue" onclick="window.location.href='formations.html'">
-  <div class="nav-btn-icon">🎓</div>
-  <div class="nav-btn-info">
-    <div class="nav-btn-label">Formations</div>
-    <div class="nav-btn-desc">Certificats · Habilitations</div>
-  </div>
-          <button class="nav-btn nb-red wide" onclick="showToast('Rapports — Module à venir')">
-  <div class="nav-btn-icon">📊</div>
-  <div class="nav-btn-info">
-    <div class="nav-btn-label">Rapports & Bilans</div>
-    <div class="nav-btn-desc">Mensuel · Annuel · Export PDF</div>
-  </div>
-  <span class="nav-btn-arrow">›</span>
-</button>
-  <span class="nav-btn-arrow">›</span>
-</button>
+        <button class="nav-btn nb-purple" onclick="window.location.href='formations.html'">
+          <div class="nav-btn-icon">🎓</div>
+          <div class="nav-btn-info">
+            <div class="nav-btn-label">Formations</div>
+            <div class="nav-btn-desc">Certificats · Habilitations</div>
+          </div>
+          <span class="nav-btn-arrow">›</span>
+        </button>
+
+        <button class="nav-btn nb-teal" onclick="window.location.href='dji_logs.html'">
+          <div class="nav-btn-icon">🎮</div>
+          <div class="nav-btn-info">
+            <div class="nav-btn-label">Logs DJI</div>
+            <div class="nav-btn-desc">Import · Analyse</div>
+          </div>
+          <span class="nav-btn-arrow">›</span>
+        </button>
+
+        <button class="nav-btn nb-red wide" onclick="showToast('Rapports — Module à venir')">
           <div class="nav-btn-icon">📊</div>
           <div class="nav-btn-info">
             <div class="nav-btn-label">Rapports & Bilans</div>
@@ -737,6 +492,7 @@
           </div>
           <span class="nav-btn-arrow">›</span>
         </button>
+
       </div>
 
       <div class="app-footer">
@@ -749,7 +505,7 @@
 
     </section>
 
-    <!-- ════ ÉCRAN VOLS ════ -->
+    <!-- VOLS -->
     <section id="screen-vols" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">✈️</div>
@@ -758,7 +514,7 @@
       </div>
     </section>
 
-    <!-- ════ ÉCRAN MAINTENANCE ════ -->
+    <!-- MAINTENANCE -->
     <section id="screen-maint" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">🔧</div>
@@ -767,28 +523,29 @@
       </div>
     </section>
 
-    <!-- ════ ÉCRAN MÉTÉO ════ -->
+    <!-- MÉTÉO -->
     <section id="screen-meteo" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">🌦️</div>
         <div class="placeholder-title">Météo & NOTAM</div>
-        <div class="placeholder-text">Module 4 — METAR/TAF CheckWX, météo OpenWeather, ADS-B OpenSky, liens SOFIA</div>
-        <div class="placeholder-badge">MODULE 4 — À VENIR</div>
+        <div class="placeholder-text">METAR/TAF CheckWX · Météo OpenWeather · ADS-B OpenSky · Liens SOFIA</div>
+        <div class="placeholder-badge">MODULE — À VENIR</div>
       </div>
     </section>
 
-    <!-- ════ ÉCRAN CONFIG ════ -->
+    <!-- CONFIG -->
     <section id="screen-config" class="screen">
       <div class="placeholder-screen">
         <div class="placeholder-icon">⚙️</div>
         <div class="placeholder-title">Configuration</div>
-        <div class="placeholder-text">Module 5 — Clés API, profil exploitant, paramètres UAS</div>
-        <div class="placeholder-badge">MODULE 5 — À VENIR</div>
+        <div class="placeholder-text">Clés API · Profil exploitant · Paramètres UAS</div>
+        <div class="placeholder-badge">MODULE — À VENIR</div>
       </div>
     </section>
 
   </main>
 
+  <!-- TAB BAR -->
   <nav id="tab-bar">
     <button class="tab-btn active" onclick="navigateTo('accueil')" id="tab-accueil">
       <div class="tab-indicator"></div>
@@ -805,10 +562,15 @@
       <span class="tab-icon">🔧</span>
       <span class="tab-label">Maint.</span>
     </button>
-    <button class="tab-btn" onclick="navigateTo('meteo')" id="tab-meteo">
+    <button class="tab-btn" onclick="window.location.href='checklist.html'" id="tab-checklist">
       <div class="tab-indicator"></div>
-      <span class="tab-icon">🌦️</span>
-      <span class="tab-label">Météo</span>
+      <span class="tab-icon">✅</span>
+      <span class="tab-label">Check-list</span>
+    </button>
+    <button class="tab-btn" onclick="window.location.href='formations.html'" id="tab-formations">
+      <div class="tab-indicator"></div>
+      <span class="tab-icon">🎓</span>
+      <span class="tab-label">Formations</span>
     </button>
     <button class="tab-btn" onclick="navigateTo('config')" id="tab-config">
       <div class="tab-indicator"></div>
@@ -836,7 +598,7 @@
 </div>
 
 <script>
-const EXPLOITANT = {
+var EXPLOITANT = {
   nom: 'CONTE Philippe',
   alphatango: 'FRAjqq48j12nfy4c',
   uas: 'DJI Mavic 4 Pro',
@@ -845,110 +607,143 @@ const EXPLOITANT = {
   assurance: { label: 'Assurance COVERDRONE', expire: '2027-04-10', ref: 'CDA22411846EUR' }
 };
 
-const APP_VERSION = '1.0.0';
-const WARN_DAYS = 30;
-
-let currentScreen = 'accueil';
+var APP_VERSION = '1.0.0';
+var WARN_DAYS = 30;
+var currentScreen = 'accueil';
 
 function navigateTo(screenId) {
-  // Navigation directe pour les modules externes
   if (screenId === 'vols') { window.location.href = 'vols.html'; return; }
   if (screenId === 'maint') { window.location.href = 'maintenance.html'; return; }
 
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const screen = document.getElementById('screen-' + screenId);
-  const tab = document.getElementById('tab-' + screenId);
-  if (screen) screen.classList.add('active');
-  if (tab) tab.classList.add('active');
+  var screens = document.querySelectorAll('.screen');
+  var tabs = document.querySelectorAll('.tab-btn');
+  var i;
+  for (i = 0; i < screens.length; i++) { screens[i].classList.remove('active'); }
+  for (i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+
+  var screen = document.getElementById('screen-' + screenId);
+  var tab = document.getElementById('tab-' + screenId);
+  if (screen) { screen.classList.add('active'); }
+  if (tab) { tab.classList.add('active'); }
   currentScreen = screenId;
-  const subtitles = {
-    accueil: 'Tableau de bord', vols: 'Carnet de Vol',
-    maint: 'Maintenance & REX', meteo: 'Météo & NOTAM', config: 'Configuration'
+
+  var subtitles = {
+    accueil: 'TABLEAU DE BORD',
+    vols: 'CARNET DE VOL',
+    maint: 'MAINTENANCE & REX',
+    meteo: 'MÉTÉO & NOTAM',
+    config: 'CONFIGURATION'
   };
-  document.querySelector('#header-subtitle').textContent = subtitles[screenId] || '';
+  document.getElementById('header-subtitle').textContent = subtitles[screenId] || '';
 }
 
 function daysBetween(dateStr) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const target = new Date(dateStr); target.setHours(0,0,0,0);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var target = new Date(dateStr); target.setHours(0,0,0,0);
   return Math.round((target - today) / 86400000);
 }
-function formatDate(dateStr) { const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
-function getValidityClass(days) { if (days < 0) return 'expired'; if (days <= WARN_DAYS) return 'warning'; return 'valid'; }
-function getValidityIcon(days) { if (days < 0) return '🔴'; if (days <= WARN_DAYS) return '🟡'; return '🟢'; }
+
+function formatDate(dateStr) {
+  var p = dateStr.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function getValidityClass(days) {
+  if (days < 0) { return 'expired'; }
+  if (days <= WARN_DAYS) { return 'warning'; }
+  return 'valid';
+}
+
+function getValidityIcon(days) {
+  if (days < 0) { return '🔴'; }
+  if (days <= WARN_DAYS) { return '🟡'; }
+  return '🟢';
+}
+
 function getValidityRemain(days) {
-  if (days < 0) return `Expiré depuis ${Math.abs(days)} j`;
-  if (days === 0) return "Expire aujourd'hui !";
-  if (days <= WARN_DAYS) return `⚠️ Expire dans ${days} j`;
-  return `Valide — ${days} j restants`;
+  if (days < 0) { return 'Expiré depuis ' + Math.abs(days) + ' j'; }
+  if (days === 0) { return "Expire aujourd'hui !"; }
+  if (days <= WARN_DAYS) { return 'Expire dans ' + days + ' j'; }
+  return 'Valide — ' + days + ' j restants';
 }
 
 function renderValidity() {
-  const container = document.getElementById('validity-section');
-  const items = [EXPLOITANT.cats, EXPLOITANT.assurance];
-  container.innerHTML = items.map(item => {
-    const days = daysBetween(item.expire);
-    const cls = getValidityClass(days);
-    return `
-      <div class="validity-card ${cls}">
-        <div class="validity-status-dot"></div>
-        <div class="validity-icon">${getValidityIcon(days)}</div>
-        <div class="validity-label">${item.label}</div>
-        <div class="validity-date">${formatDate(item.expire)}</div>
-        <div class="validity-remain">${getValidityRemain(days)}</div>
-        <div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">${item.ref}</div>
-      </div>`;
-  }).join('');
+  var container = document.getElementById('validity-section');
+  var items = [EXPLOITANT.cats, EXPLOITANT.assurance];
+  var html = '';
+  var i, item, days, cls;
+  for (i = 0; i < items.length; i++) {
+    item = items[i];
+    days = daysBetween(item.expire);
+    cls = getValidityClass(days);
+    html += '<div class="validity-card ' + cls + '">';
+    html += '<div class="validity-status-dot"></div>';
+    html += '<div class="validity-icon">' + getValidityIcon(days) + '</div>';
+    html += '<div class="validity-label">' + item.label + '</div>';
+    html += '<div class="validity-date">' + formatDate(item.expire) + '</div>';
+    html += '<div class="validity-remain">' + getValidityRemain(days) + '</div>';
+    html += '<div style="font-size:10px;color:var(--text-light);margin-top:4px;font-weight:500">' + item.ref + '</div>';
+    html += '</div>';
+  }
+  container.innerHTML = html;
 }
 
 function loadKPIs() {
-  const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const volsData = JSON.parse(localStorage.getItem(`uas_vols_${monthKey}`) || 'null');
-  const incidents = parseInt(localStorage.getItem('uas_incidents_total') || '0', 10);
-  const volsCount = volsData ? volsData.count : 0;
-  const heures = volsData ? volsData.heures : 0;
+  var now = new Date();
+  var monthKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  var volsData = null;
+  try { volsData = JSON.parse(localStorage.getItem('uas_vols_' + monthKey)); } catch(e) {}
+  var incidents = 0;
+  try { incidents = parseInt(localStorage.getItem('uas_incidents_total') || '0', 10); } catch(e) {}
+  var volsCount = volsData ? volsData.count : 0;
+  var heures = volsData ? volsData.heures : 0;
   document.getElementById('kpi-vols').textContent = volsCount;
-  document.getElementById('kpi-heures').textContent = heures > 0 ? `${heures.toFixed(1)}h` : '0h';
+  document.getElementById('kpi-heures').textContent = heures > 0 ? (heures.toFixed(1) + 'h') : '0h';
   document.getElementById('kpi-incidents').textContent = incidents;
   document.getElementById('kpi-card-incidents').dataset.zero = incidents === 0 ? 'true' : 'false';
 }
 
 function updateSyncLabel() {
-  const lastSync = localStorage.getItem('uas_last_sync');
-  const label = document.getElementById('sync-label');
-  const dot = document.getElementById('sync-dot');
-  if (!lastSync) { label.textContent = 'Jamais synchronisé'; dot.style.background = 'var(--amber)'; return; }
-  const d = new Date(parseInt(lastSync));
-  label.textContent = `Sync ${d.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+  var lastSync = null;
+  try { lastSync = localStorage.getItem('uas_last_sync'); } catch(e) {}
+  var label = document.getElementById('sync-label');
+  var dot = document.getElementById('sync-dot');
+  if (!lastSync) {
+    label.textContent = 'Jamais synchronisé';
+    dot.style.background = 'var(--amber)';
+    return;
+  }
+  var d = new Date(parseInt(lastSync));
+  label.textContent = 'Sync ' + d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
   dot.style.background = 'var(--green)';
-  localStorage.setItem('uas_last_sync', Date.now().toString());
+  try { localStorage.setItem('uas_last_sync', Date.now().toString()); } catch(e) {}
 }
 
-let toastTimer;
+var toastTimer;
 function showToast(msg) {
-  const el = document.getElementById('toast');
+  var el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2800);
 }
 
-async function registerSW() {
+function registerSW() {
   if ('serviceWorker' in navigator) {
-    try {
-      const reg = await navigator.serviceWorker.register('/UAS-MANAGER/sw.js');
-      console.log('[App] SW enregistré:', reg.scope);
-    } catch (err) { console.warn('[App] SW non enregistré:', err); }
+    navigator.serviceWorker.register('/UAS-MANAGER/sw.js').catch(function(err) {
+      console.warn('[App] SW non enregistré:', err);
+    });
   }
 }
 
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e;
-  if (!localStorage.getItem('uas_install_dismissed')) {
-    setTimeout(() => { document.getElementById('install-banner').style.display = 'block'; }, 3000);
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var dismissed = false;
+  try { dismissed = !!localStorage.getItem('uas_install_dismissed'); } catch(e2) {}
+  if (!dismissed) {
+    setTimeout(function() { document.getElementById('install-banner').style.display = 'block'; }, 3000);
   }
 });
 
@@ -958,22 +753,32 @@ function triggerInstall() {
 }
 function dismissInstall() {
   document.getElementById('install-banner').style.display = 'none';
-  localStorage.setItem('uas_install_dismissed', '1');
+  try { localStorage.setItem('uas_install_dismissed', '1'); } catch(e) {}
 }
 
 function updateOnlineStatus() {
   document.body.classList.toggle('offline', !navigator.onLine);
-  if (!navigator.onLine) showToast('📡 Mode hors-ligne activé');
+  if (!navigator.onLine) { showToast('📡 Mode hors-ligne activé'); }
 }
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderValidity(); loadKPIs(); updateSyncLabel(); updateOnlineStatus(); registerSW();
-  if (!localStorage.getItem('uas_last_sync')) localStorage.setItem('uas_last_sync', Date.now().toString());
+document.addEventListener('DOMContentLoaded', function() {
+  renderValidity();
+  loadKPIs();
+  updateSyncLabel();
+  updateOnlineStatus();
+  registerSW();
+  try {
+    if (!localStorage.getItem('uas_last_sync')) {
+      localStorage.setItem('uas_last_sync', Date.now().toString());
+    }
+  } catch(e) {}
 });
 
-window.addEventListener('popstate', () => { if (currentScreen !== 'accueil') navigateTo('accueil'); });
+window.addEventListener('popstate', function() {
+  if (currentScreen !== 'accueil') { navigateTo('accueil'); }
+});
 </script>
 
 </body>
