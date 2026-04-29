@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8">
+<!-- saved from url=(0053)file:///Users/contephilippe/Downloads/dji_logs_1.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -168,6 +169,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
          -webkit-tap-highlight-color:transparent}
 .nav-btn.active{color:var(--navy)}
 .nav-icon{font-size:22px}
+
+/* ══ UNIFIED BOTTOM NAV ══ */
+.ubnav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #E8ECF0;
+  display:flex;align-items:stretch;
+  height:calc(64px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -2px 12px rgba(12,68,124,.08);
+  z-index:500;
+}
+@media(prefers-color-scheme:dark){
+  .ubnav{background:#1A2535;border-top-color:#2D3E52;}
+}
+.ubnav-btn{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  padding-top:8px;gap:3px;
+  border:none;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;text-decoration:none;
+}
+.ubnav-btn:active{opacity:.7;}
+.ubnav-ico{font-size:22px;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+.ubnav-lbl{font-size:10px;font-weight:600;color:#B0BAC6;letter-spacing:.3px;}
+.ubnav-btn.active .ubnav-ico{transform:scale(1.15);}
+.ubnav-btn.active .ubnav-lbl{color:#0C447C;}
+@media(prefers-color-scheme:dark){
+  .ubnav-btn.active .ubnav-lbl{color:#5BA3E8;}
+}
+.ubnav-bar{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:3px;border-radius:0 0 3px 3px;
+  background:#0C447C;opacity:0;
+}
+.ubnav-btn.active .ubnav-bar{opacity:1;}
+
 </style>
 </head>
 <body>
@@ -178,14 +216,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <h1>DJI Fly — Logs de vol</h1>
     <p>Parsing automatique → carnet UAS Manager</p>
   </div>
-  <button class="header-btn" onclick="window.location.href='vols.html'">✈ Vols</button>
+  <button class="header-btn" onclick="window.location.href=&#39;vols.html&#39;">✈ Vols</button>
 </div>
 
 <!-- ══ ONGLETS MÉTHODE ══ -->
 <div class="method-tabs">
-  <button class="method-tab active" onclick="setMethod('txt',this)">Fichier .txt</button>
-  <button class="method-tab" onclick="setMethod('csv',this)">CSV DJI Fly</button>
-  <button class="method-tab" onclick="setMethod('guide',this)">Guide export</button>
+  <button class="method-tab active" onclick="setMethod(&#39;txt&#39;,this)">Fichier .txt</button>
+  <button class="method-tab" onclick="setMethod(&#39;csv&#39;,this)">CSV DJI Fly</button>
+  <button class="method-tab" onclick="setMethod(&#39;guide&#39;,this)">Guide export</button>
 </div>
 
 <!-- ══ PANE TXT ══ -->
@@ -195,7 +233,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <p><strong>Fichier .txt DJI :</strong> stocké dans <code>Sur mon iPhone › DJI Fly › FlightRecords</code>.<br>
     Le fichier est chiffré — l'app extrait les métadonnées disponibles. Pour des données complètes (GPS, vitesse, batterie), utilisez l'export CSV depuis DJI Fly.</p>
   </div>
-  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById(&#39;file-input&#39;).click()" ondragover="event.preventDefault();this.classList.add(&#39;drag&#39;)" ondragleave="this.classList.remove(&#39;drag&#39;)" ondrop="handleDrop(event)">
     <div class="drop-icon">📂</div>
     <div class="drop-title">Sélectionner le fichier DJI</div>
     <div class="drop-sub">DJIFlightRecord_YYYYMMDD_HHMMSS.txt<br>ou tout fichier log DJI</div>
@@ -211,7 +249,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <p><strong>Méthode recommandée :</strong> dans DJI Fly → Profil → Mes vols → sélectionner un vol → icône Partager.<br>
     Le CSV contient : date, durée, distance, altitude max. Pas de chiffrement.</p>
   </div>
-  <div class="drop-zone" onclick="document.getElementById('csv-input').click()">
+  <div class="drop-zone" onclick="document.getElementById(&#39;csv-input&#39;).click()">
     <div class="drop-icon">📊</div>
     <div class="drop-title">Sélectionner le CSV DJI Fly</div>
     <div class="drop-sub">Exporté via Profil → Mes vols → Partager</div>
@@ -260,8 +298,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
     <div class="card-header">
       <span class="card-header-title" id="parsed-count">0 vol détecté</span>
       <div style="display:flex;gap:6px">
-        <button class="btn-small on" id="btn-all" onclick="filterFlights('all')">Tous</button>
-        <button class="btn-small" id="btn-new" onclick="filterFlights('new')">Nouveaux</button>
+        <button class="btn-small on" id="btn-all" onclick="filterFlights(&#39;all&#39;)">Tous</button>
+        <button class="btn-small" id="btn-new" onclick="filterFlights(&#39;new&#39;)">Nouveaux</button>
       </div>
     </div>
     <div id="flights-list"></div>
@@ -290,7 +328,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
   <div style="padding:16px">
     <div class="select-info" id="select-info">Touchez un vol pour le sélectionner</div>
-    <button class="btn-primary" id="btn-import-sel" onclick="importSelected()" disabled>Importer la sélection dans le carnet</button>
+    <button class="btn-primary" id="btn-import-sel" onclick="importSelected()" disabled="">Importer la sélection dans le carnet</button>
     <button class="btn-secondary" onclick="importAll()">Tout importer</button>
   </div>
 </div>
@@ -300,11 +338,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 
 <!-- ══ BOTTOM NAV ══ -->
 <div class="bottom-nav">
-  <button class="nav-btn" onclick="window.location.href='index.html'"><span class="nav-icon">🏠</span>Accueil</button>
-  <button class="nav-btn" onclick="window.location.href='vols.html'"><span class="nav-icon">✈️</span>Vols</button>
-  <button class="nav-btn" onclick="window.location.href='maintenance.html'"><span class="nav-icon">🔧</span>Maint.</button>
+  <button class="nav-btn" onclick="window.location.href=&#39;index.html&#39;"><span class="nav-icon">🏠</span>Accueil</button>
+  <button class="nav-btn" onclick="window.location.href=&#39;vols.html&#39;"><span class="nav-icon">✈️</span>Vols</button>
+  <button class="nav-btn" onclick="window.location.href=&#39;maintenance.html&#39;"><span class="nav-icon">🔧</span>Maint.</button>
   <button class="nav-btn active"><span class="nav-icon">🎮</span>DJI</button>
-  <button class="nav-btn" onclick="toast('Météo — Module à venir',true,'var(--amber)')"><span class="nav-icon">🌦</span>Météo</button>
+  <button class="nav-btn" onclick="toast(&#39;Météo — Module à venir&#39;,true,&#39;var(--amber)&#39;)"><span class="nav-icon">🌦</span>Météo</button>
 </div>
 
 <script>
@@ -581,5 +619,23 @@ function toast(msg,hide=true,bg=''){
   if(hide) setTimeout(()=>t.className='toast',3000);
 }
 </script>
+
+<nav class="ubnav">
+  <button class="ubnav-btn" onclick="window.location.href=&#39;index.html&#39;">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🏠</span><span class="ubnav-lbl">Accueil</span>
+  </button>
+  <button class="ubnav-btn active" onclick="window.location.href=&#39;vols.html&#39;">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">✈️</span><span class="ubnav-lbl">Vols</span>
+  </button>
+  <button class="ubnav-btn" onclick="window.location.href=&#39;maintenance.html&#39;">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🔧</span><span class="ubnav-lbl">Maint.</span>
+  </button>
+  <button class="ubnav-btn" onclick="window.location.href=&#39;meteo.html&#39;">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🌦️</span><span class="ubnav-lbl">Météo</span>
+  </button>
+  <button class="ubnav-btn" onclick="window.location.href=&#39;bilans.html&#39;">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">📊</span><span class="ubnav-lbl">Bilans</span>
+  </button>
+</nav>
 
 </body></html>

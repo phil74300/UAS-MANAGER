@@ -306,6 +306,43 @@ nav{
 /* ── Skeleton ── */
 .skel{background:linear-gradient(90deg,var(--border) 25%,var(--bg) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;}
 @keyframes shimmer{to{background-position:-200% 0;}}
+
+/* ══ UNIFIED BOTTOM NAV ══ */
+.ubnav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #E8ECF0;
+  display:flex;align-items:stretch;
+  height:calc(64px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -2px 12px rgba(12,68,124,.08);
+  z-index:500;
+}
+@media(prefers-color-scheme:dark){
+  .ubnav{background:#1A2535;border-top-color:#2D3E52;}
+}
+.ubnav-btn{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  padding-top:8px;gap:3px;
+  border:none;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;text-decoration:none;
+}
+.ubnav-btn:active{opacity:.7;}
+.ubnav-ico{font-size:22px;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+.ubnav-lbl{font-size:10px;font-weight:600;color:#B0BAC6;letter-spacing:.3px;}
+.ubnav-btn.active .ubnav-ico{transform:scale(1.15);}
+.ubnav-btn.active .ubnav-lbl{color:#0C447C;}
+@media(prefers-color-scheme:dark){
+  .ubnav-btn.active .ubnav-lbl{color:#5BA3E8;}
+}
+.ubnav-bar{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:3px;border-radius:0 0 3px 3px;
+  background:#0C447C;opacity:0;
+}
+.ubnav-btn.active .ubnav-bar{opacity:1;}
+
 </style>
 </head>
 <body>
@@ -1600,4 +1637,21 @@ init();
 </script>
 
 
+<nav class="ubnav">
+  <button class="ubnav-btn " onclick="window.location.href='index.html'">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🏠</span><span class="ubnav-lbl">Accueil</span>
+  </button>
+  <button class="ubnav-btn " onclick="window.location.href='vols.html'">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">✈️</span><span class="ubnav-lbl">Vols</span>
+  </button>
+  <button class="ubnav-btn " onclick="window.location.href='maintenance.html'">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🔧</span><span class="ubnav-lbl">Maint.</span>
+  </button>
+  <button class="ubnav-btn active" onclick="window.location.href='meteo.html'">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">🌦️</span><span class="ubnav-lbl">Météo</span>
+  </button>
+  <button class="ubnav-btn " onclick="window.location.href='bilans.html'">
+    <div class="ubnav-bar"></div><span class="ubnav-ico">📊</span><span class="ubnav-lbl">Bilans</span>
+  </button>
+</nav>
 </body></html>
