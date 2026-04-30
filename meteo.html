@@ -23,7 +23,6 @@
   --border:      #D0DCE8;
   --text:        #1A2333;
   --text-muted:  #5B6F86;
-  --tab-h:       56px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top:    env(safe-area-inset-top, 0px);
   --radius:      14px;
@@ -81,7 +80,7 @@ header{
 @keyframes pulse-banner{0%,100%{background:#8B2020;}50%{background:#A52525;}}
 
 /* ── Main 2-pane layout ── */
-#main-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
+#main-wrap{display:flex;flex:1;min-height:0;overflow:clip;overflow-clip-margin:0;}
 
 /* ── LEFT: airport list ── */
 #airport-panel{
@@ -148,7 +147,7 @@ header{
 /* ── RIGHT: detail panel ── */
 #detail-panel{
   flex:1;min-width:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:12px;padding-bottom:calc(var(--tab-h) + var(--safe-bottom) + 12px);
+  padding:12px;padding-bottom:calc(env(safe-area-inset-bottom) + 20px);
   display:flex;flex-direction:column;gap:12px;
 }
 
@@ -162,7 +161,7 @@ header{
 @media(max-width:700px){#btn-airport-list{display:flex;align-items:center;gap:5px;}}
 
 /* ── Cards ── */
-.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:visible;}
 .card-hdr{
   padding:10px 14px 9px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:8px;flex-wrap:wrap;
@@ -186,7 +185,7 @@ header{
   transition:color .15s,border-color .15s;text-transform:uppercase;letter-spacing:.4px;
 }
 .tab-btn.active{color:var(--blue);border-color:var(--blue);}
-.tab-content{display:none;padding:12px 14px;}
+.tab-content{display:none;padding:12px 14px;overflow:visible;}
 .tab-content.active{display:block;}
 
 /* ── Decoded METAR display ── */
@@ -288,20 +287,6 @@ header{
 .empty-icon{font-size:42px;}
 .empty-title{font-size:15px;font-weight:800;color:var(--text);}
 .empty-msg{font-size:13px;color:var(--text-muted);line-height:1.55;max-width:280px;}
-
-/* ── Bottom tab bar ── */
-nav{
-  height:calc(var(--tab-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);
-  background:var(--surface);border-top:1px solid var(--border);
-  display:flex;align-items:center;flex-shrink:0;
-}
-.tab{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;padding:4px 0;cursor:pointer;color:var(--text-muted);font-size:10px;font-weight:500;
-  text-decoration:none;border:none;background:none;-webkit-tap-highlight-color:transparent;
-}
-.tab.active{color:var(--blue);}
-.tab-icon{font-size:21px;line-height:1;}
 
 /* ── Skeleton ── */
 .skel{background:linear-gradient(90deg,var(--border) 25%,var(--bg) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;}
