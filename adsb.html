@@ -522,6 +522,10 @@ let REFRESH_INTERVAL = 15; // secondes — modifiable via sélecteur
 
 // APIs ADS-B avec CORS activé (pas de clé requise)
 // Fallback automatique si l'une est indisponible
+// ─── SOURCES ADS-B (ordre de priorité, toutes CORS-OK) ───
+// adsb.lol  : principale, gratuite, sans clé, CORS OK
+// airplanes.live : backup fiable, CORS OK
+// hellosky  : 3ème source de secours
 const APIS = [
   {
     name: 'adsb.lol',
@@ -533,30 +537,49 @@ const APIS = [
       country:  a.r || '?',
       lat:      a.lat,
       lon:      a.lon,
-      alt:      a.alt_baro !== 'ground' ? parseFloat(a.alt_baro) * 0.3048 : null, // ft→m
-      onGround: a.alt_baro === 'ground' || a.on_ground,
-      speed:    a.gs ? a.gs * 0.514444 : null, // kts→m/s
-      track:    a.track || null,
+      alt:      a.alt_baro !== 'ground' && a.alt_baro != null
+                  ? parseFloat(a.alt_baro) * 0.3048 : null,
+      onGround: a.alt_baro === 'ground' || !!a.on_ground,
+      speed:    a.gs ? a.gs * 0.514444 : null,
+      track:    a.track ?? null,
     }),
   },
   {
-    name: 'adsb.fi',
-    url: (lat, lon, r) => `https://api.adsb.fi/v1/aircraft/state?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&radius=${r}`,
-    parse: (data) => data.aircraft || [],
+    name: 'airplanes.live',
+    url: (lat, lon, r) => `https://api.airplanes.live/v2/point/${lat.toFixed(4)}/${lon.toFixed(4)}/${r}`,
+    parse: (data) => data.ac || [],
     toAircraft: (a) => ({
-      icao:     a.icao24 || '?',
-      callsign: (a.callsign || '').trim(),
-      country:  a.origin_country || '?',
-      lat:      a.latitude,
-      lon:      a.longitude,
-      alt:      a.baro_altitude,
-      onGround: a.on_ground,
-      speed:    a.velocity,
-      track:    a.true_track,
+      icao:     a.hex || '?',
+      callsign: (a.flight || a.r || '').trim(),
+      country:  a.r || '?',
+      lat:      a.lat,
+      lon:      a.lon,
+      alt:      a.alt_baro !== 'ground' && a.alt_baro != null
+                  ? parseFloat(a.alt_baro) * 0.3048 : null,
+      onGround: a.alt_baro === 'ground' || !!a.on_ground,
+      speed:    a.gs ? a.gs * 0.514444 : null,
+      track:    a.track ?? null,
+    }),
+  },
+  {
+    name: 'hellosky',
+    url: (lat, lon, r) => `https://data.hellosky.net/api/v2/map/aircraft?lat=${lat.toFixed(4)}&lng=${lon.toFixed(4)}&radius=${r}`,
+    parse: (data) => Array.isArray(data) ? data : (data.data || data.aircraft || []),
+    toAircraft: (a) => ({
+      icao:     a.icao || a.hex || '?',
+      callsign: (a.callsign || a.flight || '').trim(),
+      country:  a.country || a.registration || '?',
+      lat:      a.lat || a.latitude,
+      lon:      a.lng || a.lon || a.longitude,
+      alt:      a.altitude != null ? parseFloat(a.altitude) : null,
+      onGround: !!a.on_ground || a.altitude === 0,
+      speed:    a.speed ? a.speed * 0.514444 : null,
+      track:    a.heading || a.track || null,
     }),
   },
 ];
 let currentApiIdx = 0;
+let apiFailCount = 0; // nb d'échecs consécutifs toutes sources
 
 // ─── STATE ───────────────────────────────────────────────
 let state = {
@@ -690,6 +713,7 @@ async function fetchADSB() {
       .filter(a => a.lat && a.lon);
 
     state.lastFetch = new Date();
+    apiFailCount = 0; // reset compteur d'échecs
     renderAircraft();
     updateStats();
     setStatus(`✅ ${api.name}`, true);
@@ -699,20 +723,24 @@ async function fetchADSB() {
     const isTimeout = e.name === 'TimeoutError' || e.name === 'AbortError';
     const isCors = e.message.includes('Failed to fetch') || e.message.includes('Load failed');
 
-    if (isCors) {
-      // CORS ou réseau — essayer l'API suivante
-      const nextIdx = (currentApiIdx + 1) % APIS.length;
-      if (nextIdx !== currentApiIdx) {
-        currentApiIdx = nextIdx;
-        showToast(`⚠️ ${api.name} inaccessible — bascule sur ${APIS[currentApiIdx].name}`, 'amber');
-        state.isLoading = false;
-        await fetchADSB(); // retry immédiat avec autre API
-        return;
-      }
-    }
+    apiFailCount++;
 
-    if (isTimeout) {
-      showToast('⏱ Délai dépassé — réseau lent', 'amber');
+    if (isCors || isTimeout) {
+      // Essayer la source suivante immédiatement
+      const nextIdx = (currentApiIdx + 1) % APIS.length;
+      if (apiFailCount < APIS.length) {
+        currentApiIdx = nextIdx;
+        const reason = isCors ? 'inaccessible' : 'délai dépassé';
+        showToast(`⚠️ ${api.name} ${reason} → ${APIS[currentApiIdx].name}`, 'amber');
+        state.isLoading = false;
+        await fetchADSB();
+        return;
+      } else {
+        // Toutes les sources ont échoué
+        apiFailCount = 0;
+        currentApiIdx = 0; // repartir de la première au prochain cycle
+        showToast('❌ Toutes les sources ADS-B inaccessibles', 'red');
+      }
     } else {
       showToast(`❌ ${api.name} : ${e.message.slice(0,40)}`, 'red');
     }
