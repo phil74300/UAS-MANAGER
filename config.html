@@ -435,55 +435,106 @@ html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystem
   <!-- ══════ TAB : NOTIFICATIONS ══════ -->
   <section class="section" id="tab-notifications">
 
+    <!-- ── 1. DGAC / BEA — Déclarations obligatoires ── -->
     <div class="card">
-      <div class="card-header"><span class="card-icon">📧</span><h2>Email REX / Incidents</h2></div>
+      <div class="card-header"><span class="card-icon">🚨</span><h2>DGAC / BEA — Déclarations obligatoires</h2></div>
       <div class="card-body">
-        <div class="field-row full">
-          <div class="field"><label>Email destinataire REX</label><input type="email" id="notif-rex-email" placeholder="responsable@exemple.com"></div>
+        <div class="info-note warn" style="margin-bottom:10px;">⚠️ Tout accident ou incident grave UAS doit être déclaré au BEA et signalé à la DGAC dans les meilleurs délais (règlement UE 376/2014).</div>
+        <div class="field-row">
+          <div class="field"><label>Email DGAC — Direction UAS</label><input type="email" id="notif-dgac-email" placeholder="dgac-dta@aviation-civile.gouv.fr"></div>
+          <div class="field"><label>Email BEA — Incidents graves</label><input type="email" id="notif-bea-email" placeholder="bea@bea.aero"></div>
         </div>
-        <div class="field-row full">
-          <div class="field"><label>Email en copie (CC)</label><input type="email" id="notif-rex-cc" placeholder="direction@exemple.com (optionnel)"></div>
+        <div class="field-row">
+          <div class="field"><label>Email CC (copie)</label><input type="email" id="notif-dgac-cc" placeholder="votre.email@exemple.com"></div>
+          <div class="field"><label>Objet email (préfixe)</label><input id="notif-dgac-sujet" value="[Déclaration incident UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
         </div>
-        <div class="field-row full">
-          <div class="field"><label>Objet email REX (préfixe)</label><input id="notif-rex-sujet" value="[REX UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
-        </div>
-        <div class="info-note">Utilisé pour pré-remplir le mailto: lors d'un rapport d'incident dans le module REX.</div>
+        <div class="info-note">Contacts officiels DGAC : <strong>dsac.direction@aviation-civile.gouv.fr</strong> · BEA : <strong>bea@bea.aero</strong> · Formulaire CRESUS en ligne.</div>
         <div style="margin-top:10px;">
-          <button class="btn btn-amber btn-sm" onclick="testerEmailREX()">📧 Tester l'email REX</button>
+          <button class="btn btn-red btn-sm" onclick="testerEmailDGAC()">📧 Tester email DGAC/BEA</button>
         </div>
       </div>
     </div>
 
+    <!-- ── 2. DSAC Locale — Gestion télépilote ── -->
     <div class="card">
-      <div class="card-header"><span class="card-icon">🏛️</span><h2>Notification DSAC — Zone d'opération</h2></div>
+      <div class="card-header"><span class="card-icon">🏛️</span><h2>DSAC Locale — Gestion télépilote</h2></div>
       <div class="card-body">
+        <div class="info-note" style="margin-bottom:10px;">Votre DSAC locale (direction régionale) pour les demandes de dérogation, renouvellement CATS, et suivi de l'exploitation.</div>
         <div class="field-row full">
-          <div class="field"><label>Email DSAC / Préfecture</label><input type="email" id="notif-dsac-email" placeholder="dsac-nc.dsac-no@aviation-civile.gouv.fr"></div>
+          <div class="field"><label>DSAC Locale compétente</label>
+            <select id="notif-dsac-region">
+              <option value="">— Sélectionner la direction —</option>
+              <option value="dsac-nc">DSAC Nord-Claudia (Auvergne-Rhône-Alpes) · dsac-nc@aviation-civile.gouv.fr</option>
+              <option value="dsac-no">DSAC Nord-Ouest · dsac-no@aviation-civile.gouv.fr</option>
+              <option value="dsac-so">DSAC Sud-Ouest · dsac-so@aviation-civile.gouv.fr</option>
+              <option value="dsac-se">DSAC Sud-Est · dsac-se@aviation-civile.gouv.fr</option>
+              <option value="dsac-ce">DSAC Centre-Est · dsac-ce@aviation-civile.gouv.fr</option>
+              <option value="custom">Autre / Personnalisé</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Email DSAC locale</label><input type="email" id="notif-dsac-email" placeholder="dsac-nc@aviation-civile.gouv.fr"></div>
+          <div class="field"><label>Email CC</label><input type="email" id="notif-dsac-cc" placeholder="copie@exemple.com (optionnel)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Téléphone DSAC locale</label><input type="tel" id="notif-dsac-tel" placeholder="04 72 XX XX XX"></div>
+          <div class="field"><label>Objet email (préfixe)</label><input id="notif-dsac-sujet" value="[Gestion télépilote UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
         </div>
         <div class="field-row full">
-          <div class="field"><label>Email copie (CC)</label><input type="email" id="notif-dsac-cc" placeholder="prefecture@haute-savoie.gouv.fr (optionnel)"></div>
+          <div class="field"><label>Notes / Interlocuteur dédié</label><input id="notif-dsac-contact" placeholder="Ex: M. Dupont — référent UAS DSAC NC"></div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-navy btn-sm" onclick="testerEmailDSAC()">📧 Tester email DSAC locale</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. REX interne ── -->
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><h2>REX interne — Notification équipe</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Email destinataire REX interne</label><input type="email" id="notif-rex-email" placeholder="responsable@exemple.com"></div>
+          <div class="field"><label>Email CC</label><input type="email" id="notif-rex-cc" placeholder="copie@exemple.com (optionnel)"></div>
         </div>
         <div class="field-row full">
-          <div class="field"><label>Objet email DSAC (préfixe)</label><input id="notif-dsac-sujet" value="[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
+          <div class="field"><label>Objet email REX (préfixe)</label><input id="notif-rex-sujet" value="[REX UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
+        </div>
+        <div class="info-note">Pré-remplit le mailto: dans le module REX pour chaque rapport d'incident interne.</div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-amber btn-sm" onclick="testerEmailREX()">📧 Tester email REX</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. Préfecture — Notification zone ── -->
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📍</span><h2>Préfecture — Notification zone d'opération</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Email Préfecture</label><input type="email" id="notif-pref-email" placeholder="prefecture@haute-savoie.gouv.fr"></div>
+          <div class="field"><label>Email CC</label><input type="email" id="notif-pref-cc" placeholder="copie@exemple.com (optionnel)"></div>
         </div>
         <div class="field-row full">
-          <div class="field"><label>Délai de notification préfecture</label>
+          <div class="field"><label>Objet email (préfixe)</label><input id="notif-pref-sujet" value="[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Délai de notification</label>
             <select id="notif-delai">
               <option value="10">10 jours ouvrés (règle 2026)</option>
               <option value="5">5 jours ouvrés (ancienne règle)</option>
               <option value="0">Pas de notification requise</option>
             </select>
           </div>
-        </div>
-        <div class="field-row full">
           <div class="field"><label>Zone habituelle d'opération</label><input id="notif-zone" placeholder="Ex: Thyez / Cluses / Vallée de l'Arve, Haute-Savoie"></div>
         </div>
         <div class="field-row full">
           <div class="field"><label>Lien SOFIA Briefing</label><input id="notif-sofia" value="https://sofia-briefing.aviation-civile.gouv.fr"></div>
         </div>
-        <div class="info-note warn">⚠️ Depuis janvier 2026 : délai de notification préfecture = 10 jours ouvrés (remplace l'ancienne règle des 5 jours).</div>
+        <div class="info-note warn">⚠️ Depuis janvier 2026 : délai de notification préfecture = <strong>10 jours ouvrés</strong> (remplace l'ancienne règle des 5 jours).</div>
         <div style="margin-top:10px;">
-          <button class="btn btn-navy btn-sm" onclick="testerEmailDSAC()">📧 Tester notification DSAC</button>
+          <button class="btn btn-primary btn-sm" onclick="testerEmailPref()">📧 Tester notification préfecture</button>
         </div>
       </div>
     </div>
@@ -702,10 +753,19 @@ const DEFAULTS = {
   api_checkwx:'', api_owm:'',
   opensky_mode:'anonymous', opensky_user:'', opensky_pass:'',
   // Notifications
+  // DGAC / BEA
+  notif_dgac_email:'', notif_bea_email:'bea@bea.aero',
+  notif_dgac_cc:'', notif_dgac_sujet:'[Déclaration incident UAS] CONTE Philippe · FRAjqq48j12nfy4c',
+  // DSAC locale
+  notif_dsac_region:'dsac-nc', notif_dsac_email:'', notif_dsac_cc:'',
+  notif_dsac_tel:'', notif_dsac_sujet:'[Gestion télépilote UAS] CONTE Philippe · FRAjqq48j12nfy4c',
+  notif_dsac_contact:'',
+  // REX interne
   notif_rex_email:'', notif_rex_cc:'',
   notif_rex_sujet:'[REX UAS] CONTE Philippe · FRAjqq48j12nfy4c',
-  notif_dsac_email:'', notif_dsac_cc:'',
-  notif_dsac_sujet:'[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c',
+  // Préfecture
+  notif_pref_email:'', notif_pref_cc:'',
+  notif_pref_sujet:'[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c',
   notif_delai:'10', notif_zone:'', notif_sofia:'https://sofia-briefing.aviation-civile.gouv.fr',
   // Alertes
   alerte_cats:'60', alerte_assurance:'30', alerte_maintenance:'5',
@@ -747,6 +807,26 @@ function init() {
   setupChangeTracking();
   renderStorageStats();
   setupOpenskyMode();
+  setupDSACRegion();
+}
+
+function setupDSACRegion() {
+  const sel = document.getElementById('notif-dsac-region');
+  if (!sel) return;
+  const emails = {
+    'dsac-nc': 'dsac-nc@aviation-civile.gouv.fr',
+    'dsac-no': 'dsac-no@aviation-civile.gouv.fr',
+    'dsac-so': 'dsac-so@aviation-civile.gouv.fr',
+    'dsac-se': 'dsac-se@aviation-civile.gouv.fr',
+    'dsac-ce': 'dsac-ce@aviation-civile.gouv.fr',
+  };
+  sel.addEventListener('change', () => {
+    const emailField = document.getElementById('notif-dsac-email');
+    if (emails[sel.value] && !emailField.value) {
+      emailField.value = emails[sel.value];
+      setDirty(true);
+    }
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -763,9 +843,15 @@ const FIELD_MAP = {
   'thr-rayon':'thr_rayon','thr-duree':'thr_duree',
   'api-checkwx':'api_checkwx','api-owm':'api_owm',
   'api-opensky-mode':'opensky_mode','api-opensky-user':'opensky_user',
+  'notif-dgac-email':'notif_dgac_email','notif-bea-email':'notif_bea_email',
+  'notif-dgac-cc':'notif_dgac_cc','notif-dgac-sujet':'notif_dgac_sujet',
+  'notif-dsac-region':'notif_dsac_region','notif-dsac-email':'notif_dsac_email',
+  'notif-dsac-cc':'notif_dsac_cc','notif-dsac-tel':'notif_dsac_tel',
+  'notif-dsac-sujet':'notif_dsac_sujet','notif-dsac-contact':'notif_dsac_contact',
   'notif-rex-email':'notif_rex_email','notif-rex-cc':'notif_rex_cc',
-  'notif-rex-sujet':'notif_rex_sujet','notif-dsac-email':'notif_dsac_email',
-  'notif-dsac-cc':'notif_dsac_cc','notif-dsac-sujet':'notif_dsac_sujet',
+  'notif-rex-sujet':'notif_rex_sujet',
+  'notif-pref-email':'notif_pref_email','notif-pref-cc':'notif_pref_cc',
+  'notif-pref-sujet':'notif_pref_sujet',
   'notif-delai':'notif_delai','notif-zone':'notif_zone','notif-sofia':'notif_sofia',
   'alerte-cats':'alerte_cats','alerte-assurance':'alerte_assurance',
   'alerte-maintenance':'alerte_maintenance',
@@ -1094,6 +1180,34 @@ function testerEmailREX() {
   if (!to) { showToast('⚠️ Saisir un email REX d\'abord','amber'); return; }
   const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
   window.open(`mailto:${to}${ccPart}?subject=${sujet}&body=${body}`);
+}
+
+function testerEmailDGAC() {
+  const to = document.getElementById('notif-dgac-email').value.trim();
+  const bea = document.getElementById('notif-bea-email').value.trim();
+  const cc = document.getElementById('notif-dgac-cc').value.trim();
+  const sujet = encodeURIComponent(document.getElementById('notif-dgac-sujet').value + ' — TEST');
+  const toFinal = [to, bea].filter(Boolean).join(',');
+  if (!toFinal) { showToast('⚠️ Saisir au moins un email DGAC ou BEA','amber'); return; }
+  const body = encodeURIComponent(
+    `Bonjour,\n\nJe vous signale l'incident/accident UAS suivant :\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{}])[0].nom||'DJI Mavic 4 Pro'} · ${(config.drones||[{}])[0].immat||'UAS-FR-517804'}\nDate : ${new Date().toLocaleString('fr-FR')}\n\n[Décrire l'incident]\n\nCordialement,\n${config.nom}`
+  );
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  window.open(\`mailto:\${toFinal}\${ccPart}?subject=\${sujet}&body=\${body}\`);
+}
+
+function testerEmailPref() {
+  const to = document.getElementById('notif-pref-email').value.trim();
+  const cc = document.getElementById('notif-pref-cc').value.trim();
+  const zone = document.getElementById('notif-zone').value.trim();
+  const delai = document.getElementById('notif-delai').value;
+  const sujet = encodeURIComponent(document.getElementById('notif-pref-sujet').value + ' — TEST');
+  if (!to) { showToast('⚠️ Saisir un email préfecture d\'abord','amber'); return; }
+  const body = encodeURIComponent(
+    `Madame, Monsieur,\n\nConformément à la réglementation en vigueur, je vous informe de la réalisation de vols UAS dans un délai de ${delai} jours ouvrés :\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{}])[0].nom||'DJI Mavic 4 Pro'} · ${(config.drones||[{}])[0].immat||'UAS-FR-517804'}\nZone d'opération : ${zone||'À préciser'}\nScénarios : ${config.scenarios}\n\nCordialement,\n${config.nom}\n${config.tel}`
+  );
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  window.open(\`mailto:\${to}\${ccPart}?subject=\${sujet}&body=\${body}\`);
 }
 
 function testerEmailDSAC() {
