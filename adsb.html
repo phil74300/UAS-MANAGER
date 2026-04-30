@@ -412,8 +412,11 @@
     <h1>✈️ ADS-B Trafic</h1>
     <div id="header-actions">
       <a class="back-btn" href="index.html">← Accueil</a>
-      <button class="hdr-btn" id="btn-my-pos" title="Ma position GPS">
-        📍 Ma position
+      <div id="gps-badge" style="display:none;background:rgba(29,107,55,0.35);border:1px solid rgba(29,107,55,0.5);border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;color:#6FD492;white-space:nowrap;align-items:center;gap:4px;">
+        📍 <span id="gps-acc">GPS</span>
+      </div>
+      <button class="hdr-btn" id="btn-my-pos" title="Activer le suivi GPS temps réel">
+        📍 Suivi GPS
       </button>
     </div>
   </header>
@@ -436,6 +439,17 @@
     <div id="radius-control">
       <label for="radius-input">Rayon (km)</label>
       <input type="number" id="radius-input" value="50" min="10" max="200" step="10">
+    </div>
+    <div class="tool-sep"></div>
+    <div id="interval-control" style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+      <label style="font-size:11px;color:var(--text-muted);font-weight:600;white-space:nowrap;">Refresh</label>
+      <select id="refresh-select" style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-weight:600;color:var(--text);width:58px;">
+        <option value="5">5s</option>
+        <option value="10">10s</option>
+        <option value="15" selected>15s</option>
+        <option value="30">30s</option>
+        <option value="60">60s</option>
+      </select>
     </div>
     <div class="tool-sep"></div>
     <div id="countdown-wrap">
@@ -504,8 +518,45 @@
 
 const DEFAULT_LAT = 45.9523;
 const DEFAULT_LON = 6.5016;
-const REFRESH_INTERVAL = 15; // secondes
-const OPENSKY_BASE = 'https://opensky-network.org/api/states/all';
+let REFRESH_INTERVAL = 15; // secondes — modifiable via sélecteur
+
+// APIs ADS-B avec CORS activé (pas de clé requise)
+// Fallback automatique si l'une est indisponible
+const APIS = [
+  {
+    name: 'adsb.lol',
+    url: (lat, lon, r) => `https://api.adsb.lol/v2/point/${lat.toFixed(4)}/${lon.toFixed(4)}/${r}`,
+    parse: (data) => data.ac || [],
+    toAircraft: (a) => ({
+      icao:     a.hex || '?',
+      callsign: (a.flight || a.r || '').trim(),
+      country:  a.r || '?',
+      lat:      a.lat,
+      lon:      a.lon,
+      alt:      a.alt_baro !== 'ground' ? parseFloat(a.alt_baro) * 0.3048 : null, // ft→m
+      onGround: a.alt_baro === 'ground' || a.on_ground,
+      speed:    a.gs ? a.gs * 0.514444 : null, // kts→m/s
+      track:    a.track || null,
+    }),
+  },
+  {
+    name: 'adsb.fi',
+    url: (lat, lon, r) => `https://api.adsb.fi/v1/aircraft/state?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&radius=${r}`,
+    parse: (data) => data.aircraft || [],
+    toAircraft: (a) => ({
+      icao:     a.icao24 || '?',
+      callsign: (a.callsign || '').trim(),
+      country:  a.origin_country || '?',
+      lat:      a.latitude,
+      lon:      a.longitude,
+      alt:      a.baro_altitude,
+      onGround: a.on_ground,
+      speed:    a.velocity,
+      track:    a.true_track,
+    }),
+  },
+];
+let currentApiIdx = 0;
 
 // ─── STATE ───────────────────────────────────────────────
 let state = {
@@ -602,6 +653,7 @@ function bbox() {
   };
 }
 
+// ─── FETCH ADS-B (multi-API avec fallback) ────────────────
 async function fetchADSB() {
   if (state.isLoading) return;
   if (state.retryIn > 0) return;
@@ -609,37 +661,78 @@ async function fetchADSB() {
   state.isLoading = true;
   setStatus('⏳ Chargement…', false);
 
-  const b = bbox();
-  const url = `${OPENSKY_BASE}?lamin=${b.lamin.toFixed(4)}&lomin=${b.lomin.toFixed(4)}&lamax=${b.lamax.toFixed(4)}&lomax=${b.lomax.toFixed(4)}`;
+  const api = APIS[currentApiIdx];
+  const url = api.url(state.lat, state.lon, state.radius);
 
   try {
-    const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    const resp = await fetch(url, {
+      signal: AbortSignal.timeout(10000),
+      headers: { 'Accept': 'application/json' },
+    });
 
     if (resp.status === 429) {
       state.isLoading = false;
-      startRetry(10);
-      showToast('⚠️ Limite API atteinte, retry dans 10s', 'amber');
+      // Basculer sur l'API suivante
+      currentApiIdx = (currentApiIdx + 1) % APIS.length;
+      showToast(`⚠️ Limite ${api.name} — bascule sur ${APIS[currentApiIdx].name}`, 'amber');
+      startRetry(15);
       return;
     }
 
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
     const data = await resp.json();
-    state.aircraft = data.states || [];
+    const raw = api.parse(data);
+
+    // Normaliser vers format interne
+    state.aircraft = raw
+      .map(api.toAircraft)
+      .filter(a => a.lat && a.lon);
+
     state.lastFetch = new Date();
     renderAircraft();
     updateStats();
-    setStatus('✅ En ligne', true);
+    setStatus(`✅ ${api.name}`, true);
+    updateApiBadge(api.name, true);
+
   } catch (e) {
-    if (e.name === 'TimeoutError') {
+    const isTimeout = e.name === 'TimeoutError' || e.name === 'AbortError';
+    const isCors = e.message.includes('Failed to fetch') || e.message.includes('Load failed');
+
+    if (isCors) {
+      // CORS ou réseau — essayer l'API suivante
+      const nextIdx = (currentApiIdx + 1) % APIS.length;
+      if (nextIdx !== currentApiIdx) {
+        currentApiIdx = nextIdx;
+        showToast(`⚠️ ${api.name} inaccessible — bascule sur ${APIS[currentApiIdx].name}`, 'amber');
+        state.isLoading = false;
+        await fetchADSB(); // retry immédiat avec autre API
+        return;
+      }
+    }
+
+    if (isTimeout) {
       showToast('⏱ Délai dépassé — réseau lent', 'amber');
     } else {
-      showToast(`❌ Erreur: ${e.message}`, 'red');
+      showToast(`❌ ${api.name} : ${e.message.slice(0,40)}`, 'red');
     }
     setStatus('⚠️ Hors ligne', false);
+    updateApiBadge(api.name, false);
   } finally {
     state.isLoading = false;
   }
+}
+
+function updateApiBadge(name, ok) {
+  let badge = document.getElementById('api-source-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'api-source-badge';
+    badge.style.cssText = 'position:absolute;bottom:52px;right:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;z-index:500;box-shadow:var(--shadow);';
+    document.getElementById('map-container').appendChild(badge);
+  }
+  badge.textContent = ok ? `📡 ${name}` : `⚠️ ${name}`;
+  badge.style.color = ok ? 'var(--green)' : 'var(--amber)';
 }
 
 // ─── RENDER AIRCRAFT ─────────────────────────────────────
@@ -647,29 +740,15 @@ function renderAircraft() {
   aircraftLayer.clearLayers();
 
   const visible = state.aircraft.filter(a => {
-    if (!a[5] || !a[6]) return false; // pas de position
-    if (!state.showGround && a[8]) return false; // filtre sol
+    if (!a.lat || !a.lon) return false;
+    if (!state.showGround && a.onGround) return false;
     return true;
   });
 
   visible.forEach(a => {
-    // OpenSky states: [icao24, callsign, origin_country, time_pos, last_contact,
-    //   longitude, latitude, baro_alt, on_ground, velocity, true_track,
-    //   vertical_rate, sensors, geo_alt, squawk, spi, position_source]
-    const lon      = a[5];
-    const lat      = a[6];
-    const alt      = a[7];   // baro_alt en mètres
-    const onGround = a[8];
-    const speed    = a[9];   // m/s
-    const track    = a[10];  // degrees true
-    const callsign = (a[1] || a[0] || '???').trim();
-    const icao     = a[0];
-    const country  = a[2] || '?';
-
-    const icon = makeAircraftIcon(track, alt, onGround);
-    const marker = L.marker([lat, lon], { icon }).addTo(aircraftLayer);
-
-    marker.on('click', () => showDetail({ callsign, icao, country, alt, onGround, speed, track, lat, lon }));
+    const icon = makeAircraftIcon(a.track, a.alt, a.onGround);
+    const marker = L.marker([a.lat, a.lon], { icon }).addTo(aircraftLayer);
+    marker.on('click', () => showDetail(a));
   });
 }
 
@@ -677,14 +756,14 @@ function renderAircraft() {
 function showDetail(ac) {
   document.getElementById('detail-title').textContent = `✈️ ${ac.callsign || ac.icao}`;
 
-  const altStr = ac.onGround ? '🛬 Au sol' : (ac.alt !== null && ac.alt !== undefined ? `${Math.round(ac.alt)} m` : 'N/A');
-  const spdStr = ac.speed !== null && ac.speed !== undefined ? `${Math.round(ac.speed * 3.6)} km/h` : 'N/A';
-  const trkStr = ac.track !== null && ac.track !== undefined ? `${Math.round(ac.track)}°` : 'N/A';
+  const altStr = ac.onGround ? '🛬 Au sol' : (ac.alt != null ? `${Math.round(ac.alt)} m` : 'N/A');
+  const spdStr = ac.speed != null ? `${Math.round(ac.speed * 3.6)} km/h` : 'N/A';
+  const trkStr = ac.track != null ? `${Math.round(ac.track)}°` : 'N/A';
 
   document.getElementById('detail-grid').innerHTML = `
     <div class="detail-cell"><div class="dc-label">ICAO24</div><div class="dc-val">${ac.icao}</div></div>
     <div class="detail-cell"><div class="dc-label">Indicatif</div><div class="dc-val">${ac.callsign || '—'}</div></div>
-    <div class="detail-cell"><div class="dc-label">Pays d'origine</div><div class="dc-val">${ac.country}</div></div>
+    <div class="detail-cell"><div class="dc-label">Pays / Immat.</div><div class="dc-val">${ac.country}</div></div>
     <div class="detail-cell"><div class="dc-label">Statut</div><div class="dc-val">${ac.onGround ? '🛬 Sol' : '🛫 En vol'}</div></div>
     <div class="detail-cell"><div class="dc-label">Altitude baro.</div><div class="dc-val">${altStr}</div></div>
     <div class="detail-cell"><div class="dc-label">Vitesse sol</div><div class="dc-val">${spdStr}</div></div>
@@ -701,8 +780,8 @@ function closeDetail() {
 
 // ─── STATS ───────────────────────────────────────────────
 function updateStats() {
-  const total = state.aircraft.filter(a => a[5] && a[6]).length;
-  const airborne = state.aircraft.filter(a => a[5] && a[6] && !a[8]).length;
+  const total = state.aircraft.length;
+  const airborne = state.aircraft.filter(a => !a.onGround).length;
   const t = state.lastFetch;
   const timeStr = t ? `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}` : '—';
 
@@ -792,30 +871,79 @@ function updatePilotPosition(lat, lon) {
   radiusCircle.setRadius(state.radius * 1000);
 }
 
-function goToMyPosition() {
+// ─── GPS TEMPS RÉEL ────────────────────────────────────
+let gpsWatchId = null;
+let gpsActive = false;
+let firstGpsFix = true;
+
+function toggleGPS() {
+  if (gpsActive) {
+    stopGPS();
+  } else {
+    startGPS();
+  }
+}
+
+function startGPS() {
   if (!navigator.geolocation) {
     showToast('⚠️ Géolocalisation non disponible', 'amber');
     return;
   }
-  document.getElementById('btn-my-pos').innerHTML = '<span class="spin">⏳</span> GPS…';
-  navigator.geolocation.getCurrentPosition(
+  document.getElementById('btn-my-pos').innerHTML = '<span class="spin">⏳</span> Acquisition…';
+  firstGpsFix = true;
+
+  gpsWatchId = navigator.geolocation.watchPosition(
     (pos) => {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
+      const acc = Math.round(pos.coords.accuracy);
+
       updatePilotPosition(lat, lon);
-      map.setView([lat, lon], 10);
-      showToast(`📍 Position GPS acquise`, 'info');
-      document.getElementById('btn-my-pos').textContent = '📍 Ma position';
-      // Relance fetch avec nouvelle position
-      fetchADSB().then(() => startCountdown());
+
+      // Badge GPS visible avec précision
+      const badge = document.getElementById('gps-badge');
+      const accEl = document.getElementById('gps-acc');
+      badge.style.display = 'flex';
+      accEl.textContent = `±${acc}m`;
+
+      // Centrer la carte seulement au premier fix
+      if (firstGpsFix) {
+        map.setView([lat, lon], 11);
+        showToast('📍 Suivi GPS actif', 'info');
+        firstGpsFix = false;
+        // Relancer fetch ADS-B avec la nouvelle zone
+        clearInterval(countdownTimer);
+        fetchADSB().then(() => startCountdown());
+      }
+
+      gpsActive = true;
+      document.getElementById('btn-my-pos').textContent = '⏹ Arrêter GPS';
+      document.getElementById('btn-my-pos').style.background = 'rgba(29,107,55,0.4)';
     },
     (err) => {
-      showToast('❌ GPS refusé ou indisponible', 'red');
-      document.getElementById('btn-my-pos').textContent = '📍 Ma position';
+      const msgs = {1:'GPS refusé', 2:'GPS indisponible', 3:'Délai GPS dépassé'};
+      showToast(`❌ ${msgs[err.code] || 'Erreur GPS'}`, 'red');
+      stopGPS();
     },
-    { timeout: 10000, enableHighAccuracy: true }
+    { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
   );
 }
+
+function stopGPS() {
+  if (gpsWatchId !== null) {
+    navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId = null;
+  }
+  gpsActive = false;
+  firstGpsFix = true;
+  document.getElementById('btn-my-pos').textContent = '📍 Suivi GPS';
+  document.getElementById('btn-my-pos').style.background = '';
+  document.getElementById('gps-badge').style.display = 'none';
+  showToast('⏹ Suivi GPS arrêté', 'amber');
+}
+
+// Alias pour compatibilité
+function goToMyPosition() { toggleGPS(); }
 
 // ─── RADIUS ──────────────────────────────────────────────
 document.getElementById('radius-input').addEventListener('change', (e) => {
@@ -844,6 +972,18 @@ document.getElementById('btn-refresh-now').addEventListener('click', () => {
   fetchADSB().then(() => startCountdown());
 });
 
+// ─── REFRESH INTERVAL SELECTOR ───────────────────────────
+document.getElementById('refresh-select').addEventListener('change', (e) => {
+  REFRESH_INTERVAL = parseInt(e.target.value);
+  // Mettre à jour le stroke-dasharray du ring selon le nouvel intervalle
+  const r = 12;
+  const newCirc = 2 * Math.PI * r;
+  document.getElementById('ring-progress').style.strokeDasharray = newCirc;
+  clearInterval(countdownTimer);
+  startCountdown();
+  showToast(`🔄 Refresh toutes les ${REFRESH_INTERVAL}s`, 'info');
+});
+
 // ─── MY POSITION ─────────────────────────────────────────
 document.getElementById('btn-my-pos').addEventListener('click', goToMyPosition);
 
@@ -864,6 +1004,20 @@ setTimeout(() => {
 setTimeout(() => {
   map.invalidateSize({ animate: false });
 }, 500);
+
+// Lire le refresh depuis config si dispo
+try {
+  const c = JSON.parse(localStorage.getItem('uas_config') || '{}');
+  if (c.thr_rayon) {
+    state.radius = parseInt(c.thr_rayon);
+    document.getElementById('radius-input').value = state.radius;
+    radiusCircle.setRadius(state.radius * 1000);
+  }
+} catch {}
+
+// Arrêter le GPS proprement en quittant la page
+window.addEventListener('beforeunload', () => { if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId); });
+window.addEventListener('pagehide', () => { if (gpsWatchId !== null) navigator.geolocation.clearWatch(gpsWatchId); });
 
 showToast('📡 Connexion OpenSky…', 'info');
 fetchADSB().then(() => startCountdown());

@@ -1193,7 +1193,7 @@ function testerEmailDGAC() {
     `Bonjour,\n\nJe vous signale l'incident/accident UAS suivant :\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{}])[0].nom||'DJI Mavic 4 Pro'} · ${(config.drones||[{}])[0].immat||'UAS-FR-517804'}\nDate : ${new Date().toLocaleString('fr-FR')}\n\n[Décrire l'incident]\n\nCordialement,\n${config.nom}`
   );
   const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
-  window.open(\`mailto:\${toFinal}\${ccPart}?subject=\${sujet}&body=\${body}\`);
+  window.open(`mailto:${toFinal}${ccPart}?subject=${sujet}&body=${body}`);
 }
 
 function testerEmailPref() {
@@ -1207,7 +1207,7 @@ function testerEmailPref() {
     `Madame, Monsieur,\n\nConformément à la réglementation en vigueur, je vous informe de la réalisation de vols UAS dans un délai de ${delai} jours ouvrés :\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{}])[0].nom||'DJI Mavic 4 Pro'} · ${(config.drones||[{}])[0].immat||'UAS-FR-517804'}\nZone d'opération : ${zone||'À préciser'}\nScénarios : ${config.scenarios}\n\nCordialement,\n${config.nom}\n${config.tel}`
   );
   const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
-  window.open(\`mailto:\${to}\${ccPart}?subject=\${sujet}&body=\${body}\`);
+  window.open(`mailto:${to}${ccPart}?subject=${sujet}&body=${body}`);
 }
 
 function testerEmailDSAC() {
