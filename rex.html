@@ -333,6 +333,7 @@
     <h1>REX — Incidents</h1>
     <div class="header-sub">Retour d'expérience · CONTE Philippe</div>
   </div>
+  <a class="back-btn" href="index.html">← Accueil</a>
 </div>
 
 <!-- DSAC Critical Banner -->
@@ -462,7 +463,10 @@
   </div>
 
   <div class="section" style="margin-bottom:16px;">
-    <button class="btn btn-danger" onclick="saveIncident()">⚠️ Enregistrer l'incident</button>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-danger" style="flex:1;" onclick="saveIncident()">⚠️ Enregistrer l'incident</button>
+      <button onclick="resetIncidentForm()" class="btn" style="flex:0 0 auto;background:transparent;color:var(--text-muted,#5A6478);border:1.5px solid #ccc;">✕ Annuler</button>
+    </div>
   </div>
 </div>
 
@@ -661,6 +665,15 @@ function updateDSACFields() {
 }
 
 /* ── Save Incident ── */
+function resetIncidentForm() {
+  document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(el => {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  // Scroll to top of form
+  const tab = document.querySelector('[data-tab="saisie"], #tab-saisie');
+  if (tab) tab.scrollTop = 0;
+}
 function saveIncident() {
   const date = document.getElementById('incidentDate').value;
   const cat  = document.getElementById('incidentCategorie').value;

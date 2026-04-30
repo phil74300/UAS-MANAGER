@@ -360,6 +360,7 @@ nav{
   <button class="btn-refresh" id="btn-refresh" onclick="doRefresh(true)">
     <span class="spin">↻</span> Actualiser
   </button>
+<a class="back-btn" href="index.html" style="margin-left:auto;flex-shrink:0;">← Accueil</a>
 </header>
 
 <!-- WIND ALERT -->
@@ -943,7 +944,7 @@ nav{
       <div class="notam-actions">
         <div class="notam-info" id="notam-info">NOTAM pour Annecy-Haute-Savoie (LFLP) via les services AIP/SIA. Ouvrez Sofia Briefing pour le briefing complet du secteur LF.</div>
         <div class="notam-links" id="notam-links">
-    <a class="btn-notam primary" href="https://sofia-briefing.aviation-civile.gouv.fr/sofia/pages/notamform.html" target="_blank" rel="noopener">🟢 Sofia Briefing SIA</a>
+    <a class="btn-notam primary" href="https://sofia-briefing.aviation-civile.gouv.fr/sofia/espace-client/briefing" target="_blank" rel="noopener">🟢 Sofia Briefing SIA</a>
     <a class="btn-notam secondary" href="https://www.notam.aviation-civile.gouv.fr/plibs/notamBulletin.php?icao=LFLP" target="_blank" rel="noopener">📋 NOTAM SIA — LFLP</a>
     <a class="btn-notam amber" href="https://www.skybriefing.com/" target="_blank" rel="noopener">☁️ SkyBriefing</a>
     <a class="btn-notam secondary" href="https://pilotweb.nas.faa.gov/PilotWeb/?reportType=RAW&amp;reportFacility=LFLP&amp;retrieveLocId=LFLP&amp;actionType=notamRetrievalByICAOs&amp;Submit=View+NOTAMs" target="_blank" rel="noopener">🌐 FAA NOTAM</a>
@@ -964,13 +965,7 @@ nav{
 </div><!-- /main-wrap -->
 
 <!-- BOTTOM TAB BAR -->
-<nav>
-  <a class="tab" href="file:///Users/contephilippe/Downloads/meteo_4.html#"><span class="tab-icon">🏠</span>Accueil</a>
-  <a class="tab" href="file:///Users/contephilippe/Downloads/meteo_4.html#"><span class="tab-icon">✈️</span>Vols</a>
-  <a class="tab" href="file:///Users/contephilippe/Downloads/meteo_4.html#"><span class="tab-icon">🔧</span>Maint.</a>
-  <a class="tab active" href="file:///Users/contephilippe/Downloads/meteo_4.html#"><span class="tab-icon">🌦</span>Météo</a>
-  <a class="tab" href="file:///Users/contephilippe/Downloads/meteo_4.html#"><span class="tab-icon">⚙️</span>Config</a>
-</nav>
+
 
 </div><!-- /app -->
 
@@ -1223,7 +1218,7 @@ function buildNotamLinks(ap) {
   const icao = ap.icao;
   const linksEl = document.getElementById('notam-links');
   // Direct NOTAM query URL for Sofia (best effort — prefill ICAO)
-  const sofiaUrl = `https://sofia-briefing.aviation-civile.gouv.fr/sofia/pages/notamform.html`;
+  const sofiaUrl = `https://sofia-briefing.aviation-civile.gouv.fr/sofia/espace-client/briefing`;
   // EUROCONTROL Prefligh
   const euroUrl  = `https://www.eurocontrol.int/tool/prefligh`;
   // SkyVector for visual reference

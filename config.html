@@ -44,7 +44,7 @@ html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystem
 /* ─── TAB NAV ─── */
 #tab-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;}
 #tab-nav::-webkit-scrollbar{display:none;}
-.tnav-btn{flex:1;min-width:72px;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted);font-size:11.5px;font-weight:600;padding:11px 6px;cursor:pointer;white-space:nowrap;text-align:center;transition:color .15s,border-color .15s;}
+.tnav-btn{flex:0 0 auto;min-width:0;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted);font-size:11px;font-weight:600;padding:10px 14px;cursor:pointer;white-space:nowrap;text-align:center;transition:color .15s,border-color .15s;letter-spacing:-.1px;}
 .tnav-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
 @media(prefers-color-scheme:dark){.tnav-btn.active{color:#7EB8F7;border-bottom-color:#7EB8F7;}}
 

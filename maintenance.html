@@ -193,6 +193,10 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
   </div>
 </div>
 
+<div style="background:var(--navy,#0C447C);display:flex;align-items:center;padding:env(safe-area-inset-top) 14px 10px;gap:10px;position:sticky;top:0;z-index:200;">
+  <span style="font-size:16px;font-weight:800;color:#fff;flex:1;">🔧 Maintenance</span>
+  <a class="back-btn" href="index.html">← Accueil</a>
+</div>
 <!-- DSAC Banner -->
 <div class="banner red" id="dsacBanner" style="display: none;">
   <div class="banner-row"><span style="font-size:18px">🚨</span><span id="dsacBannerText">DÉCLARATION DSAC REQUISE — délai dépassé</span></div>
@@ -281,7 +285,10 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
     </div>
   </div>
   <div class="sec" style="margin-bottom:16px;">
-    <button class="btn btn-green" onclick="saveMaint()">💾 Enregistrer</button>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-green" style="flex:1;" onclick="saveMaint()">💾 Enregistrer</button>
+      <button onclick="resetMaintForm()" style="flex:0 0 auto;padding:14px 18px;border-radius:var(--radius);border:1.5px solid var(--border,#D0DCF0);background:transparent;color:var(--muted,#5A6478);font-size:15px;font-weight:700;cursor:pointer;">✕ Annuler</button>
+    </div>
   </div>
 </div>
 
@@ -372,6 +379,7 @@ input:checked+.tgl-sl::before{transform:translateX(20px);}
         <button class="btn btn-ghost" onclick="openCresus()">📄 Formulaire CRESUS (PDF)</button>
         <button class="btn btn-amber" onclick="sendMailDSAC()">📧 Envoyer par mail à la DSAC</button>
         <button class="btn btn-red" onclick="saveRex()">⚠️ Enregistrer l'incident</button>
+        <button onclick="resetRexForm()" class="btn" style="background:transparent;color:var(--muted,#5A6478);border:1.5px solid var(--border,#D0DCF0);">✕ Annuler</button>
       </div>
     </div>
   </div>
@@ -520,6 +528,22 @@ function renderStatut() {
 }
 
 /* ══ MAINTENANCE — SAVE ══ */
+function resetMaintForm() {
+  ['m-date','m-type','m-duree','m-tech','m-cout','m-pieces','m-notes',
+   'm-essai-date','m-essai-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const sel = document.getElementById('m-essai-res');
+  if (sel) sel.selectedIndex = 0;
+  showToast && showToast('Formulaire réinitialisé');
+}
+function resetRexForm() {
+  ['rex-date','rex-type','rex-desc','rex-action','rex-gravite'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
 function saveMaint() {
   const date = document.getElementById('m-date').value;
   const type = document.getElementById('m-type').value;

@@ -120,6 +120,7 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
     <input id="missionId" placeholder="Ex: M2025-001" maxlength="30">
     <button onclick="showHist()">Missions</button>
   </div>
+  <a class="back-btn" href="index.html">← Accueil</a>
 </div>
 
 <div class="segbar">
@@ -158,6 +159,7 @@ body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0
 <div class="savebar">
   <button class="btn-hist" onclick="showHist()">Hist.</button>
   <button class="btn-save" onclick="saveMission()">Enregistrer la mission</button>
+  <button onclick="resetChecklist()" style="background:transparent;border:1.5px solid #d8e4f0;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:700;cursor:pointer;color:#5A6478;font-family:inherit;">✕ Annuler</button>
 </div>
 
 <div class="ovlay" id="ovOv">
@@ -399,6 +401,14 @@ function showGo() {
 
 function doOv() { ovOk = true; closeOv('ovOv'); showGo(); toast('Derogation enregistree'); }
 
+function resetChecklist() {
+  if (!confirm('Réinitialiser tous les items de la check-liste ?')) return;
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.checked = false;
+  });
+  const missionEl = document.getElementById('missionId');
+  if (missionEl) missionEl.value = '';
+}
 function saveMission() {
   var id = document.getElementById('missionId').value;
   id = id ? id.trim() : '';
