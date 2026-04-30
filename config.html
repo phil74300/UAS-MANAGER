@@ -1,705 +1,419 @@
 <!DOCTYPE html>
-<!-- saved from url=(0049)file:///Users/contephilippe/Downloads/config.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UAS Manager — Config &amp; Export</title>
-<!-- JSZip CDN pour export ZIP -->
-<script src="./config_files/jszip.min.js"></script>
+<title>UAS Manager — Config & Export</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════
-   UAS Manager · Module 8 — Config & Export
+   UAS Manager · Module 8 v2 — Config & Export
    © Philippe CONTE · FRAjqq48j12nfy4c
 ═══════════════════════════════════════════ */
 :root {
-  --navy:        #0C447C;
-  --blue:        #185FA5;
-  --light-blue:  #E6F1FB;
-  --green:       #1D6B37;
-  --light-green: #E8F5E9;
-  --amber:       #BA7517;
-  --light-amber: #FAEEDA;
-  --red:         #8B2020;
-  --light-red:   #FDECEC;
-  --teal:        #006064;
-  --bg:          #F0F4FA;
-  --surface:     #FFFFFF;
-  --surface2:    #F8FAFD;
-  --text:        #0D1220;
-  --text-muted:  #5A6478;
-  --border:      #D0DCF0;
-  --shadow:      0 2px 12px rgba(12,68,124,0.10);
-  --radius:      14px;
-  --header-h:    56px;
+  --navy:#0C447C; --blue:#185FA5; --light-blue:#E6F1FB;
+  --green:#1D6B37; --light-green:#E8F5E9;
+  --amber:#BA7517; --light-amber:#FAEEDA;
+  --red:#8B2020; --light-red:#FDECEC;
+  --teal:#006064;
+  --bg:#F0F4FA; --surface:#FFFFFF; --surface2:#F8FAFD;
+  --text:#0D1220; --text-muted:#5A6478; --border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,0.10);
+  --radius:14px; --header-h:56px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:         #0D1220;
-    --surface:    #161E30;
-    --surface2:   #1C2840;
-    --text:       #E8EEF8;
-    --text-muted: #7A8BAA;
-    --border:     #253050;
-    --light-blue: #1A2D4A;
-    --light-amber:#2A1E00;
-    --light-green:#0F2318;
-    --light-red:  #2A0D0D;
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0D1220; --surface:#161E30; --surface2:#1C2840;
+    --text:#E8EEF8; --text-muted:#7A8BAA; --border:#253050;
+    --light-blue:#1A2D4A; --light-amber:#2A1E00;
+    --light-green:#0F2318; --light-red:#2A0D0D;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{
-  min-height:100%;
-  font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
 /* ─── HEADER ─── */
-#header{
-  position:sticky;top:0;z-index:200;
-  background:var(--navy);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:env(safe-area-inset-top) 16px 0;
-  height:calc(var(--header-h) + env(safe-area-inset-top));
-  box-shadow:0 2px 12px rgba(12,68,124,0.25);
-  overflow:hidden;
-}
-#header::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 90% 50%,rgba(24,95,165,0.4) 0%,transparent 60%);
-  pointer-events:none;
-}
-#header h1{
-  font-size:17px;font-weight:800;color:#fff;
-  letter-spacing:-.2px;display:flex;align-items:center;gap:8px;
-  position:relative;z-index:1;
-}
-.back-btn{
-  background:rgba(255,255,255,0.14);border:none;border-radius:8px;
-  color:#fff;padding:6px 12px;font-size:13px;font-weight:600;
-  cursor:pointer;display:flex;align-items:center;gap:4px;
-  text-decoration:none;transition:background .15s;
-  position:relative;z-index:1;flex-shrink:0;
-}
+#header{position:sticky;top:0;z-index:200;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 16px 0;height:calc(var(--header-h) + env(safe-area-inset-top));box-shadow:0 2px 12px rgba(12,68,124,0.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 50%,rgba(24,95,165,0.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.2px;display:flex;align-items:center;gap:8px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,0.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;text-decoration:none;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
 .back-btn:active{background:rgba(255,255,255,0.28);}
 
 /* ─── TAB NAV ─── */
-#tab-nav{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  display:flex;
-  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-  position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));
-  z-index:100;
-}
+#tab-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;}
 #tab-nav::-webkit-scrollbar{display:none;}
-.tnav-btn{
-  flex:1;min-width:80px;
-  background:none;border:none;border-bottom:2.5px solid transparent;
-  color:var(--text-muted);
-  font-size:12px;font-weight:600;
-  padding:12px 8px;cursor:pointer;
-  white-space:nowrap;text-align:center;
-  transition:color .15s,border-color .15s;
-}
+.tnav-btn{flex:1;min-width:72px;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted);font-size:11.5px;font-weight:600;padding:11px 6px;cursor:pointer;white-space:nowrap;text-align:center;transition:color .15s,border-color .15s;}
 .tnav-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
 @media(prefers-color-scheme:dark){.tnav-btn.active{color:#7EB8F7;border-bottom-color:#7EB8F7;}}
 
 /* ─── CONTENT ─── */
-#content{
-  max-width:640px;margin:0 auto;
-  padding:20px 16px calc(40px + env(safe-area-inset-bottom));
-}
+#content{max-width:640px;margin:0 auto;padding:16px 14px calc(80px + env(safe-area-inset-bottom));}
 
 /* ─── SECTION ─── */
-.section{display:none;}
-.section.active{display:block;}
+.section{display:none;} .section.active{display:block;}
 
 /* ─── CARD ─── */
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  margin-bottom:14px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  animation:fadeUp .3s both;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-
-.card-header{
-  background:var(--surface2);
-  border-bottom:1px solid var(--border);
-  padding:12px 16px;
-  display:flex;align-items:center;gap:8px;
-}
-.card-header h2{
-  font-size:13px;font-weight:700;color:var(--navy);
-  letter-spacing:.2px;flex:1;
-}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:11px 14px;display:flex;align-items:center;gap:8px;}
+.card-header h2{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.2px;flex:1;}
 @media(prefers-color-scheme:dark){.card-header h2{color:#7EB8F7;}}
-.card-icon{font-size:18px;line-height:1;}
-.card-body{padding:14px 16px;}
+.card-icon{font-size:17px;line-height:1;}
+.card-body{padding:12px 14px;}
 
-/* ─── FORM FIELDS ─── */
-.field-row{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  margin-bottom:10px;
-}
+/* ─── FORM ─── */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
 .field-row.full{grid-template-columns:1fr;}
+.field-row.tri{grid-template-columns:1fr 1fr 1fr;}
 .field{display:flex;flex-direction:column;gap:4px;}
-.field label{
-  font-size:10px;font-weight:700;color:var(--text-muted);
-  text-transform:uppercase;letter-spacing:.6px;
-}
-.field input,.field select{
-  background:var(--bg);
-  border:1.5px solid var(--border);
-  border-radius:8px;
-  color:var(--text);
-  font-size:13px;font-weight:500;
-  padding:8px 10px;
-  transition:border-color .15s,box-shadow .15s;
-  width:100%;
-  font-family:inherit;
-}
-.field input:focus,.field select:focus{
-  outline:none;
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(24,95,165,.12);
-}
-.field input[readonly]{
-  background:var(--light-blue);
-  color:var(--text-muted);
-  cursor:default;
-}
-
-/* ─── METAR STATIONS ─── */
-.stations-grid{
-  display:flex;flex-wrap:wrap;gap:8px;
-  margin-bottom:4px;
-}
-.station-chip{
-  display:flex;align-items:center;gap:6px;
-  background:var(--light-blue);
-  border:1.5px solid var(--blue);
-  border-radius:8px;
-  padding:5px 10px;
-  font-size:12px;font-weight:700;color:var(--navy);
-}
-@media(prefers-color-scheme:dark){.station-chip{color:#7EB8F7;background:var(--light-blue);}}
-.station-chip .del{
-  background:none;border:none;color:var(--red);
-  font-size:14px;cursor:pointer;padding:0;line-height:1;
-}
-.add-station{
-  display:flex;gap:8px;margin-top:8px;
-}
-.add-station input{
-  flex:1;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:8px;color:var(--text);font-size:13px;
-  padding:7px 10px;font-family:inherit;text-transform:uppercase;
-}
-.add-station input:focus{outline:none;border-color:var(--blue);}
-
-/* ─── THRESHOLDS ─── */
-.threshold-row{
-  display:grid;grid-template-columns:1fr 80px;
-  align-items:center;gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid var(--border);
-}
-.threshold-row:last-child{border-bottom:none;}
-.thr-label{font-size:13px;font-weight:600;color:var(--text);}
-.thr-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
-.thr-input{
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:8px;color:var(--text);font-size:13px;
-  font-weight:700;padding:7px 8px;text-align:center;
-  font-family:inherit;width:100%;
-}
-.thr-input:focus{outline:none;border-color:var(--blue);}
-
-/* ─── PILOTES ─── */
-.pilot-row{
-  display:grid;grid-template-columns:80px 1fr;
-  align-items:center;gap:10px;
-  padding:8px 0;border-bottom:1px solid var(--border);
-}
-.pilot-row:last-child{border-bottom:none;}
-.pilot-badge{
-  font-size:11px;font-weight:700;
-  padding:4px 8px;border-radius:6px;
-  text-align:center;
-}
-.pilot-badge.rpic{background:var(--light-blue);color:var(--navy);}
-.pilot-badge.obs{background:var(--light-green);color:var(--green);}
-.pilot-input{
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:8px;color:var(--text);font-size:13px;
-  padding:8px 10px;font-family:inherit;width:100%;
-}
-.pilot-input:focus{outline:none;border-color:var(--blue);}
+.field label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.field input,.field select,.field textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;padding:8px 10px;transition:border-color .15s,box-shadow .15s;width:100%;font-family:inherit;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12);}
+.field input[readonly]{background:var(--light-blue);color:var(--text-muted);cursor:default;}
+.field textarea{resize:vertical;min-height:56px;}
 
 /* ─── BUTTONS ─── */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  border:none;border-radius:10px;
-  font-size:13px;font-weight:700;cursor:pointer;
-  padding:10px 16px;
-  transition:opacity .15s,transform .1s;
-  font-family:inherit;
-  white-space:nowrap;
-}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:10px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
 .btn:active{opacity:.8;transform:scale(.97);}
 .btn-primary{background:var(--blue);color:#fff;}
 .btn-green{background:var(--green);color:#fff;}
 .btn-amber{background:var(--amber);color:#fff;}
 .btn-red{background:var(--red);color:#fff;}
 .btn-navy{background:var(--navy);color:#fff;}
-.btn-outline{
-  background:transparent;color:var(--navy);
-  border:1.5px solid var(--border);
-}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border);}
 @media(prefers-color-scheme:dark){.btn-outline{color:#7EB8F7;}}
 .btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
 .btn-full{width:100%;}
+.btn-icon{padding:7px 10px;font-size:14px;}
 
-/* ─── SAVE BAR ─── */
-#save-bar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--navy);
-  padding:12px 20px;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom));
-  display:flex;align-items:center;justify-content:space-between;
-  gap:12px;z-index:300;
-  transform:translateY(100%);
-  transition:transform .28s cubic-bezier(.34,1.2,.64,1);
-  box-shadow:0 -4px 20px rgba(12,68,124,.3);
-}
-#save-bar.visible{transform:translateY(0);}
-#save-bar-msg{font-size:13px;color:rgba(255,255,255,.75);font-weight:500;}
+/* ─── DYNAMIC LIST (drones / pilotes) ─── */
+.dyn-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.dyn-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;position:relative;}
+.dyn-item.active-item{border-color:var(--blue);}
+.dyn-item-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.dyn-item-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--light-blue);color:var(--navy);white-space:nowrap;}
+.dyn-item-badge.primary{background:var(--navy);color:#fff;}
+.dyn-item-name{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+.dyn-item-actions{display:flex;gap:6px;}
+.dyn-toggle{background:none;border:none;font-size:18px;cursor:pointer;padding:0;line-height:1;color:var(--text-muted);}
+.dyn-fields{display:none;}
+.dyn-fields.open{display:block;}
+.dyn-del{background:var(--light-red);border:none;border-radius:6px;color:var(--red);font-size:12px;font-weight:700;padding:4px 8px;cursor:pointer;}
+.dyn-del:active{opacity:.7;}
+.dyn-primary-btn{background:var(--light-green);border:none;border-radius:6px;color:var(--green);font-size:11px;font-weight:700;padding:4px 8px;cursor:pointer;}
 
-/* ─── EXPORT GRID ─── */
-.export-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-}
-.export-card{
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:14px 12px;
-  display:flex;flex-direction:column;gap:8px;
-  align-items:flex-start;
-}
-.export-card .ec-icon{font-size:22px;}
+/* ─── STATIONS ─── */
+.stations-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+.station-chip{display:flex;align-items:center;gap:5px;background:var(--light-blue);border:1.5px solid var(--blue);border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--navy);}
+@media(prefers-color-scheme:dark){.station-chip{color:#7EB8F7;}}
+.station-chip .del{background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:0;line-height:1;}
+.add-row{display:flex;gap:7px;margin-top:6px;}
+.add-row input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:7px 10px;font-family:inherit;text-transform:uppercase;}
+.add-row input:focus{outline:none;border-color:var(--blue);}
+
+/* ─── THRESHOLD ─── */
+.thr-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.thr-row:last-child{border-bottom:none;}
+.thr-row.tri-val{grid-template-columns:1fr 72px 72px;}
+.thr-label{font-size:13px;font-weight:600;color:var(--text);}
+.thr-sub{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.thr-input{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:700;padding:7px 8px;text-align:center;font-family:inherit;width:100%;}
+.thr-input:focus{outline:none;border-color:var(--blue);}
+.thr-unit{font-size:10px;color:var(--text-muted);font-weight:600;text-align:center;}
+
+/* ─── RESET SECTION ─── */
+.reset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.reset-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;}
+.reset-card .rc-icon{font-size:20px;}
+.reset-card .rc-label{font-size:12px;font-weight:700;color:var(--text);}
+.reset-card .rc-sub{font-size:10px;color:var(--text-muted);}
+.danger-zone{background:var(--light-red);border:2px solid var(--red);border-radius:12px;padding:14px;margin-bottom:12px;}
+.danger-zone h3{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+
+/* ─── EXPORT ─── */
+.export-full{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;color:#fff;}
+.export-full .ef-icon{font-size:28px;flex-shrink:0;}
+.export-full .ef-body{flex:1;}
+.export-full .ef-title{font-size:14px;font-weight:700;margin-bottom:1px;}
+.export-full .ef-sub{font-size:10px;opacity:.7;}
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.export-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:7px;}
+.export-card .ec-icon{font-size:20px;}
 .export-card .ec-label{font-size:12px;font-weight:700;color:var(--text);}
 .export-card .ec-sub{font-size:10px;color:var(--text-muted);}
 
-/* ─── ZIP FULL ─── */
-.export-full{
-  background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);
-  border-radius:12px;
-  padding:16px;
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:14px;
-  color:#fff;
-}
-.export-full .ef-icon{font-size:32px;flex-shrink:0;}
-.export-full .ef-body{flex:1;}
-.export-full .ef-title{font-size:14px;font-weight:700;margin-bottom:2px;}
-.export-full .ef-sub{font-size:11px;opacity:.7;}
-
-/* ─── PDF SECTION ─── */
-.pdf-preview{
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:14px;
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:14px;
-}
-.pdf-page{
-  width:44px;height:60px;
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:4px;
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  font-size:8px;color:#999;gap:2px;
-  flex-shrink:0;
-  box-shadow:2px 2px 6px rgba(0,0,0,.08);
-}
-.pdf-page-lines{width:28px;height:2px;background:#ddd;border-radius:1px;margin:1px 0;}
+/* ─── PDF ─── */
+.pdf-preview{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.pdf-page{width:40px;height:54px;background:#fff;border:1px solid var(--border);border-radius:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:7px;color:#aaa;gap:2px;flex-shrink:0;box-shadow:2px 2px 5px rgba(0,0,0,.07);}
+.pdf-line{width:26px;height:2px;background:#ddd;border-radius:1px;margin:1px 0;}
 .pdf-info{flex:1;}
 .pdf-info .pi-title{font-size:13px;font-weight:700;color:var(--text);}
-.pdf-info .pi-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.pdf-info .pi-sub{font-size:10px;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+
+/* ─── API ─── */
+.api-row{display:flex;gap:7px;align-items:flex-end;margin-bottom:9px;}
+.api-row .field{flex:1;}
+.api-toggle{background:var(--light-blue);border:1.5px solid var(--border);border-radius:8px;color:var(--navy);font-size:13px;padding:8px 10px;cursor:pointer;flex-shrink:0;}
+
+/* ─── MISC ─── */
+.info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5;}
+.info-note.warn{background:var(--light-amber);color:var(--amber);}
+.divider{height:1px;background:var(--border);margin:10px 0;}
+.label-pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.3px;}
+.pill-green{background:var(--light-green);color:var(--green);}
+.pill-amber{background:var(--light-amber);color:var(--amber);}
+.pill-blue{background:var(--light-blue);color:var(--blue);}
+.section-sep{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;}
+
+/* ─── SAVE BAR ─── */
+#save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);padding:11px 18px;padding-bottom:calc(11px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:300;transform:translateY(100%);transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -4px 20px rgba(12,68,124,.3);}
+#save-bar.visible{transform:translateY(0);}
+#save-bar-msg{font-size:12px;color:rgba(255,255,255,.7);font-weight:500;}
+
+/* ─── MODAL CONFIRM ─── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:var(--surface);border-radius:16px 16px 0 0;padding:24px 20px;padding-bottom:calc(24px + env(safe-area-inset-bottom));width:100%;max-width:500px;animation:slideUp .25s cubic-bezier(.34,1.2,.64,1);}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+#modal-title{font-size:16px;font-weight:800;color:var(--red);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+#modal-msg{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;}
+#modal-actions{display:flex;gap:10px;}
+#modal-actions .btn{flex:1;}
 
 /* ─── TOAST ─── */
-#toast{
-  position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 12px);
-  left:50%;transform:translateX(-50%) translateY(-60px);
-  background:var(--green);color:#fff;
-  padding:8px 18px;border-radius:20px;
-  font-size:12px;font-weight:700;
-  z-index:500;white-space:nowrap;
-  transition:transform .28s cubic-bezier(.34,1.2,.64,1);
-  box-shadow:0 4px 16px rgba(0,0,0,.2);
-  pointer-events:none;
-}
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 12px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
 #toast.visible{transform:translateX(-50%) translateY(0);}
 #toast.amber{background:var(--amber);}
 #toast.red{background:var(--red);}
 
-/* ─── API KEY FIELD ─── */
-.api-row{
-  display:flex;gap:8px;align-items:flex-end;
-  margin-bottom:10px;
-}
-.api-row .field{flex:1;}
-.api-toggle{
-  background:var(--light-blue);border:1.5px solid var(--border);
-  border-radius:8px;color:var(--navy);font-size:13px;
-  padding:8px 10px;cursor:pointer;flex-shrink:0;
-  font-family:inherit;
-}
-
-/* ─── PRINT STYLES ─── */
-@media print {
+/* ─── PRINT ─── */
+@media print{
   body{background:#fff!important;color:#000!important;}
-  #header,#tab-nav,#save-bar,#toast,.btn,.card-header{box-shadow:none!important;}
+  #header,#tab-nav,#save-bar,#toast,#modal-overlay,.btn{display:none!important;}
   .section{display:block!important;}
-  #tab-nav,.back-btn,.btn-group,#save-bar{display:none!important;}
-  .card{border:1px solid #ccc!important;break-inside:avoid;margin-bottom:10px;}
+  .card{border:1px solid #ccc!important;break-inside:avoid;margin-bottom:8pt;}
   @page{size:A4;margin:20mm 15mm;}
-
-  /* En-tête rapport */
-  body::before{
-    content:'RAPPORT DE SYNTHÈSE UAS — CONTE Philippe · FRAjqq48j12nfy4c · MANEX_Philippe_V5.1_2026';
-    display:block;
-    font-size:9pt;font-weight:700;color:#0C447C;
-    border-bottom:2pt solid #0C447C;
-    padding-bottom:6pt;margin-bottom:12pt;
-    letter-spacing:.5px;
-  }
-  body::after{
-    content:'Généré le ' attr(data-print-date) ' · UAS-FR-517804 · DJI Mavic 4 Pro · MTOM 956g';
-    display:block;position:fixed;bottom:10mm;left:15mm;right:15mm;
-    font-size:8pt;color:#666;border-top:1pt solid #ccc;padding-top:4pt;
-    text-align:center;
-  }
-}
-
-/* ─── MISC ─── */
-.divider{height:1px;background:var(--border);margin:12px 0;}
-.label-pill{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
-  letter-spacing:.3px;
-}
-.pill-green{background:var(--light-green);color:var(--green);}
-.pill-amber{background:var(--light-amber);color:var(--amber);}
-.info-note{
-  font-size:11px;color:var(--text-muted);
-  background:var(--light-blue);
-  border-radius:8px;padding:8px 10px;
-  margin-top:8px;line-height:1.5;
 }
 </style>
 </head>
-<body data-print-date="29/04/2026">
+<body>
 
-<!-- ═══ HEADER ═══ -->
+<!-- HEADER -->
 <header id="header">
-  <h1>⚙️ Config &amp; Export</h1>
-  <a class="back-btn" href="file:///Users/contephilippe/Downloads/index.html">← Accueil</a>
+  <h1>⚙️ Config & Export</h1>
+  <a class="back-btn" href="index.html">← Accueil</a>
 </header>
 
-<!-- ═══ TAB NAV ═══ -->
+<!-- TAB NAV -->
 <nav id="tab-nav">
-  <button class="tnav-btn active" data-tab="config">⚙️ Config</button>
-  <button class="tnav-btn" data-tab="pilotes">👤 Pilotes</button>
+  <button class="tnav-btn active" data-tab="exploitant">🏢 Exploitant</button>
+  <button class="tnav-btn" data-tab="drones">🛸 Drones</button>
+  <button class="tnav-btn" data-tab="equipe">👤 Équipe</button>
+  <button class="tnav-btn" data-tab="vol">✈️ Paramètres vol</button>
   <button class="tnav-btn" data-tab="api">🔑 API</button>
-  <button class="tnav-btn" data-tab="export">📤 Export CSV</button>
-  <button class="tnav-btn" data-tab="rapport">📄 Rapport PDF</button>
+  <button class="tnav-btn" data-tab="notifications">📧 Notifications</button>
+  <button class="tnav-btn" data-tab="export">📤 Export</button>
+  <button class="tnav-btn" data-tab="reset">🗑️ Réinit.</button>
 </nav>
 
-<!-- ═══ CONTENT ═══ -->
 <div id="content">
 
-  <!-- ─── TAB : CONFIG ─── -->
-  <section class="section active" id="tab-config">
+  <!-- ══════ TAB : EXPLOITANT ══════ -->
+  <section class="section active" id="tab-exploitant">
 
     <div class="card" style="animation-delay:.05s">
-      <div class="card-header">
-        <span class="card-icon">🏢</span>
-        <h2>Données exploitant</h2>
-        <span class="label-pill pill-green">✅ Certifié</span>
-      </div>
+      <div class="card-header"><span class="card-icon">👤</span><h2>Données exploitant</h2><span class="label-pill pill-green">✅ DSAC</span></div>
       <div class="card-body">
         <div class="field-row">
-          <div class="field">
-            <label>Nom complet</label>
-            <input type="text" id="cfg-nom" value="CONTE Philippe">
-          </div>
-          <div class="field">
-            <label>AlphaTango</label>
-            <input type="text" id="cfg-alphatango" value="FRAjqq48j12nfy4c">
-          </div>
+          <div class="field"><label>Nom complet</label><input id="cfg-nom" value="CONTE Philippe"></div>
+          <div class="field"><label>AlphaTango</label><input id="cfg-alphatango" value="FRAjqq48j12nfy4c"></div>
         </div>
         <div class="field-row">
-          <div class="field">
-            <label>Adresse</label>
-            <input type="text" id="cfg-adresse" value="288, rue de la Concorde">
-          </div>
-          <div class="field">
-            <label>Ville / CP</label>
-            <input type="text" id="cfg-ville" value="74300 THYEZ">
-          </div>
+          <div class="field"><label>Adresse</label><input id="cfg-adresse" value="288, rue de la Concorde"></div>
+          <div class="field"><label>Ville / CP</label><input id="cfg-ville" value="74300 THYEZ"></div>
         </div>
         <div class="field-row">
-          <div class="field">
-            <label>Email</label>
-            <input type="email" id="cfg-email" value="contephil74@gmail.com">
-          </div>
-          <div class="field">
-            <label>Téléphone</label>
-            <input type="tel" id="cfg-tel" value="+33 6 20 42 55 11">
-          </div>
+          <div class="field"><label>Email</label><input type="email" id="cfg-email" value="contephil74@gmail.com"></div>
+          <div class="field"><label>Téléphone</label><input type="tel" id="cfg-tel" value="+33 6 20 42 55 11"></div>
         </div>
       </div>
     </div>
 
     <div class="card" style="animation-delay:.10s">
-      <div class="card-header">
-        <span class="card-icon">🛸</span>
-        <h2>Aéronef UAS</h2>
-      </div>
+      <div class="card-header"><span class="card-icon">📋</span><h2>Certifications & Assurance</h2></div>
       <div class="card-body">
         <div class="field-row">
-          <div class="field">
-            <label>Modèle</label>
-            <input type="text" id="cfg-uas-modele" value="DJI Mavic 4 Pro">
-          </div>
-          <div class="field">
-            <label>Enregistrement UAS</label>
-            <input type="text" id="cfg-uas-immat" value="UAS-FR-517804">
-          </div>
+          <div class="field"><label>N° CATS</label><input id="cfg-cats" value="NLD-RP-q99cvjjh51fz"></div>
+          <div class="field"><label>Validité CATS</label><input type="date" id="cfg-cats-exp" value="2029-09-15"></div>
         </div>
         <div class="field-row">
-          <div class="field">
-            <label>DRI (identifiant direct)</label>
-            <input type="text" id="cfg-dri" value="FRAjqq48j12nfy4cvsy">
-          </div>
-          <div class="field">
-            <label>MTOM (g) — figé MANEX</label>
-            <input type="number" id="cfg-mtom" value="956" readonly="">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Scénarios autorisés</label>
-            <input type="text" id="cfg-scenarios" value="PDRA-S01 / PDRA-S02">
-          </div>
-          <div class="field">
-            <label>Version MANEX</label>
-            <input type="text" id="cfg-manex" value="MANEX_Philippe_V5.1_2026">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="animation-delay:.15s">
-      <div class="card-header">
-        <span class="card-icon">📋</span>
-        <h2>Certifications &amp; Assurance</h2>
-      </div>
-      <div class="card-body">
-        <div class="field-row">
-          <div class="field">
-            <label>N° CATS</label>
-            <input type="text" id="cfg-cats" value="NLD-RP-q99cvjjh51fz">
-          </div>
-          <div class="field">
-            <label>Validité CATS</label>
-            <input type="date" id="cfg-cats-exp" value="2029-09-15">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label>Police assurance</label>
-            <input type="text" id="cfg-assurance" value="CDA22411846EUR">
-          </div>
-          <div class="field">
-            <label>Validité assurance</label>
-            <input type="date" id="cfg-assurance-exp" value="2027-04-10">
-          </div>
+          <div class="field"><label>Police assurance</label><input id="cfg-assurance" value="CDA22411846EUR"></div>
+          <div class="field"><label>Validité assurance</label><input type="date" id="cfg-assurance-exp" value="2027-04-10"></div>
         </div>
         <div class="field-row full">
-          <div class="field">
-            <label>Assureur</label>
-            <input type="text" id="cfg-assureur" value="COVERDRONE">
-          </div>
+          <div class="field"><label>Assureur</label><input id="cfg-assureur" value="COVERDRONE"></div>
         </div>
-      </div>
-    </div>
-
-    <div class="card" style="animation-delay:.20s">
-      <div class="card-header">
-        <span class="card-icon">🌬️</span>
-        <h2>Seuils opérationnels</h2>
-      </div>
-      <div class="card-body">
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">Vent maximum</div>
-            <div class="thr-sub">Rafales incluses — GO/NO GO</div>
-          </div>
-          <input type="number" class="thr-input" id="thr-vent" value="12" min="0" max="30" step="1">
+        <div class="field-row full">
+          <div class="field"><label>Référence MANEX</label><input id="cfg-manex" value="MANEX_Philippe_V5.1_2026"></div>
         </div>
-        <div class="threshold-row" style="display:grid;grid-template-columns:1fr 80px 80px;gap:10px;">
-          <div>
-            <div class="thr-label">Température (°C)</div>
-            <div class="thr-sub">Plage opérationnelle</div>
-          </div>
-          <input type="number" class="thr-input" id="thr-temp-min" value="-10" min="-30" max="0">
-          <input type="number" class="thr-input" id="thr-temp-max" value="40" min="20" max="55">
+        <div class="field-row full">
+          <div class="field"><label>Scénarios autorisés</label><input id="cfg-scenarios" value="PDRA-S01 / PDRA-S02"></div>
         </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">Visibilité minimum (km)</div>
-            <div class="thr-sub">Visibilité horizontale sol</div>
-          </div>
-          <input type="number" class="thr-input" id="thr-visi" value="5" min="1" max="50" step="1">
-        </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">Plafond nuageux min (ft)</div>
-            <div class="thr-sub">Base des nuages</div>
-          </div>
-          <input type="number" class="thr-input" id="thr-plafond" value="1500" min="0" max="10000" step="100">
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="animation-delay:.25s">
-      <div class="card-header">
-        <span class="card-icon">🛰️</span>
-        <h2>Stations METAR favorites</h2>
-        <span id="stations-count" class="label-pill pill-green">3/5</span>
-      </div>
-      <div class="card-body">
-        <div class="stations-grid" id="stations-grid">
-    <div class="station-chip">
-      <span>LFLB</span>
-      <button class="del" onclick="removeStation(0)">×</button>
-    </div>
-    <div class="station-chip">
-      <span>LFLI</span>
-      <button class="del" onclick="removeStation(1)">×</button>
-    </div>
-    <div class="station-chip">
-      <span>LSGG</span>
-      <button class="del" onclick="removeStation(2)">×</button>
-    </div></div>
-        <div class="add-station">
-          <input type="text" id="station-input" placeholder="ICAO ex: LFMN" maxlength="4">
-          <button class="btn btn-primary btn-sm" onclick="addStation()">+ Ajouter</button>
-        </div>
-        <div class="info-note">Max 5 stations · Code ICAO 4 lettres (ex: LFLB = Chambéry, LSGG = Genève)</div>
       </div>
     </div>
 
   </section>
 
-  <!-- ─── TAB : PILOTES ─── -->
-  <section class="section" id="tab-pilotes">
+  <!-- ══════ TAB : DRONES ══════ -->
+  <section class="section" id="tab-drones">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🛸</span>
+        <h2>Flotte UAS</h2>
+        <span id="drones-count" class="label-pill pill-blue">1 drone</span>
+      </div>
+      <div class="card-body">
+        <div class="dyn-list" id="drones-list"></div>
+        <button class="btn btn-primary btn-sm" onclick="addDrone()">+ Ajouter un drone</button>
+        <div class="info-note">Le drone marqué ⭐ Principal est pré-sélectionné dans le carnet de vol.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════ TAB : ÉQUIPE ══════ -->
+  <section class="section" id="tab-equipe">
 
     <div class="card">
       <div class="card-header">
         <span class="card-icon">👨‍✈️</span>
-        <h2>Équipe de vol</h2>
+        <h2>Pilotes RPIC</h2>
+        <span id="pilots-count" class="label-pill pill-blue">1 pilote</span>
       </div>
       <div class="card-body">
-        <div class="pilot-row">
-          <span class="pilot-badge rpic">RPIC</span>
-          <input type="text" class="pilot-input" id="pilot-rpic" value="CONTE Philippe" placeholder="Pilote commandant de bord">
-        </div>
-        <div class="pilot-row">
-          <span class="pilot-badge obs">OBS-1</span>
-          <input type="text" class="pilot-input" id="pilot-obs1" placeholder="Observateur 1 (optionnel)">
-        </div>
-        <div class="pilot-row">
-          <span class="pilot-badge obs">OBS-2</span>
-          <input type="text" class="pilot-input" id="pilot-obs2" placeholder="Observateur 2 (optionnel)">
-        </div>
-        <div class="pilot-row">
-          <span class="pilot-badge obs">OBS-3</span>
-          <input type="text" class="pilot-input" id="pilot-obs3" placeholder="Observateur 3 (optionnel)">
-        </div>
-        <div class="info-note">Ces noms alimentent automatiquement les dropdowns du module Vols (carnet de vol).</div>
+        <div class="dyn-list" id="pilots-list"></div>
+        <button class="btn btn-primary btn-sm" onclick="addPilot()">+ Ajouter un pilote</button>
+        <div class="info-note">Le pilote ⭐ Principal est pré-sélectionné dans le carnet de vol.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">👁️</span>
+        <h2>Observateurs</h2>
+        <span id="obs-count" class="label-pill pill-blue">0 obs.</span>
+      </div>
+      <div class="card-body">
+        <div class="dyn-list" id="obs-list"></div>
+        <button class="btn btn-teal btn-sm" onclick="addObs()">+ Ajouter un observateur</button>
+        <div class="info-note">Observateurs disponibles pour OBS-1, OBS-2, OBS-3 dans le carnet de vol.</div>
       </div>
     </div>
 
   </section>
 
-  <!-- ─── TAB : API ─── -->
+  <!-- ══════ TAB : PARAMÈTRES VOL ══════ -->
+  <section class="section" id="tab-vol">
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🌬️</span><h2>Seuils météo</h2></div>
+      <div class="card-body">
+        <div class="thr-row">
+          <div><div class="thr-label">Vent maximum</div><div class="thr-sub">Rafales incluses · GO/NO GO</div></div>
+          <div><input type="number" class="thr-input" id="thr-vent" value="12" min="0" max="30"><div class="thr-unit">m/s</div></div>
+        </div>
+        <div class="thr-row tri-val">
+          <div><div class="thr-label">Température (°C)</div><div class="thr-sub">Min · Max opérationnel</div></div>
+          <div><input type="number" class="thr-input" id="thr-temp-min" value="-10"><div class="thr-unit">min</div></div>
+          <div><input type="number" class="thr-input" id="thr-temp-max" value="40"><div class="thr-unit">max</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Visibilité minimum</div><div class="thr-sub">Visibilité horizontale sol</div></div>
+          <div><input type="number" class="thr-input" id="thr-visi" value="5" min="1" max="50"><div class="thr-unit">km</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Plafond nuageux min</div><div class="thr-sub">Base des nuages</div></div>
+          <div><input type="number" class="thr-input" id="thr-plafond" value="1500" min="0" max="10000" step="100"><div class="thr-unit">ft</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📐</span><h2>Limites de vol</h2></div>
+      <div class="card-body">
+        <div class="thr-row">
+          <div><div class="thr-label">Altitude maximale</div><div class="thr-sub">Hauteur sol autorisée (réglementaire)</div></div>
+          <div><input type="number" class="thr-input" id="thr-alt-max" value="120" min="0" max="500" step="5"><div class="thr-unit">m AGL</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Distance maximale pilote</div><div class="thr-sub">Distance horizontale VLOS</div></div>
+          <div><input type="number" class="thr-input" id="thr-dist-max" value="500" min="0" max="5000" step="50"><div class="thr-unit">m</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Rayon zone opération</div><div class="thr-sub">Rayon par défaut sur carte ADS-B</div></div>
+          <div><input type="number" class="thr-input" id="thr-rayon" value="50" min="5" max="200" step="5"><div class="thr-unit">km</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Durée max session vol</div><div class="thr-sub">Alerte dépassement en cours de vol</div></div>
+          <div><input type="number" class="thr-input" id="thr-duree" value="30" min="5" max="120" step="5"><div class="thr-unit">min</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🛰️</span><h2>Stations METAR favorites</h2><span id="stations-count" class="label-pill pill-amber">3/5</span></div>
+      <div class="card-body">
+        <div class="stations-wrap" id="stations-grid"></div>
+        <div class="add-row">
+          <input type="text" id="station-input" placeholder="ICAO ex: LFMN" maxlength="4">
+          <button class="btn btn-primary btn-sm" onclick="addStation()">+ Ajouter</button>
+        </div>
+        <div class="info-note">Max 5 · LFLB=Chambéry · LFLI=Annemasse · LSGG=Genève · LFMN=Nice</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════ TAB : API ══════ -->
   <section class="section" id="tab-api">
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🔑</span>
-        <h2>CheckWX (METAR / TAF)</h2>
-      </div>
+      <div class="card-header"><span class="card-icon">🔑</span><h2>CheckWX — METAR / TAF</h2></div>
       <div class="card-body">
         <div class="api-row">
-          <div class="field">
-            <label>Clé API CheckWX</label>
-            <input type="password" id="api-checkwx" placeholder="Votre clé API…">
-          </div>
-          <button class="api-toggle" onclick="toggleVis(&#39;api-checkwx&#39;)">👁</button>
+          <div class="field"><label>Clé API CheckWX</label><input type="password" id="api-checkwx" placeholder="Votre clé API…"></div>
+          <button class="api-toggle" onclick="toggleVis('api-checkwx')">👁</button>
         </div>
-        <div class="info-note">Gratuit jusqu'à 10 000 req/mois · <strong>checkwx.com/dashboard</strong></div>
-        <div id="checkwx-status" style="margin-top:8px;"></div>
-        <div style="margin-top:10px;">
-          <button class="btn btn-outline btn-sm" onclick="testCheckWX()">🔍 Tester la clé</button>
+        <div id="checkwx-status" style="min-height:20px;"></div>
+        <div style="display:flex;gap:8px;margin-top:9px;">
+          <button class="btn btn-outline btn-sm" onclick="testCheckWX()">🔍 Tester</button>
         </div>
+        <div class="info-note">Gratuit · 10 000 req/mois · checkwx.com/dashboard</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🌤️</span>
-        <h2>OpenWeatherMap</h2>
-      </div>
+      <div class="card-header"><span class="card-icon">🌤️</span><h2>OpenWeatherMap</h2></div>
       <div class="card-body">
         <div class="api-row">
-          <div class="field">
-            <label>Clé API OWM</label>
-            <input type="password" id="api-owm" placeholder="Votre clé API…">
-          </div>
-          <button class="api-toggle" onclick="toggleVis(&#39;api-owm&#39;)">👁</button>
+          <div class="field"><label>Clé API OWM</label><input type="password" id="api-owm" placeholder="Votre clé API…"></div>
+          <button class="api-toggle" onclick="toggleVis('api-owm')">👁</button>
         </div>
-        <div class="info-note">Gratuit jusqu'à 1 000 req/jour · <strong>openweathermap.org/api</strong></div>
-        <div id="owm-status" style="margin-top:8px;"></div>
-        <div style="margin-top:10px;">
-          <button class="btn btn-outline btn-sm" onclick="testOWM()">🔍 Tester la clé</button>
-        </div>
+        <div id="owm-status" style="min-height:20px;"></div>
+        <div style="margin-top:9px;"><button class="btn btn-outline btn-sm" onclick="testOWM()">🔍 Tester</button></div>
+        <div class="info-note">Gratuit · 1 000 req/jour · openweathermap.org/api</div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📡</span>
-        <h2>OpenSky Network (ADS-B)</h2>
-      </div>
+      <div class="card-header"><span class="card-icon">📡</span><h2>OpenSky Network (ADS-B)</h2></div>
       <div class="card-body">
         <div class="field-row full">
-          <div class="field">
-            <label>Mode</label>
+          <div class="field"><label>Mode</label>
             <select id="api-opensky-mode">
               <option value="anonymous">Anonyme (gratuit, limité)</option>
               <option value="authenticated">Authentifié (compte OpenSky)</option>
@@ -708,629 +422,965 @@ html,body{
         </div>
         <div id="opensky-auth-fields" style="display:none;">
           <div class="field-row">
-            <div class="field">
-              <label>Nom d'utilisateur</label>
-              <input type="text" id="api-opensky-user" placeholder="username OpenSky">
-            </div>
-            <div class="field">
-              <label>Mot de passe</label>
-              <input type="password" id="api-opensky-pass" placeholder="••••••••">
-            </div>
+            <div class="field"><label>Nom d'utilisateur</label><input id="api-opensky-user" placeholder="username"></div>
+            <div class="field"><label>Mot de passe</label><input type="password" id="api-opensky-pass" placeholder="••••••••"></div>
           </div>
         </div>
-        <div class="info-note">En mode anonyme : max 100 req/jour, délai ≥30s · Avec compte : 4000 req/jour, délai ≥10s</div>
+        <div class="info-note">Anonyme : 100 req/jour, délai ≥30s · Compte : 4 000 req/jour, délai ≥10s</div>
       </div>
     </div>
 
   </section>
 
-  <!-- ─── TAB : EXPORT CSV ─── -->
+  <!-- ══════ TAB : NOTIFICATIONS ══════ -->
+  <section class="section" id="tab-notifications">
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📧</span><h2>Email REX / Incidents</h2></div>
+      <div class="card-body">
+        <div class="field-row full">
+          <div class="field"><label>Email destinataire REX</label><input type="email" id="notif-rex-email" placeholder="responsable@exemple.com"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Email en copie (CC)</label><input type="email" id="notif-rex-cc" placeholder="direction@exemple.com (optionnel)"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Objet email REX (préfixe)</label><input id="notif-rex-sujet" value="[REX UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
+        </div>
+        <div class="info-note">Utilisé pour pré-remplir le mailto: lors d'un rapport d'incident dans le module REX.</div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-amber btn-sm" onclick="testerEmailREX()">📧 Tester l'email REX</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🏛️</span><h2>Notification DSAC — Zone d'opération</h2></div>
+      <div class="card-body">
+        <div class="field-row full">
+          <div class="field"><label>Email DSAC / Préfecture</label><input type="email" id="notif-dsac-email" placeholder="dsac-nc.dsac-no@aviation-civile.gouv.fr"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Email copie (CC)</label><input type="email" id="notif-dsac-cc" placeholder="prefecture@haute-savoie.gouv.fr (optionnel)"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Objet email DSAC (préfixe)</label><input id="notif-dsac-sujet" value="[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Délai de notification préfecture</label>
+            <select id="notif-delai">
+              <option value="10">10 jours ouvrés (règle 2026)</option>
+              <option value="5">5 jours ouvrés (ancienne règle)</option>
+              <option value="0">Pas de notification requise</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Zone habituelle d'opération</label><input id="notif-zone" placeholder="Ex: Thyez / Cluses / Vallée de l'Arve, Haute-Savoie"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Lien SOFIA Briefing</label><input id="notif-sofia" value="https://sofia-briefing.aviation-civile.gouv.fr"></div>
+        </div>
+        <div class="info-note warn">⚠️ Depuis janvier 2026 : délai de notification préfecture = 10 jours ouvrés (remplace l'ancienne règle des 5 jours).</div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-navy btn-sm" onclick="testerEmailDSAC()">📧 Tester notification DSAC</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🔔</span><h2>Alertes expiration</h2></div>
+      <div class="card-body">
+        <div class="thr-row">
+          <div><div class="thr-label">Alerte CATS expiration</div><div class="thr-sub">Avertir X jours avant la date</div></div>
+          <div><input type="number" class="thr-input" id="alerte-cats" value="60" min="7" max="365"><div class="thr-unit">jours</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Alerte assurance expiration</div><div class="thr-sub">Avertir X jours avant la date</div></div>
+          <div><input type="number" class="thr-input" id="alerte-assurance" value="30" min="7" max="365"><div class="thr-unit">jours</div></div>
+        </div>
+        <div class="thr-row">
+          <div><div class="thr-label">Alerte maintenance UAS</div><div class="thr-sub">Avertir X heures avant l'échéance</div></div>
+          <div><input type="number" class="thr-input" id="alerte-maintenance" value="5" min="1" max="50"><div class="thr-unit">h vol</div></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════ TAB : EXPORT ══════ -->
   <section class="section" id="tab-export">
 
-    <!-- Export tout en ZIP -->
     <div class="export-full">
       <div class="ef-icon">🗜️</div>
       <div class="ef-body">
         <div class="ef-title">Export complet — ZIP</div>
-        <div class="ef-sub">Vols + Maintenance + REX + Formations en un seul fichier</div>
+        <div class="ef-sub">Vols + Maintenance + REX + Formations + README</div>
       </div>
-      <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.35);" onclick="exportZIP()">
-        ⬇️ ZIP
-      </button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.35);" onclick="exportZIP()">⬇️ ZIP</button>
     </div>
 
-    <!-- Exports individuels -->
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📤</span>
-        <h2>Export par registre</h2>
-      </div>
+      <div class="card-header"><span class="card-icon">📤</span><h2>Export par registre (CSV)</h2></div>
       <div class="card-body">
         <div class="export-grid">
           <div class="export-card">
-            <div class="ec-icon">✈️</div>
-            <div class="ec-label">Carnet de vol</div>
-            <div class="ec-sub">vols.csv · UTF-8 ; </div>
-            <button class="btn btn-primary btn-sm btn-full" onclick="exportCSV(&#39;vols&#39;)">⬇️ Export</button>
+            <div class="ec-icon">✈️</div><div class="ec-label">Carnet de vol</div>
+            <div class="ec-sub">vols.csv · UTF-8 BOM · ; </div>
+            <button class="btn btn-primary btn-sm btn-full" onclick="exportCSV('vols')">⬇️ Export</button>
           </div>
           <div class="export-card">
-            <div class="ec-icon">🔧</div>
-            <div class="ec-label">Maintenance</div>
-            <div class="ec-sub">maintenance.csv · UTF-8 ; </div>
-            <button class="btn btn-green btn-sm btn-full" onclick="exportCSV(&#39;maintenance&#39;)">⬇️ Export</button>
+            <div class="ec-icon">🔧</div><div class="ec-label">Maintenance</div>
+            <div class="ec-sub">maintenance.csv · UTF-8 BOM · ; </div>
+            <button class="btn btn-green btn-sm btn-full" onclick="exportCSV('maintenance')">⬇️ Export</button>
           </div>
           <div class="export-card">
-            <div class="ec-icon">⚠️</div>
-            <div class="ec-label">REX / Incidents</div>
-            <div class="ec-sub">rex.csv · UTF-8 ; </div>
-            <button class="btn btn-amber btn-sm btn-full" onclick="exportCSV(&#39;rex&#39;)">⬇️ Export</button>
+            <div class="ec-icon">⚠️</div><div class="ec-label">REX / Incidents</div>
+            <div class="ec-sub">rex.csv · UTF-8 BOM · ; </div>
+            <button class="btn btn-amber btn-sm btn-full" onclick="exportCSV('rex')">⬇️ Export</button>
           </div>
           <div class="export-card">
-            <div class="ec-icon">🎓</div>
-            <div class="ec-label">Formations</div>
-            <div class="ec-sub">formations.csv · UTF-8 ; </div>
-            <button class="btn btn-navy btn-sm btn-full" onclick="exportCSV(&#39;formations&#39;)">⬇️ Export</button>
+            <div class="ec-icon">🎓</div><div class="ec-label">Formations</div>
+            <div class="ec-sub">formations.csv · UTF-8 BOM · ; </div>
+            <button class="btn btn-navy btn-sm btn-full" onclick="exportCSV('formations')">⬇️ Export</button>
           </div>
         </div>
-
-        <div class="info-note" style="margin-top:12px;">
-          Format identique au classeur Registre_UAS V5.7 · Encodage UTF-8 BOM · Séparateur point-virgule ( ; )
-        </div>
+        <div id="export-stats" style="margin-top:10px;"></div>
+        <div class="info-note">Format identique au classeur Registre_UAS V5.7</div>
       </div>
     </div>
 
-    <!-- Infos sur les données -->
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">ℹ️</span>
-        <h2>Données exportées</h2>
-      </div>
-      <div class="card-body" id="export-stats">
-        <div id="export-stats-content"><div class="threshold-row">
-      <div><div class="thr-label">✈️ Vols</div>
-      <div class="thr-sub">Clé localStorage : uas_vols</div></div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;">10<span style="font-size:10px;color:var(--text-muted);font-weight:500;"> enr.</span></div>
-    </div><div class="threshold-row">
-      <div><div class="thr-label">🔧 Maintenance</div>
-      <div class="thr-sub">Clé localStorage : uas_maintenance</div></div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;">0<span style="font-size:10px;color:var(--text-muted);font-weight:500;"> enr.</span></div>
-    </div><div class="threshold-row">
-      <div><div class="thr-label">⚠️ Rex</div>
-      <div class="thr-sub">Clé localStorage : uas_rex</div></div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;">0<span style="font-size:10px;color:var(--text-muted);font-weight:500;"> enr.</span></div>
-    </div><div class="threshold-row">
-      <div><div class="thr-label">🎓 Formations</div>
-      <div class="thr-sub">Clé localStorage : uas_formations</div></div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;">0<span style="font-size:10px;color:var(--text-muted);font-weight:500;"> enr.</span></div>
-    </div></div>
+      <div class="card-header"><span class="card-icon">📄</span><h2>Rapport PDF</h2></div>
+      <div class="card-body">
+        <div class="pdf-preview">
+          <div class="pdf-page"><div class="pdf-line"></div><div class="pdf-line"></div><div class="pdf-line" style="width:20px;"></div><span>A4</span></div>
+          <div class="pdf-info">
+            <div class="pi-title">Synthèse exploitant UAS</div>
+            <div class="pi-sub">CONTE Philippe · FRAjqq48j12nfy4c<br>MANEX_Philippe_V5.1_2026 · Format A4</div>
+          </div>
+        </div>
+        <div class="field-row full" style="margin-bottom:10px;">
+          <div class="field"><label>Titre personnalisé</label><input id="pdf-titre" placeholder="Ex: Dossier DSAC — Janvier 2026"></div>
+        </div>
+        <button class="btn btn-red btn-full" onclick="genererPDF()">🖨️ Générer rapport PDF</button>
+        <div class="info-note">Sur iPhone : Partager → Enregistrer en PDF. Sur iPad : Imprimer → PDF.</div>
       </div>
     </div>
 
   </section>
 
-  <!-- ─── TAB : RAPPORT PDF ─── -->
-  <section class="section" id="tab-rapport">
+  <!-- ══════ TAB : RÉINITIALISATION ══════ -->
+  <section class="section" id="tab-reset">
 
-    <div class="pdf-preview">
-      <div class="pdf-page">
-        <div class="pdf-page-lines"></div>
-        <div class="pdf-page-lines"></div>
-        <div class="pdf-page-lines" style="width:20px;"></div>
-        <span style="font-size:6px;margin-top:2px;">A4</span>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🗑️</span><h2>Réinitialiser un module</h2></div>
+      <div class="card-body">
+        <div class="reset-grid">
+          <div class="reset-card">
+            <div class="rc-icon">✈️</div>
+            <div class="rc-label">Carnet de vol</div>
+            <div class="rc-sub">Supprime tous les vols enregistrés</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('vols','Carnet de vol')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">🔧</div>
+            <div class="rc-label">Maintenance</div>
+            <div class="rc-sub">Supprime l'historique de maintenance</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('maintenance','Maintenance')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">⚠️</div>
+            <div class="rc-label">REX / Incidents</div>
+            <div class="rc-sub">Supprime tous les incidents</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('rex','REX / Incidents')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">🎓</div>
+            <div class="rc-label">Formations</div>
+            <div class="rc-sub">Supprime le registre formations</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('formations','Formations')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">📊</div>
+            <div class="rc-label">Bilans</div>
+            <div class="rc-sub">Réinitialise les données bilans</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('bilans','Bilans')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">☑️</div>
+            <div class="rc-label">Check-listes</div>
+            <div class="rc-sub">Efface l'historique check-list</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('checklist','Check-listes')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">🌦️</div>
+            <div class="rc-label">Météo (cache)</div>
+            <div class="rc-sub">Vide le cache météo / METAR</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('meteo','Météo (cache)')">🗑️ Vider</button>
+          </div>
+          <div class="reset-card">
+            <div class="rc-icon">📡</div>
+            <div class="rc-label">ADS-B (cache)</div>
+            <div class="rc-sub">Vide le cache ADS-B</div>
+            <button class="btn btn-outline btn-sm btn-full" onclick="confirmReset('adsb','ADS-B (cache)')">🗑️ Vider</button>
+          </div>
+        </div>
       </div>
-      <div class="pdf-info">
-        <div class="pi-title">Rapport de synthèse UAS</div>
-        <div class="pi-sub">CONTE Philippe · FRAjqq48j12nfy4c<br>MANEX_Philippe_V5.1_2026 · Format A4</div>
-      </div>
+    </div>
+
+    <!-- Zone danger -->
+    <div class="danger-zone">
+      <h3>⚠️ Zone de danger — Réinitialisation complète</h3>
+      <p style="font-size:12px;color:var(--red);margin-bottom:12px;line-height:1.5;">
+        Cette action supprime <strong>toutes les données</strong> de l'application : vols, maintenance, REX, formations, configuration, drones, pilotes. <strong>Action irréversible.</strong>
+      </p>
+      <button class="btn btn-red btn-full" onclick="confirmResetAll()">
+        🗑️ Réinitialiser toute l'application
+      </button>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-icon">📄</span>
-        <h2>Contenu du rapport</h2>
-      </div>
-      <div class="card-body">
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">✅ Données exploitant</div>
-            <div class="thr-sub">Identité, certifications, assurance</div>
-          </div>
-        </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">✅ Configuration opérationnelle</div>
-            <div class="thr-sub">Seuils, scénarios, aéronef</div>
-          </div>
-        </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">✅ Équipe de vol</div>
-            <div class="thr-sub">RPIC, observateurs</div>
-          </div>
-        </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">✅ Stations METAR</div>
-            <div class="thr-sub">Stations surveillées</div>
-          </div>
-        </div>
-        <div class="threshold-row">
-          <div>
-            <div class="thr-label">✅ En-tête &amp; pied de page</div>
-            <div class="thr-sub">Date de génération, référence MANEX</div>
-          </div>
-        </div>
-        <div class="divider"></div>
-        <div class="field-row full" style="margin-bottom:0;">
-          <div class="field">
-            <label>Titre personnalisé (optionnel)</label>
-            <input type="text" id="pdf-titre" placeholder="Ex: Dossier DSAC — Janvier 2026">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn btn-red btn-full" style="font-size:14px;padding:14px;" onclick="genererPDF()">
-      🖨️ Générer le rapport PDF
-    </button>
-    <div class="info-note" style="margin-top:10px;">
-      Utilise l'impression système du navigateur. Sur iPhone : partager → Enregistrer en PDF. Sur iPad : Imprimer → PDF.
+      <div class="card-header"><span class="card-icon">ℹ️</span><h2>État du stockage</h2></div>
+      <div class="card-body" id="storage-stats">Chargement…</div>
     </div>
 
   </section>
 
 </div><!-- /content -->
 
-<!-- ─── SAVE BAR ─── -->
+<!-- SAVE BAR -->
 <div id="save-bar">
   <span id="save-bar-msg">Modifications non sauvegardées</span>
   <div style="display:flex;gap:8px;">
-    <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.3);" onclick="resetConfig()">Annuler</button>
+    <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.3);" onclick="resetForm()">Annuler</button>
     <button class="btn btn-green btn-sm" onclick="saveConfig()">💾 Sauvegarder</button>
   </div>
 </div>
 
-<!-- ─── TOAST ─── -->
+<!-- MODAL CONFIRM -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-title">⚠️ Confirmer la suppression</div>
+    <div id="modal-msg"></div>
+    <div id="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-red" id="modal-confirm-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  UAS Manager — Module 8 : Config + Export CSV + PDF
+//  UAS Manager — Module 8 v2 : Config + Export + Réinit.
 //  © Philippe CONTE · FRAjqq48j12nfy4c
 // ═══════════════════════════════════════════════════════════
 
 const STORAGE_KEY = 'uas_config';
 
-// ─── DEFAULTS ────────────────────────────────────────────
 const DEFAULTS = {
+  // Exploitant
   nom:'CONTE Philippe', alphatango:'FRAjqq48j12nfy4c',
   adresse:'288, rue de la Concorde', ville:'74300 THYEZ',
   email:'contephil74@gmail.com', tel:'+33 6 20 42 55 11',
-  uas_modele:'DJI Mavic 4 Pro', uas_immat:'UAS-FR-517804',
-  dri:'FRAjqq48j12nfy4cvsy', mtom:'956',
-  scenarios:'PDRA-S01 / PDRA-S02', manex:'MANEX_Philippe_V5.1_2026',
+  // Certif
   cats:'NLD-RP-q99cvjjh51fz', cats_exp:'2029-09-15',
   assurance:'CDA22411846EUR', assurance_exp:'2027-04-10',
-  assureur:'COVERDRONE',
+  assureur:'COVERDRONE', manex:'MANEX_Philippe_V5.1_2026',
+  scenarios:'PDRA-S01 / PDRA-S02',
+  // Seuils météo
   thr_vent:'12', thr_temp_min:'-10', thr_temp_max:'40',
   thr_visi:'5', thr_plafond:'1500',
+  // Limites vol
+  thr_alt_max:'120', thr_dist_max:'500', thr_rayon:'50', thr_duree:'30',
+  // Stations
   stations:['LFLB','LFLI','LSGG'],
-  pilot_rpic:'CONTE Philippe', pilot_obs1:'', pilot_obs2:'', pilot_obs3:'',
+  // API
   api_checkwx:'', api_owm:'',
   opensky_mode:'anonymous', opensky_user:'', opensky_pass:'',
+  // Notifications
+  notif_rex_email:'', notif_rex_cc:'',
+  notif_rex_sujet:'[REX UAS] CONTE Philippe · FRAjqq48j12nfy4c',
+  notif_dsac_email:'', notif_dsac_cc:'',
+  notif_dsac_sujet:'[Déclaration zone UAS] CONTE Philippe · FRAjqq48j12nfy4c',
+  notif_delai:'10', notif_zone:'', notif_sofia:'https://sofia-briefing.aviation-civile.gouv.fr',
+  // Alertes
+  alerte_cats:'60', alerte_assurance:'30', alerte_maintenance:'5',
+  // Drones (liste)
+  drones:[{
+    id:'drone-1', nom:'DJI Mavic 4 Pro', immat:'UAS-FR-517804',
+    dri:'FRAjqq48j12nfy4cvsy', mtom:'956',
+    classe:'C2', numero_serie:'', achat:'', notes:'', primary:true
+  }],
+  // Pilotes (liste)
+  pilots:[{
+    id:'pilot-1', nom:'CONTE Philippe', cats:'NLD-RP-q99cvjjh51fz',
+    cats_exp:'2029-09-15', tel:'+33 6 20 42 55 11',
+    email:'contephil74@gmail.com', notes:'', primary:true
+  }],
+  // Observateurs (liste)
+  observers:[],
 };
 
 let config = {};
 let dirty = false;
 
-// ─── INIT ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
 function init() {
   const saved = localStorage.getItem(STORAGE_KEY);
-  config = saved ? { ...DEFAULTS, ...JSON.parse(saved) } : { ...DEFAULTS };
+  if (saved) {
+    try { config = { ...DEFAULTS, ...JSON.parse(saved) }; }
+    catch { config = { ...DEFAULTS }; }
+  } else {
+    config = { ...DEFAULTS };
+  }
   loadFormFromConfig();
+  renderDrones();
+  renderPilots();
+  renderObservers();
   renderStations();
   setupChangeTracking();
-  renderExportStats();
+  renderStorageStats();
   setupOpenskyMode();
-
-  // date pour @print
-  document.body.setAttribute('data-print-date',
-    new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'}));
 }
 
-// ─── LOAD FORM ────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  FORM LOAD
+// ═══════════════════════════════════════════════════════════
+const FIELD_MAP = {
+  'cfg-nom':'nom','cfg-alphatango':'alphatango','cfg-adresse':'adresse','cfg-ville':'ville',
+  'cfg-email':'email','cfg-tel':'tel','cfg-cats':'cats','cfg-cats-exp':'cats_exp',
+  'cfg-assurance':'assurance','cfg-assurance-exp':'assurance_exp','cfg-assureur':'assureur',
+  'cfg-manex':'manex','cfg-scenarios':'scenarios',
+  'thr-vent':'thr_vent','thr-temp-min':'thr_temp_min','thr-temp-max':'thr_temp_max',
+  'thr-visi':'thr_visi','thr-plafond':'thr_plafond',
+  'thr-alt-max':'thr_alt_max','thr-dist-max':'thr_dist_max',
+  'thr-rayon':'thr_rayon','thr-duree':'thr_duree',
+  'api-checkwx':'api_checkwx','api-owm':'api_owm',
+  'api-opensky-mode':'opensky_mode','api-opensky-user':'opensky_user',
+  'notif-rex-email':'notif_rex_email','notif-rex-cc':'notif_rex_cc',
+  'notif-rex-sujet':'notif_rex_sujet','notif-dsac-email':'notif_dsac_email',
+  'notif-dsac-cc':'notif_dsac_cc','notif-dsac-sujet':'notif_dsac_sujet',
+  'notif-delai':'notif_delai','notif-zone':'notif_zone','notif-sofia':'notif_sofia',
+  'alerte-cats':'alerte_cats','alerte-assurance':'alerte_assurance',
+  'alerte-maintenance':'alerte_maintenance',
+};
+
 function loadFormFromConfig() {
-  const map = {
-    'cfg-nom':'nom','cfg-alphatango':'alphatango',
-    'cfg-adresse':'adresse','cfg-ville':'ville',
-    'cfg-email':'email','cfg-tel':'tel',
-    'cfg-uas-modele':'uas_modele','cfg-uas-immat':'uas_immat',
-    'cfg-dri':'dri','cfg-mtom':'mtom',
-    'cfg-scenarios':'scenarios','cfg-manex':'manex',
-    'cfg-cats':'cats','cfg-cats-exp':'cats_exp',
-    'cfg-assurance':'assurance','cfg-assurance-exp':'assurance_exp',
-    'cfg-assureur':'assureur',
-    'thr-vent':'thr_vent','thr-temp-min':'thr_temp_min',
-    'thr-temp-max':'thr_temp_max','thr-visi':'thr_visi',
-    'thr-plafond':'thr_plafond',
-    'pilot-rpic':'pilot_rpic','pilot-obs1':'pilot_obs1',
-    'pilot-obs2':'pilot_obs2','pilot-obs3':'pilot_obs3',
-    'api-checkwx':'api_checkwx','api-owm':'api_owm',
-    'api-opensky-mode':'opensky_mode',
-    'api-opensky-user':'opensky_user',
-  };
-  for (const [id, key] of Object.entries(map)) {
+  for (const [id, key] of Object.entries(FIELD_MAP)) {
     const el = document.getElementById(id);
-    if (el) el.value = config[key] || '';
+    if (el) el.value = config[key] ?? '';
   }
-  // opensky pass séparé (ne jamais pré-remplir les mots de passe)
 }
 
-// ─── SAVE ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  SAVE
+// ═══════════════════════════════════════════════════════════
 function saveConfig() {
-  // Lire tous les champs
-  const map = {
-    'cfg-nom':'nom','cfg-alphatango':'alphatango',
-    'cfg-adresse':'adresse','cfg-ville':'ville',
-    'cfg-email':'email','cfg-tel':'tel',
-    'cfg-uas-modele':'uas_modele','cfg-uas-immat':'uas_immat',
-    'cfg-dri':'dri','cfg-scenarios':'scenarios','cfg-manex':'manex',
-    'cfg-cats':'cats','cfg-cats-exp':'cats_exp',
-    'cfg-assurance':'assurance','cfg-assurance-exp':'assurance_exp',
-    'cfg-assureur':'assureur',
-    'thr-vent':'thr_vent','thr-temp-min':'thr_temp_min',
-    'thr-temp-max':'thr_temp_max','thr-visi':'thr_visi',
-    'thr-plafond':'thr_plafond',
-    'pilot-rpic':'pilot_rpic','pilot-obs1':'pilot_obs1',
-    'pilot-obs2':'pilot_obs2','pilot-obs3':'pilot_obs3',
-    'api-checkwx':'api_checkwx','api-owm':'api_owm',
-    'api-opensky-mode':'opensky_mode','api-opensky-user':'opensky_user',
-  };
-  for (const [id, key] of Object.entries(map)) {
+  for (const [id, key] of Object.entries(FIELD_MAP)) {
     const el = document.getElementById(id);
     if (el) config[key] = el.value;
   }
-  const passEl = document.getElementById('api-opensky-pass');
-  if (passEl && passEl.value) config.opensky_pass = passEl.value;
-
+  // Sync drones / pilotes / obs depuis state
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  localStorage.setItem('uas_config_updated', Date.now().toString());
   setDirty(false);
   showToast('✅ Configuration sauvegardée');
-
-  // Diffuser aux autres modules via localStorage event
-  localStorage.setItem('uas_config_updated', Date.now().toString());
 }
 
-function resetConfig() {
+function resetForm() {
   loadFormFromConfig();
-  renderStations();
+  renderDrones(); renderPilots(); renderObservers(); renderStations();
   setDirty(false);
-  showToast('↩️ Modifications annulées', 'amber');
-}
-
-// ─── DIRTY TRACKING ──────────────────────────────────────
-function setupChangeTracking() {
-  document.querySelectorAll('input, select').forEach(el => {
-    el.addEventListener('input', () => setDirty(true));
-    el.addEventListener('change', () => setDirty(true));
-  });
+  showToast('↩️ Modifications annulées','amber');
 }
 
 function setDirty(val) {
   dirty = val;
-  const bar = document.getElementById('save-bar');
-  if (val) bar.classList.add('visible');
-  else bar.classList.remove('visible');
+  document.getElementById('save-bar').classList.toggle('visible', val);
 }
 
-// ─── STATIONS ────────────────────────────────────────────
+function setupChangeTracking() {
+  document.querySelectorAll('input,select,textarea').forEach(el => {
+    el.addEventListener('input', () => setDirty(true));
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DRONES
+// ═══════════════════════════════════════════════════════════
+function renderDrones() {
+  const list = document.getElementById('drones-list');
+  const drones = config.drones || [];
+  list.innerHTML = drones.map((d,i) => `
+    <div class="dyn-item ${d.primary ? 'active-item' : ''}">
+      <div class="dyn-item-header">
+        <span class="dyn-item-badge ${d.primary ? 'primary' : ''}">${d.primary ? '⭐ Principal' : `Drone ${i+1}`}</span>
+        <span class="dyn-item-name">${d.nom || 'Drone sans nom'}</span>
+        <div class="dyn-item-actions">
+          ${!d.primary ? `<button class="dyn-primary-btn" onclick="setDronePrimary('${d.id}')">⭐</button>` : ''}
+          <button class="dyn-toggle" onclick="toggleDyn('drone-fields-${i}')">✏️</button>
+          ${!d.primary ? `<button class="dyn-del" onclick="deleteDrone('${d.id}')">✕</button>` : ''}
+        </div>
+      </div>
+      <div class="dyn-fields" id="drone-fields-${i}">
+        <div class="field-row">
+          <div class="field"><label>Modèle</label><input value="${d.nom||''}" onchange="updateDrone('${d.id}','nom',this.value)"></div>
+          <div class="field"><label>Immatriculation UAS</label><input value="${d.immat||''}" onchange="updateDrone('${d.id}','immat',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>DRI</label><input value="${d.dri||''}" onchange="updateDrone('${d.id}','dri',this.value)"></div>
+          <div class="field"><label>MTOM (g)</label><input type="number" value="${d.mtom||''}" onchange="updateDrone('${d.id}','mtom',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Classe</label>
+            <select onchange="updateDrone('${d.id}','classe',this.value)">
+              ${['C0','C1','C2','C3','C4','C5','C6'].map(c=>`<option ${d.classe===c?'selected':''}>${c}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>N° série</label><input value="${d.numero_serie||''}" onchange="updateDrone('${d.id}','numero_serie',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Date achat</label><input type="date" value="${d.achat||''}" onchange="updateDrone('${d.id}','achat',this.value)"></div>
+          <div class="field"><label>Notes</label><input value="${d.notes||''}" onchange="updateDrone('${d.id}','notes',this.value)"></div>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('drones-count').textContent = `${drones.length} drone${drones.length>1?'s':''}`;
+}
+
+function addDrone() {
+  const id = 'drone-' + Date.now();
+  config.drones.push({ id, nom:'Nouveau drone', immat:'', dri:'', mtom:'', classe:'C2', numero_serie:'', achat:'', notes:'', primary:false });
+  renderDrones(); setDirty(true);
+}
+
+function deleteDrone(id) {
+  config.drones = config.drones.filter(d => d.id !== id);
+  renderDrones(); setDirty(true);
+}
+
+function setDronePrimary(id) {
+  config.drones.forEach(d => d.primary = d.id === id);
+  renderDrones(); setDirty(true);
+}
+
+function updateDrone(id, field, val) {
+  const d = config.drones.find(d => d.id === id);
+  if (d) { d[field] = val; setDirty(true); }
+  // Refresh name in header
+  const item = config.drones.findIndex(d => d.id === id);
+  if (field === 'nom') {
+    const nameEl = document.querySelectorAll('.dyn-item-name')[item];
+    if (nameEl) nameEl.textContent = val || 'Drone sans nom';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PILOTES
+// ═══════════════════════════════════════════════════════════
+function renderPilots() {
+  const list = document.getElementById('pilots-list');
+  const pilots = config.pilots || [];
+  list.innerHTML = pilots.map((p,i) => `
+    <div class="dyn-item ${p.primary ? 'active-item' : ''}">
+      <div class="dyn-item-header">
+        <span class="dyn-item-badge ${p.primary ? 'primary' : ''}">
+          ${p.primary ? '⭐ RPIC principal' : `RPIC ${i+1}`}
+        </span>
+        <span class="dyn-item-name">${p.nom || 'Pilote sans nom'}</span>
+        <div class="dyn-item-actions">
+          ${!p.primary ? `<button class="dyn-primary-btn" onclick="setPilotPrimary('${p.id}')">⭐</button>` : ''}
+          <button class="dyn-toggle" onclick="toggleDyn('pilot-fields-${i}')">✏️</button>
+          ${!p.primary ? `<button class="dyn-del" onclick="deletePilot('${p.id}')">✕</button>` : ''}
+        </div>
+      </div>
+      <div class="dyn-fields" id="pilot-fields-${i}">
+        <div class="field-row">
+          <div class="field"><label>Nom complet</label><input value="${p.nom||''}" onchange="updatePilot('${p.id}','nom',this.value)"></div>
+          <div class="field"><label>Téléphone</label><input type="tel" value="${p.tel||''}" onchange="updatePilot('${p.id}','tel',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input type="email" value="${p.email||''}" onchange="updatePilot('${p.id}','email',this.value)"></div>
+          <div class="field"><label>N° CATS</label><input value="${p.cats||''}" onchange="updatePilot('${p.id}','cats',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Validité CATS</label><input type="date" value="${p.cats_exp||''}" onchange="updatePilot('${p.id}','cats_exp',this.value)"></div>
+          <div class="field"><label>Notes / Qualif.</label><input value="${p.notes||''}" onchange="updatePilot('${p.id}','notes',this.value)"></div>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('pilots-count').textContent = `${pilots.length} pilote${pilots.length>1?'s':''}`;
+}
+
+function addPilot() {
+  config.pilots.push({ id:'pilot-'+Date.now(), nom:'Nouveau pilote', tel:'', email:'', cats:'', cats_exp:'', notes:'', primary:false });
+  renderPilots(); setDirty(true);
+}
+
+function deletePilot(id) {
+  config.pilots = config.pilots.filter(p => p.id !== id);
+  renderPilots(); setDirty(true);
+}
+
+function setPilotPrimary(id) {
+  config.pilots.forEach(p => p.primary = p.id === id);
+  renderPilots(); setDirty(true);
+}
+
+function updatePilot(id, field, val) {
+  const p = config.pilots.find(p => p.id === id);
+  if (p) { p[field] = val; setDirty(true); }
+  if (field === 'nom') {
+    const idx = config.pilots.findIndex(p => p.id === id);
+    const nameEls = document.querySelectorAll('#pilots-list .dyn-item-name');
+    if (nameEls[idx]) nameEls[idx].textContent = val || 'Pilote sans nom';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  OBSERVATEURS
+// ═══════════════════════════════════════════════════════════
+function renderObservers() {
+  const list = document.getElementById('obs-list');
+  const obs = config.observers || [];
+  list.innerHTML = obs.length === 0
+    ? '<div style="font-size:12px;color:var(--text-muted);padding:4px 0;">Aucun observateur enregistré.</div>'
+    : obs.map((o,i) => `
+    <div class="dyn-item">
+      <div class="dyn-item-header">
+        <span class="dyn-item-badge" style="background:var(--light-green);color:var(--green);">OBS ${i+1}</span>
+        <span class="dyn-item-name">${o.nom || 'Observateur'}</span>
+        <div class="dyn-item-actions">
+          <button class="dyn-toggle" onclick="toggleDyn('obs-fields-${i}')">✏️</button>
+          <button class="dyn-del" onclick="deleteObs('${o.id}')">✕</button>
+        </div>
+      </div>
+      <div class="dyn-fields" id="obs-fields-${i}">
+        <div class="field-row">
+          <div class="field"><label>Nom complet</label><input value="${o.nom||''}" onchange="updateObs('${o.id}','nom',this.value)"></div>
+          <div class="field"><label>Téléphone</label><input type="tel" value="${o.tel||''}" onchange="updateObs('${o.id}','tel',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input type="email" value="${o.email||''}" onchange="updateObs('${o.id}','email',this.value)"></div>
+          <div class="field"><label>Formation</label><input value="${o.formation||''}" onchange="updateObs('${o.id}','formation',this.value)" placeholder="Ex: A1/A3 sensibilisation"></div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Notes</label><input value="${o.notes||''}" onchange="updateObs('${o.id}','notes',this.value)"></div>
+        </div>
+      </div>
+    </div>`).join('');
+  document.getElementById('obs-count').textContent = `${obs.length} obs.`;
+}
+
+function addObs() {
+  if (!config.observers) config.observers = [];
+  config.observers.push({ id:'obs-'+Date.now(), nom:'', tel:'', email:'', formation:'', notes:'' });
+  renderObservers(); setDirty(true);
+}
+
+function deleteObs(id) {
+  config.observers = config.observers.filter(o => o.id !== id);
+  renderObservers(); setDirty(true);
+}
+
+function updateObs(id, field, val) {
+  const o = config.observers.find(o => o.id === id);
+  if (o) { o[field] = val; setDirty(true); }
+  if (field === 'nom') {
+    const idx = config.observers.findIndex(o => o.id === id);
+    const nameEls = document.querySelectorAll('#obs-list .dyn-item-name');
+    if (nameEls[idx]) nameEls[idx].textContent = val || 'Observateur';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOGGLE DYN FIELDS
+// ═══════════════════════════════════════════════════════════
+function toggleDyn(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATIONS METAR
+// ═══════════════════════════════════════════════════════════
 function renderStations() {
   const grid = document.getElementById('stations-grid');
   const count = document.getElementById('stations-count');
-  const stations = config.stations || [];
-  grid.innerHTML = stations.map((s,i) => `
+  const s = config.stations || [];
+  grid.innerHTML = s.map((st,i) => `
     <div class="station-chip">
-      <span>${s}</span>
+      <span>${st}</span>
       <button class="del" onclick="removeStation(${i})">×</button>
     </div>`).join('');
-  count.textContent = `${stations.length}/5`;
-  count.className = 'label-pill ' + (stations.length >= 5 ? 'pill-amber' : 'pill-green');
+  count.textContent = `${s.length}/5`;
+  count.className = 'label-pill ' + (s.length >= 5 ? 'pill-amber' : 'pill-blue');
 }
 
 function addStation() {
   const inp = document.getElementById('station-input');
   const val = inp.value.trim().toUpperCase();
-  if (!val || val.length !== 4) { showToast('⚠️ Code ICAO : 4 lettres', 'amber'); return; }
-  if ((config.stations || []).includes(val)) { showToast('⚠️ Station déjà ajoutée', 'amber'); return; }
-  if ((config.stations || []).length >= 5) { showToast('⚠️ Maximum 5 stations', 'amber'); return; }
-  config.stations = [...(config.stations || []), val];
+  if (!val || val.length !== 4) { showToast('⚠️ Code ICAO : 4 lettres','amber'); return; }
+  if ((config.stations||[]).includes(val)) { showToast('⚠️ Station déjà présente','amber'); return; }
+  if ((config.stations||[]).length >= 5) { showToast('⚠️ Maximum 5 stations','amber'); return; }
+  config.stations = [...(config.stations||[]), val];
   inp.value = '';
-  renderStations();
-  setDirty(true);
+  renderStations(); setDirty(true);
 }
 
 function removeStation(idx) {
   config.stations.splice(idx, 1);
-  renderStations();
-  setDirty(true);
+  renderStations(); setDirty(true);
 }
 
-// ─── API VISIBILITY TOGGLE ───────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════════════════════
 function toggleVis(id) {
   const el = document.getElementById(id);
   el.type = el.type === 'password' ? 'text' : 'password';
 }
 
-// ─── OPENSKY MODE ─────────────────────────────────────────
 function setupOpenskyMode() {
   const sel = document.getElementById('api-opensky-mode');
   const fields = document.getElementById('opensky-auth-fields');
-  sel.addEventListener('change', () => {
-    fields.style.display = sel.value === 'authenticated' ? 'block' : 'none';
-  });
-  if (config.opensky_mode === 'authenticated') fields.style.display = 'block';
+  const update = () => { fields.style.display = sel.value === 'authenticated' ? 'block' : 'none'; };
+  sel.addEventListener('change', update);
+  update();
 }
 
-// ─── API TESTS ────────────────────────────────────────────
 async function testCheckWX() {
   const key = document.getElementById('api-checkwx').value.trim();
-  const status = document.getElementById('checkwx-status');
-  if (!key) { showToast('⚠️ Saisir une clé d\'abord', 'amber'); return; }
-  status.innerHTML = '<span style="color:var(--text-muted);font-size:12px;">⏳ Test en cours…</span>';
+  const st = document.getElementById('checkwx-status');
+  if (!key) { showToast('⚠️ Saisir une clé d\'abord','amber'); return; }
+  st.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">⏳ Test…</span>';
   try {
-    const r = await fetch(`https://api.checkwx.com/metar/LFLB/decoded`, {
-      headers:{'X-API-Key': key}
-    });
-    if (r.ok) {
-      status.innerHTML = '<span style="color:var(--green);font-size:12px;font-weight:700;">✅ Clé valide — LFLB accessible</span>';
-    } else {
-      status.innerHTML = `<span style="color:var(--red);font-size:12px;font-weight:700;">❌ Erreur HTTP ${r.status}</span>`;
-    }
-  } catch(e) {
-    status.innerHTML = '<span style="color:var(--amber);font-size:12px;font-weight:700;">⚠️ Erreur réseau</span>';
-  }
+    const r = await fetch('https://api.checkwx.com/metar/LFLB/decoded', { headers:{'X-API-Key':key} });
+    st.innerHTML = r.ok
+      ? '<span style="font-size:12px;font-weight:700;color:var(--green);">✅ Clé valide</span>'
+      : `<span style="font-size:12px;font-weight:700;color:var(--red);">❌ HTTP ${r.status}</span>`;
+  } catch { st.innerHTML = '<span style="font-size:12px;font-weight:700;color:var(--amber);">⚠️ Erreur réseau</span>'; }
 }
 
 async function testOWM() {
   const key = document.getElementById('api-owm').value.trim();
-  const status = document.getElementById('owm-status');
-  if (!key) { showToast('⚠️ Saisir une clé d\'abord', 'amber'); return; }
-  status.innerHTML = '<span style="color:var(--text-muted);font-size:12px;">⏳ Test en cours…</span>';
+  const st = document.getElementById('owm-status');
+  if (!key) { showToast('⚠️ Saisir une clé d\'abord','amber'); return; }
+  st.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">⏳ Test…</span>';
   try {
     const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Thyez,FR&appid=${key}`);
-    if (r.ok) {
-      status.innerHTML = '<span style="color:var(--green);font-size:12px;font-weight:700;">✅ Clé valide — Thyez accessible</span>';
-    } else {
-      status.innerHTML = `<span style="color:var(--red);font-size:12px;font-weight:700;">❌ Erreur HTTP ${r.status} — clé invalide ?</span>`;
-    }
-  } catch(e) {
-    status.innerHTML = '<span style="color:var(--amber);font-size:12px;font-weight:700;">⚠️ Erreur réseau</span>';
-  }
+    st.innerHTML = r.ok
+      ? '<span style="font-size:12px;font-weight:700;color:var(--green);">✅ Clé valide — Thyez OK</span>'
+      : `<span style="font-size:12px;font-weight:700;color:var(--red);">❌ HTTP ${r.status}</span>`;
+  } catch { st.innerHTML = '<span style="font-size:12px;font-weight:700;color:var(--amber);">⚠️ Erreur réseau</span>'; }
 }
 
-// ─── EXPORT CSV ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  NOTIFICATIONS EMAIL
+// ═══════════════════════════════════════════════════════════
+function testerEmailREX() {
+  const to = document.getElementById('notif-rex-email').value.trim();
+  const cc = document.getElementById('notif-rex-cc').value.trim();
+  const sujet = encodeURIComponent(document.getElementById('notif-rex-sujet').value + ' — TEST');
+  const body = encodeURIComponent(
+    `Ceci est un email de test généré par UAS Manager.\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{nom:'DJI Mavic 4 Pro'}])[0].nom}\nDate : ${new Date().toLocaleString('fr-FR')}`
+  );
+  if (!to) { showToast('⚠️ Saisir un email REX d\'abord','amber'); return; }
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  window.open(`mailto:${to}${ccPart}?subject=${sujet}&body=${body}`);
+}
+
+function testerEmailDSAC() {
+  const to = document.getElementById('notif-dsac-email').value.trim();
+  const cc = document.getElementById('notif-dsac-cc').value.trim();
+  const zone = document.getElementById('notif-zone').value.trim();
+  const sujet = encodeURIComponent(document.getElementById('notif-dsac-sujet').value + ' — TEST');
+  const body = encodeURIComponent(
+    `Bonjour,\n\nJe vous informe de la réalisation de vols UAS dans le cadre suivant :\n\nExploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\nUAS : ${(config.drones||[{nom:'DJI Mavic 4 Pro',immat:'UAS-FR-517804'}])[0].nom} · ${(config.drones||[{immat:'UAS-FR-517804'}])[0].immat}\nZone d'opération : ${zone||'À préciser'}\nScénarios : ${config.scenarios}\n\nCordialement,\n${config.nom}`
+  );
+  if (!to) { showToast('⚠️ Saisir un email DSAC d\'abord','amber'); return; }
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  window.open(`mailto:${to}${ccPart}?subject=${sujet}&body=${body}`);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════════════════════
 const CSV_HEADERS = {
-  vols: ['Date','Heure départ','Heure arrivée','Durée (min)','Site','Commune','Département',
-         'Scénario','Altitude max (m)','RPIC','OBS-1','OBS-2','Météo','Vent (m/s)',
-         'Température (°C)','Visibilité (km)','Objectif mission','Remarques','Incidents'],
-  maintenance: ['Date','Type intervention','Description','Pièces remplacées','Technicien',
-                'Heures vol avant','Heures vol après','Prochaine éch.','Coût (€)','Remarques'],
-  rex: ['Date','Heure','Site','Phase de vol','Type événement','Gravité','Description',
-        'Facteurs contributifs','Actions correctives','Déclaration DSAC','Statut'],
-  formations: ['Date','Type formation','Organisme','Description','Durée (h)',
-               'Participant','Certificat N°','Validité','Documents','Remarques'],
+  vols:['Date','Heure départ','Heure arrivée','Durée (min)','Site','Commune','Département',
+        'Scénario','Altitude max (m)','Drone','RPIC','OBS-1','OBS-2','Météo','Vent (m/s)',
+        'Température (°C)','Visibilité (km)','Objectif mission','Remarques','Incidents'],
+  maintenance:['Date','Type intervention','Description','Pièces remplacées','Drone',
+               'Technicien','Heures vol avant','Heures vol après','Prochaine éch.','Coût (€)','Remarques'],
+  rex:['Date','Heure','Site','Drone','Phase de vol','Type événement','Gravité','Description',
+       'Facteurs contributifs','Actions correctives','Déclaration DSAC','Statut'],
+  formations:['Date','Type formation','Organisme','Description','Durée (h)',
+              'Participant','Certificat N°','Validité','Documents','Remarques'],
 };
 
-function getData(registre) {
-  // Lecture localStorage — chaque module stocke ses données sous 'uas_{registre}'
-  const raw = localStorage.getItem(`uas_${registre}`);
+function getData(reg) {
+  const raw = localStorage.getItem(`uas_${reg}`);
   if (!raw) return [];
   try { return JSON.parse(raw); } catch { return []; }
 }
 
 function toCSV(headers, rows) {
   const BOM = '\uFEFF';
-  const escape = v => {
-    if (v === null || v === undefined) return '';
-    const s = String(v);
-    return s.includes(';') || s.includes('"') || s.includes('\n')
-      ? `"${s.replace(/"/g,'""')}"` : s;
-  };
-  const lines = [headers.map(escape).join(';')];
-  for (const row of rows) {
-    lines.push(headers.map(h => escape(row[h] ?? row[headers.indexOf(h)] ?? '')).join(';'));
-  }
+  const esc = v => { const s = String(v??''); return (s.includes(';')||s.includes('"')||s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s; };
+  const lines = [headers.map(esc).join(';')];
+  rows.forEach(row => lines.push(headers.map((h,i) => esc(row[h]??row[i]??'')).join(';')));
   return BOM + lines.join('\r\n');
 }
 
-function downloadCSV(filename, content) {
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+function dlCSV(fname, content) {
+  const blob = new Blob([content], { type:'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
+  const a = Object.assign(document.createElement('a'), { href:url, download:fname });
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-function exportCSV(registre) {
-  const headers = CSV_HEADERS[registre];
-  const rows = getData(registre);
+function exportCSV(reg) {
+  const rows = getData(reg);
   const date = new Date().toISOString().slice(0,10);
-  const csv = toCSV(headers, rows);
-  downloadCSV(`UAS_${registre}_${date}.csv`, csv);
-  showToast(`✅ ${registre}.csv exporté (${rows.length} lignes)`);
+  dlCSV(`UAS_${reg}_${date}.csv`, toCSV(CSV_HEADERS[reg], rows));
+  showToast(`✅ ${reg}.csv exporté (${rows.length} lignes)`);
 }
 
 async function exportZIP() {
-  if (typeof JSZip === 'undefined') {
-    showToast('⚠️ JSZip non chargé — vérifier la connexion', 'amber');
-    return;
-  }
+  if (typeof JSZip === 'undefined') { showToast('⚠️ JSZip non disponible','amber'); return; }
   const zip = new JSZip();
   const date = new Date().toISOString().slice(0,10);
   let total = 0;
-
   for (const reg of ['vols','maintenance','rex','formations']) {
-    const headers = CSV_HEADERS[reg];
     const rows = getData(reg);
     total += rows.length;
-    zip.file(`UAS_${reg}_${date}.csv`, toCSV(headers, rows));
+    zip.file(`UAS_${reg}_${date}.csv`, toCSV(CSV_HEADERS[reg], rows));
   }
-
-  // Ajouter un fichier README
-  const cfg = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const drones = (config.drones||[]).map(d=>`  - ${d.nom} · ${d.immat} · MTOM ${d.mtom}g`).join('\n');
   zip.file('README.txt',
-    `UAS Manager — Export complet\n` +
-    `Date : ${new Date().toLocaleString('fr-FR')}\n` +
-    `Exploitant : ${cfg.nom || 'CONTE Philippe'}\n` +
-    `AlphaTango : ${cfg.alphatango || 'FRAjqq48j12nfy4c'}\n` +
-    `UAS : ${cfg.uas_modele || 'DJI Mavic 4 Pro'} · ${cfg.uas_immat || 'UAS-FR-517804'}\n` +
-    `MANEX : ${cfg.manex || 'MANEX_Philippe_V5.1_2026'}\n` +
-    `Lignes exportées : ${total}\n`
+    `UAS Manager — Export complet\nDate : ${new Date().toLocaleString('fr-FR')}\n` +
+    `Exploitant : ${config.nom}\nAlphaTango : ${config.alphatango}\n` +
+    `Drones :\n${drones}\nMANEX : ${config.manex}\nTotal lignes : ${total}\n`
   );
-
   const blob = await zip.generateAsync({ type:'blob' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `UAS_Export_Complet_${date}.zip`;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
+  const a = Object.assign(document.createElement('a'), { href:url, download:`UAS_Export_${date}.zip` });
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast(`✅ ZIP exporté — ${total} lignes au total`);
+  showToast(`✅ ZIP exporté — ${total} enregistrements`);
 }
 
-// ─── EXPORT STATS ─────────────────────────────────────────
 function renderExportStats() {
-  const el = document.getElementById('export-stats-content');
+  const el = document.getElementById('export-stats');
+  if (!el) return;
   const stats = ['vols','maintenance','rex','formations'].map(r => {
-    const rows = getData(r);
-    const icons = {vols:'✈️', maintenance:'🔧', rex:'⚠️', formations:'🎓'};
-    return `<div class="threshold-row">
-      <div><div class="thr-label">${icons[r]} ${r.charAt(0).toUpperCase()+r.slice(1)}</div>
-      <div class="thr-sub">Clé localStorage : uas_${r}</div></div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;">${rows.length}<span style="font-size:10px;color:var(--text-muted);font-weight:500;"> enr.</span></div>
-    </div>`;
+    const n = getData(r).length;
+    return `<span style="font-size:11px;color:var(--text-muted);">${r}: <strong>${n}</strong></span>`;
   });
-  el.innerHTML = stats.join('');
+  el.innerHTML = `<div style="display:flex;gap:14px;flex-wrap:wrap;">${stats.join('')}</div>`;
 }
 
-// ─── PDF / IMPRESSION ─────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  PDF
+// ═══════════════════════════════════════════════════════════
 function genererPDF() {
-  // Injecter les données config dans le DOM pour l'impression
-  const titrePDF = document.getElementById('pdf-titre').value.trim();
-  if (titrePDF) document.title = titrePDF;
-  else document.title = 'Rapport UAS — CONTE Philippe · FRAjqq48j12nfy4c';
-
-  // Préparer une page d'impression dédiée
-  const printWin = window.open('', '_blank');
-  const cfg = config;
-  const stations = (cfg.stations || []).join(', ');
+  const titre = document.getElementById('pdf-titre').value.trim() || 'Rapport de synthèse — Exploitant UAS';
+  const drones = (config.drones||[]).map(d =>
+    `<tr><td>${d.primary?'⭐ ':''} ${d.nom}</td><td>${d.immat}</td><td>${d.mtom}g · Classe ${d.classe}</td><td>${d.dri||'—'}</td></tr>`).join('');
+  const pilots = (config.pilots||[]).map(p =>
+    `<tr><td>${p.primary?'⭐ ':''} ${p.nom}</td><td>${p.cats||'—'}</td><td>${p.cats_exp||'—'}</td><td>${p.tel||'—'}</td></tr>`).join('');
+  const obs = (config.observers||[]).map((o,i) =>
+    `<tr><td>OBS-${i+1} · ${o.nom||'—'}</td><td>${o.tel||'—'}</td><td colspan="2">${o.notes||'—'}</td></tr>`).join('');
+  const stations = (config.stations||[]).join(', ');
   const dateGen = new Date().toLocaleString('fr-FR');
 
-  printWin.document.write(`<!DOCTYPE html><html lang="fr"><head>
-<meta charset="UTF-8">
-<title>Rapport UAS — ${cfg.nom}</title>
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html lang="fr"><head>
+<meta charset="UTF-8"><title>${titre}</title>
 <style>
-  body{font-family:Arial,sans-serif;font-size:10pt;color:#000;margin:0;padding:20mm 15mm;}
-  @page{size:A4;margin:20mm 15mm;}
-  h1{font-size:16pt;color:#0C447C;border-bottom:2pt solid #0C447C;padding-bottom:6pt;margin-bottom:12pt;}
-  h2{font-size:12pt;color:#0C447C;margin:14pt 0 6pt;border-left:3pt solid #0C447C;padding-left:8pt;}
-  table{width:100%;border-collapse:collapse;margin-bottom:10pt;font-size:9pt;}
-  td{padding:5pt 8pt;border:0.5pt solid #ccc;vertical-align:top;}
-  td:first-child{font-weight:bold;color:#444;width:40%;background:#f8f9ff;}
-  .header-doc{font-size:8pt;color:#666;border-bottom:0.5pt solid #ccc;padding-bottom:4pt;margin-bottom:12pt;}
-  .footer{position:fixed;bottom:10mm;left:0;right:0;text-align:center;font-size:8pt;color:#888;border-top:0.5pt solid #ccc;padding-top:4pt;}
-  .badge{display:inline-block;background:#E8F5E9;color:#1D6B37;padding:2pt 6pt;border-radius:4pt;font-size:8pt;font-weight:bold;}
-  .badge-amber{background:#FAEEDA;color:#BA7517;}
+  body{font-family:Arial,sans-serif;font-size:10pt;color:#000;margin:0;padding:18mm 14mm;}
+  @page{size:A4;margin:18mm 14mm;}
+  h1{font-size:15pt;color:#0C447C;border-bottom:2pt solid #0C447C;padding-bottom:5pt;margin-bottom:10pt;}
+  h2{font-size:11pt;color:#0C447C;border-left:3pt solid #0C447C;padding-left:7pt;margin:12pt 0 5pt;}
+  table{width:100%;border-collapse:collapse;font-size:9pt;margin-bottom:8pt;}
+  th{background:#0C447C;color:#fff;padding:4pt 7pt;text-align:left;font-size:8pt;}
+  td{padding:4pt 7pt;border:0.5pt solid #ccc;}
+  td:first-child{font-weight:bold;background:#f8f9ff;width:35%;}
+  tr:nth-child(even) td{background:#fafcff;}
+  .hdr{font-size:8pt;color:#666;border-bottom:0.5pt solid #ccc;padding-bottom:3pt;margin-bottom:10pt;display:flex;justify-content:space-between;}
+  .ftr{position:fixed;bottom:8mm;left:0;right:0;text-align:center;font-size:7pt;color:#999;border-top:0.5pt solid #ddd;padding-top:3pt;}
 </style></head><body>
-<div class="header-doc">UAS Manager · MANEX_Philippe_V5.1_2026 · Généré le ${dateGen}</div>
-<h1>${titrePDF || 'Rapport de synthèse — Exploitant UAS'}</h1>
+<div class="hdr"><span>${config.manex}</span><span>Généré le ${dateGen}</span></div>
+<h1>${titre}</h1>
 
-<h2>Données exploitant</h2>
+<h2>Exploitant</h2>
+<table><tr><td>Nom</td><td>${config.nom}</td></tr>
+<tr><td>AlphaTango</td><td>${config.alphatango}</td></tr>
+<tr><td>Adresse</td><td>${config.adresse}, ${config.ville}</td></tr>
+<tr><td>Email / Tél</td><td>${config.email} · ${config.tel}</td></tr>
+<tr><td>Scénarios</td><td>${config.scenarios}</td></tr></table>
+
+<h2>Certifications & Assurance</h2>
+<table><tr><td>CATS</td><td>${config.cats} — valide jusqu'au ${config.cats_exp}</td></tr>
+<tr><td>Assurance</td><td>${config.assurance} — ${config.assureur} — valide jusqu'au ${config.assurance_exp}</td></tr></table>
+
+<h2>Flotte UAS (${(config.drones||[]).length} drone(s))</h2>
+<table><tr><th>Modèle</th><th>Immatriculation</th><th>MTOM / Classe</th><th>DRI</th></tr>${drones}</table>
+
+<h2>Pilotes RPIC (${(config.pilots||[]).length})</h2>
+<table><tr><th>Nom</th><th>N° CATS</th><th>Validité CATS</th><th>Téléphone</th></tr>${pilots}${obs}</table>
+
+<h2>Limites opérationnelles</h2>
 <table>
-  <tr><td>Nom</td><td>${cfg.nom}</td></tr>
-  <tr><td>Numéro AlphaTango</td><td>${cfg.alphatango}</td></tr>
-  <tr><td>Adresse</td><td>${cfg.adresse}, ${cfg.ville}</td></tr>
-  <tr><td>Email</td><td>${cfg.email}</td></tr>
-  <tr><td>Téléphone</td><td>${cfg.tel}</td></tr>
-</table>
+<tr><td>Altitude max</td><td>${config.thr_alt_max} m AGL</td></tr>
+<tr><td>Distance max VLOS</td><td>${config.thr_dist_max} m</td></tr>
+<tr><td>Vent max</td><td>${config.thr_vent} m/s</td></tr>
+<tr><td>Température</td><td>${config.thr_temp_min}°C à ${config.thr_temp_max}°C</td></tr>
+<tr><td>Visibilité min</td><td>${config.thr_visi} km</td></tr>
+<tr><td>Plafond nuageux min</td><td>${config.thr_plafond} ft</td></tr>
+<tr><td>Stations METAR</td><td>${stations}</td></tr></table>
 
-<h2>Certifications & assurance</h2>
+<h2>Notifications</h2>
 <table>
-  <tr><td>Certificat CATS</td><td>${cfg.cats} <span class="badge">Valide jusqu'au ${cfg.cats_exp || '15/09/2029'}</span></td></tr>
-  <tr><td>Police assurance</td><td>${cfg.assurance} — ${cfg.assureur} <span class="badge">Valide jusqu'au ${cfg.assurance_exp || '10/04/2027'}</span></td></tr>
-</table>
+<tr><td>Email REX</td><td>${config.notif_rex_email||'—'}</td></tr>
+<tr><td>Email DSAC</td><td>${config.notif_dsac_email||'—'}</td></tr>
+<tr><td>Délai notification préfecture</td><td>${config.notif_delai} jours ouvrés</td></tr>
+<tr><td>Zone habituelle</td><td>${config.notif_zone||'—'}</td></tr></table>
 
-<h2>Aéronef UAS</h2>
-<table>
-  <tr><td>Modèle</td><td>${cfg.uas_modele}</td></tr>
-  <tr><td>Enregistrement UAS</td><td>${cfg.uas_immat}</td></tr>
-  <tr><td>DRI</td><td>${cfg.dri}</td></tr>
-  <tr><td>MTOM (figé MANEX)</td><td>${cfg.mtom} g</td></tr>
-  <tr><td>Scénarios autorisés</td><td>${cfg.scenarios}</td></tr>
-  <tr><td>Version MANEX</td><td>${cfg.manex}</td></tr>
-</table>
-
-<h2>Configuration opérationnelle</h2>
-<table>
-  <tr><td>Vent max</td><td>${cfg.thr_vent} m/s</td></tr>
-  <tr><td>Température opérationnelle</td><td>${cfg.thr_temp_min}°C à ${cfg.thr_temp_max}°C</td></tr>
-  <tr><td>Visibilité minimum</td><td>${cfg.thr_visi} km</td></tr>
-  <tr><td>Plafond nuageux min</td><td>${cfg.thr_plafond} ft</td></tr>
-</table>
-
-<h2>Équipe de vol</h2>
-<table>
-  <tr><td>RPIC</td><td>${cfg.pilot_rpic}</td></tr>
-  <tr><td>OBS-1</td><td>${cfg.pilot_obs1 || '—'}</td></tr>
-  <tr><td>OBS-2</td><td>${cfg.pilot_obs2 || '—'}</td></tr>
-  <tr><td>OBS-3</td><td>${cfg.pilot_obs3 || '—'}</td></tr>
-</table>
-
-<h2>Stations METAR surveillées</h2>
-<table>
-  <tr><td>Stations ICAO</td><td>${stations}</td></tr>
-</table>
-
-<div class="footer">CONTE Philippe · ${cfg.alphatango} · ${cfg.uas_modele} · ${cfg.uas_immat} · MTOM ${cfg.mtom}g</div>
+<div class="ftr">${config.nom} · ${config.alphatango} · ${(config.drones||[{nom:'',immat:''}])[0].nom} · ${(config.drones||[{immat:''}])[0].immat}</div>
 </body></html>`);
-
-  printWin.document.close();
-  printWin.focus();
-  setTimeout(() => { printWin.print(); }, 500);
+  win.document.close(); win.focus();
+  setTimeout(() => win.print(), 500);
 }
 
-// ─── TOAST ────────────────────────────────────────────────
-let toastTimer = null;
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `visible ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+// ═══════════════════════════════════════════════════════════
+//  RÉINITIALISATION
+// ═══════════════════════════════════════════════════════════
+const MODULE_KEYS = {
+  vols:['uas_vols'],
+  maintenance:['uas_maintenance'],
+  rex:['uas_rex'],
+  formations:['uas_formations'],
+  bilans:['uas_bilans','uas_bilan_mensuel','uas_bilan_annuel'],
+  checklist:['uas_checklist'],
+  meteo:['uas_meteo_cache','uas_metar_cache'],
+  adsb:['uas_adsb_cache'],
+};
+
+let pendingResetAction = null;
+
+function confirmReset(module, label) {
+  document.getElementById('modal-title').textContent = `🗑️ Vider — ${label}`;
+  document.getElementById('modal-msg').textContent =
+    `Vous allez supprimer toutes les données du module « ${label} ».\nCette action est irréversible.`;
+  pendingResetAction = () => doReset(module, label);
+  document.getElementById('modal-confirm-btn').textContent = `Vider ${label}`;
+  document.getElementById('modal-overlay').classList.add('open');
 }
 
-// ─── TAB NAVIGATION ───────────────────────────────────────
+function confirmResetAll() {
+  document.getElementById('modal-title').textContent = '☢️ RÉINITIALISATION COMPLÈTE';
+  document.getElementById('modal-msg').innerHTML =
+    '<strong style="color:var(--red)">ATTENTION</strong> — Cette action va supprimer <u>toutes</u> les données de l\'application : vols, maintenance, REX, formations, bilans, configuration, drones et pilotes.<br><br>Cette action est <strong>irréversible</strong>.';
+  pendingResetAction = doResetAll;
+  document.getElementById('modal-confirm-btn').textContent = '⚠️ Tout supprimer';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function doReset(module, label) {
+  const keys = MODULE_KEYS[module] || [`uas_${module}`];
+  keys.forEach(k => localStorage.removeItem(k));
+  closeModal();
+  renderStorageStats();
+  showToast(`🗑️ ${label} réinitialisé`,'amber');
+}
+
+function doResetAll() {
+  // Supprimer toutes les clés uas_
+  Object.keys(localStorage).filter(k => k.startsWith('uas_')).forEach(k => localStorage.removeItem(k));
+  closeModal();
+  config = { ...DEFAULTS };
+  loadFormFromConfig();
+  renderDrones(); renderPilots(); renderObservers(); renderStations();
+  renderStorageStats();
+  setDirty(false);
+  showToast('🗑️ Application réinitialisée — données effacées','red');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  pendingResetAction = null;
+}
+
+document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+  if (pendingResetAction) pendingResetAction();
+});
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  STORAGE STATS
+// ═══════════════════════════════════════════════════════════
+function renderStorageStats() {
+  const el = document.getElementById('storage-stats');
+  if (!el) return;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('uas_'));
+  let totalBytes = 0;
+  const rows = keys.map(k => {
+    const val = localStorage.getItem(k) || '';
+    const bytes = new TextEncoder().encode(val).length;
+    totalBytes += bytes;
+    let count = '—';
+    try { const p = JSON.parse(val); count = Array.isArray(p) ? `${p.length} enr.` : 'objet'; } catch {}
+    return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;">
+      <span style="font-family:monospace;color:var(--navy);font-size:11px;">${k}</span>
+      <span style="color:var(--text-muted);">${count} · ${(bytes/1024).toFixed(1)} ko</span>
+    </div>`;
+  });
+  el.innerHTML = rows.length
+    ? rows.join('') + `<div style="margin-top:8px;font-size:11px;color:var(--text-muted);text-align:right;">Total : <strong>${(totalBytes/1024).toFixed(1)} ko</strong> / ~5 Mo max</div>`
+    : '<div style="font-size:12px;color:var(--text-muted);">Aucune donnée stockée.</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TAB NAVIGATION
+// ═══════════════════════════════════════════════════════════
 document.querySelectorAll('.tnav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const tab = btn.dataset.tab;
     document.querySelectorAll('.tnav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    if (tab === 'export') renderExportStats();
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    if (btn.dataset.tab === 'export') renderExportStats();
+    if (btn.dataset.tab === 'reset') renderStorageStats();
   });
 });
 
-// ─── ENTER on station input ───────────────────────────────
 document.getElementById('station-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') addStation();
 });
 
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className=''; }, 3500);
+}
+
 // ─── START ────────────────────────────────────────────────
 init();
 </script>
-
-
-</body></html>
+</body>
+</html>

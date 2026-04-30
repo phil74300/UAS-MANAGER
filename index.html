@@ -1,480 +1,209 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_13.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UAS Manager">
 <title>UAS Manager — Accueil</title>
 <style>
-  :root {
-    --navy:        #0C447C;
-    --blue:        #185FA5;
-    --light-blue:  #E6F1FB;
-    --green:       #1D6B37;
-    --light-green: #E8F5E9;
-    --amber:       #BA7517;
-    --light-amber: #FAEEDA;
-    --red:         #8B2020;
-    --light-red:   #FDECEC;
-    --teal:        #006064;
-    --bg:          #F0F4FA;
-    --surface:     #FFFFFF;
-    --text:        #0D1220;
-    --text-muted:  #5A6478;
-    --border:      #D0DCF0;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:         #0D1220;
-      --surface:    #161E30;
-      --text:       #E8EEF8;
-      --text-muted: #7A8BAA;
-      --border:     #253050;
-      --light-blue: #1A2D4A;
-      --light-amber:#2A1E00;
-      --light-green:#0F2318;
-      --light-red:  #2A0D0D;
-    }
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    min-height: 100%;
-    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ─── HEADER ─── */
-  #header {
-    background: var(--navy);
-    padding: env(safe-area-inset-top) 20px 0;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* motif géo en fond */
-  #header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 80% 50%, rgba(24,95,165,0.45) 0%, transparent 60%),
-      radial-gradient(circle at 10% 80%, rgba(0,96,100,0.3) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  /* grille subtile */
-  #header::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-    pointer-events: none;
-  }
-
-  .header-inner {
-    position: relative;
-    z-index: 1;
-    padding: 24px 0 28px;
-  }
-
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.85);
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-  }
-
-  #header h1 {
-    font-size: 28px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.5px;
-    line-height: 1.1;
-  }
-  #header h1 span { color: #7EB8F7; }
-
-  .header-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.65);
-    margin-top: 6px;
-    font-weight: 500;
-  }
-
-  /* ─── PILOT CARD ─── */
-  .pilot-strip {
-    background: rgba(255,255,255,0.08);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
-  .pilot-avatar {
-    width: 38px; height: 38px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.25);
-  }
-  .pilot-info { flex: 1; min-width: 0; }
-  .pilot-name { font-size: 13px; font-weight: 700; color: #fff; }
-  .pilot-id   { font-size: 11px; color: rgba(255,255,255,0.55); font-family: 'SF Mono', monospace; margin-top: 1px; }
-  .pilot-cats {
-    background: rgba(29,107,55,0.35);
-    border: 1px solid rgba(29,107,55,0.5);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #6FD492;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-  }
-
-  /* ─── CONTENT ─── */
-  #content {
-    padding: 20px 16px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  /* ─── SECTION TITLE ─── */
-  .section-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 20px 0 10px;
-  }
-  .section-title:first-child { margin-top: 0; }
-
-  /* ─── MODULE GRID ─── */
-  .modules-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .modules-grid.wide { grid-template-columns: 1fr; }
-
-  /* ─── MODULE CARD ─── */
-  .mod-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 14px 14px;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-    -webkit-user-select: none;
-    user-select: none;
-    animation: fadeUp 0.4s both;
-  }
-
-  .mod-card:active {
-    transform: scale(0.97);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  }
-
-  /* accent strip gauche */
-  .mod-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 12px; bottom: 12px;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: var(--accent, var(--blue));
-  }
-
-  /* glow de fond */
-  .mod-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 85% 15%, var(--glow, transparent) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .mod-icon {
-    font-size: 26px;
-    line-height: 1;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mod-label {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    position: relative;
-    z-index: 1;
-    line-height: 1.2;
-  }
-
-  .mod-desc {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 500;
-    position: relative;
-    z-index: 1;
-    line-height: 1.35;
-  }
-
-  .mod-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 10px;
-    align-self: flex-start;
-    position: relative;
-    z-index: 1;
-    letter-spacing: 0.3px;
-  }
-  .mod-status.ready {
-    background: var(--light-green);
-    color: var(--green);
-  }
-  .mod-status.wip {
-    background: var(--light-amber);
-    color: var(--amber);
-  }
-  .mod-status.planned {
-    background: var(--light-blue);
-    color: var(--blue);
-  }
-
-  /* disabled */
-  .mod-card.disabled {
-    opacity: 0.55;
-    cursor: default;
-    pointer-events: none;
-  }
-
-  /* couleurs par module */
-  .mod-card.c-blue   { --accent: var(--blue);  --glow: rgba(24,95,165,0.06); }
-  .mod-card.c-green  { --accent: var(--green); --glow: rgba(29,107,55,0.06); }
-  .mod-card.c-amber  { --accent: var(--amber); --glow: rgba(186,117,23,0.06); }
-  .mod-card.c-red    { --accent: var(--red);   --glow: rgba(139,32,32,0.06); }
-  .mod-card.c-teal   { --accent: var(--teal);  --glow: rgba(0,96,100,0.06); }
-  .mod-card.c-navy   { --accent: var(--navy);  --glow: rgba(12,68,124,0.06); }
-
-  /* animation stagger */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .mod-card:nth-child(1) { animation-delay: 0.05s; }
-  .mod-card:nth-child(2) { animation-delay: 0.10s; }
-  .mod-card:nth-child(3) { animation-delay: 0.15s; }
-  .mod-card:nth-child(4) { animation-delay: 0.20s; }
-  .mod-card:nth-child(5) { animation-delay: 0.25s; }
-  .mod-card:nth-child(6) { animation-delay: 0.30s; }
-  .mod-card:nth-child(7) { animation-delay: 0.35s; }
-  .mod-card:nth-child(8) { animation-delay: 0.40s; }
-
-  /* ─── WIDE CARD (1 colonne) ─── */
-  .mod-card.wide {
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-  }
-  .mod-card.wide .mod-icon { font-size: 28px; flex-shrink: 0; }
-  .mod-card.wide .mod-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-
-  /* ─── INFO STRIP ─── */
-  .info-strip {
-    background: var(--light-blue);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .info-item { }
-  .info-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-val   { font-size: 12px; font-weight: 700; color: var(--navy); margin-top: 2px; font-family: 'SF Mono', monospace; }
-  @media (prefers-color-scheme: dark) { .info-val { color: #7EB8F7; } }
-
-  /* ─── VERSION ─── */
-  .version-line {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 24px;
-    padding-bottom: 8px;
-  }
-
-  /* ─── RESPONSIVE iPad ─── */
-  @media (min-width: 600px) {
-    .modules-grid { grid-template-columns: 1fr 1fr 1fr; }
-    #content { padding: 24px 24px; }
-  }
+  :root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--light-red:#FDECEC;--teal:#006064;--bg:#F0F4FA;--surface:#FFFFFF;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
+  @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;}}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%;font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+  #header{background:var(--navy);padding:env(safe-area-inset-top) 0 0;position:relative;overflow:hidden;}
+  #header::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(24,95,165,0.45) 0%,transparent 60%),radial-gradient(circle at 10% 80%,rgba(0,96,100,0.3) 0%,transparent 50%);pointer-events:none;}
+  #header::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+  .header-inner{position:relative;z-index:1;padding:22px 20px 26px;}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:.5px;margin-bottom:10px;}
+  #header h1{font-size:27px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.1;}
+  #header h1 span{color:#7EB8F7;}
+  .header-sub{font-size:13px;color:rgba(255,255,255,0.6);margin-top:6px;font-weight:500;}
+  .pilot-strip{background:rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.1);padding:11px 18px;display:flex;align-items:center;gap:12px;position:relative;z-index:1;}
+  .pilot-avatar{width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:2px solid rgba(255,255,255,0.25);}
+  .pilot-info{flex:1;min-width:0;}
+  .pilot-name{font-size:13px;font-weight:700;color:#fff;}
+  .pilot-id{font-size:10px;color:rgba(255,255,255,0.5);font-family:'SF Mono',monospace;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pilot-cats{background:rgba(29,107,55,0.35);border:1px solid rgba(29,107,55,0.5);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:#6FD492;white-space:nowrap;flex-shrink:0;}
+  #alerts-bar{display:none;padding:10px 14px;gap:7px;flex-direction:column;}
+  #alerts-bar.has-alerts{display:flex;}
+  .alert-item{display:flex;align-items:center;gap:8px;background:var(--light-amber);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--amber);}
+  #content{padding:16px 14px;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-width:600px;margin:0 auto;}
+  .sec-title{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}
+  .sec-title:first-child{margin-top:0;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .grid-1{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:540px){.grid-2{grid-template-columns:1fr 1fr 1fr;}}
+  .mod-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 13px 12px;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;-webkit-user-select:none;user-select:none;animation:fadeUp .35s both;}
+  .mod-card:active{transform:scale(0.96);}
+  .mod-card::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--accent,var(--blue));}
+  .mod-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 10%,var(--glow,transparent) 0%,transparent 65%);pointer-events:none;}
+  .mod-icon{font-size:24px;line-height:1;position:relative;z-index:1;}
+  .mod-label{font-size:13px;font-weight:700;color:var(--text);position:relative;z-index:1;line-height:1.2;}
+  .mod-desc{font-size:10.5px;color:var(--text-muted);font-weight:500;position:relative;z-index:1;line-height:1.3;}
+  .c-blue{--accent:var(--blue);--glow:rgba(24,95,165,0.06);}
+  .c-green{--accent:var(--green);--glow:rgba(29,107,55,0.06);}
+  .c-amber{--accent:var(--amber);--glow:rgba(186,117,23,0.06);}
+  .c-red{--accent:var(--red);--glow:rgba(139,32,32,0.06);}
+  .c-teal{--accent:var(--teal);--glow:rgba(0,96,100,0.06);}
+  .c-navy{--accent:var(--navy);--glow:rgba(12,68,124,0.06);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .mod-card:nth-child(1){animation-delay:.04s;}.mod-card:nth-child(2){animation-delay:.08s;}.mod-card:nth-child(3){animation-delay:.12s;}.mod-card:nth-child(4){animation-delay:.16s;}.mod-card:nth-child(5){animation-delay:.20s;}.mod-card:nth-child(6){animation-delay:.24s;}.mod-card:nth-child(7){animation-delay:.28s;}.mod-card:nth-child(8){animation-delay:.32s;}.mod-card:nth-child(9){animation-delay:.36s;}
+  .mod-card.wide{flex-direction:row;align-items:center;gap:13px;padding:13px 14px;}
+  .mod-card.wide .mod-icon{font-size:26px;flex-shrink:0;}
+  .mod-card.wide .mod-body{flex:1;}
+  .info-strip{background:var(--light-blue);border:1px solid var(--border);border-radius:12px;padding:11px 13px;margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .info-item .il{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+  .info-item .iv{font-size:11px;font-weight:700;color:var(--navy);margin-top:1px;font-family:'SF Mono',monospace;}
+  @media(prefers-color-scheme:dark){.info-item .iv{color:#7EB8F7;}}
+  .version{text-align:center;font-size:10px;color:var(--text-muted);margin-top:20px;padding-bottom:4px;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header id="header">
-  <div class="header-inner" style="padding-left:20px; padding-right:20px;">
+  <div class="header-inner">
     <div class="header-badge">🛸 UAS Manager · PWA</div>
     <h1>Tableau de<br><span>bord opérateur</span></h1>
-    <p class="header-sub">Gestion des vols UAS · Scénarios PDRA-S01 / PDRA-S02</p>
+    <p class="header-sub">Gestion des vols UAS · PDRA-S01 / PDRA-S02</p>
   </div>
   <div class="pilot-strip">
     <div class="pilot-avatar">👨‍✈️</div>
     <div class="pilot-info">
-      <div class="pilot-name">Philippe CONTE</div>
-      <div class="pilot-id">FRAjqq48j12nfy4c · DJI Mavic 4 Pro</div>
+      <div class="pilot-name" id="hdr-nom">Philippe CONTE</div>
+      <div class="pilot-id" id="hdr-id">FRAjqq48j12nfy4c · DJI Mavic 4 Pro · UAS-FR-517804</div>
     </div>
-    <div class="pilot-cats">✅ CATS valide</div>
+    <div class="pilot-cats" id="hdr-cats">✅ CATS valide</div>
   </div>
 </header>
 
-<!-- CONTENT -->
+<div id="alerts-bar"></div>
+
 <div id="content">
 
-  <!-- MODULES PRINCIPAUX -->
-  <div class="section-title">Modules opérationnels</div>
-  <div class="modules-grid">
-
-    <a class="mod-card c-blue disabled" href="file:///Users/contephilippe/Downloads/flights.html">
+  <div class="sec-title">Modules opérationnels</div>
+  <div class="grid-2">
+    <a class="mod-card c-blue" href="vols.html">
       <div class="mod-icon">✈️</div>
       <div class="mod-label">Carnet de vol</div>
-      <div class="mod-desc">Enregistrement et suivi des vols</div>
-      <div class="mod-status planned">📋 À venir</div>
+      <div class="mod-desc">Enregistrement & suivi des vols</div>
     </a>
-
-    <a class="mod-card c-green disabled" href="file:///Users/contephilippe/Downloads/maintenance.html">
+    <a class="mod-card c-green" href="maintenance.html">
       <div class="mod-icon">🔧</div>
       <div class="mod-label">Maintenance</div>
-      <div class="mod-desc">Suivi des interventions UAS</div>
-      <div class="mod-status planned">📋 À venir</div>
+      <div class="mod-desc">Interventions & suivi UAS</div>
     </a>
-
-    <a class="mod-card c-amber disabled" href="file:///Users/contephilippe/Downloads/checklist.html">
+    <a class="mod-card c-amber" href="checklist.html">
       <div class="mod-icon">☑️</div>
       <div class="mod-label">Check-list</div>
-      <div class="mod-desc">Pré-vol / Post-vol / Urgence</div>
-      <div class="mod-status planned">📋 À venir</div>
+      <div class="mod-desc">Pré-vol · Post-vol · Urgence</div>
     </a>
-
-    <a class="mod-card c-red disabled" href="file:///Users/contephilippe/Downloads/incidents.html">
+    <a class="mod-card c-red" href="rex.html">
       <div class="mod-icon">⚠️</div>
       <div class="mod-label">REX / Incidents</div>
       <div class="mod-desc">Retours d'expérience</div>
-      <div class="mod-status planned">📋 À venir</div>
     </a>
-
-    <a class="mod-card c-teal disabled" href="file:///Users/contephilippe/Downloads/weather.html">
-      <div class="mod-icon">🌦</div>
-      <div class="mod-label">Météo &amp; NOTAM</div>
+    <a class="mod-card c-teal" href="meteo.html">
+      <div class="mod-icon">🌦️</div>
+      <div class="mod-label">Météo & NOTAM</div>
       <div class="mod-desc">METAR · TAF · Briefing SIA</div>
-      <div class="mod-status planned">📋 À venir</div>
     </a>
-
-    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/adsb.html">
+    <a class="mod-card c-navy" href="adsb.html">
       <div class="mod-icon">📡</div>
       <div class="mod-label">ADS-B Trafic</div>
       <div class="mod-desc">Carte aéronefs temps réel</div>
-      <div class="mod-status ready">✅ Disponible</div>
     </a>
-
   </div>
 
-  <!-- BILANS & RAPPORTS -->
-  <div class="section-title">Bilans &amp; rapports</div>
-  <div class="modules-grid">
-
-    <a class="mod-card c-blue disabled" href="file:///Users/contephilippe/Downloads/bilan-mensuel.html">
-      <div class="mod-icon">📅</div>
-      <div class="mod-label">Bilan mensuel</div>
-      <div class="mod-desc">Synthèse par mois</div>
-      <div class="mod-status planned">📋 À venir</div>
-    </a>
-
-    <a class="mod-card c-navy disabled" href="file:///Users/contephilippe/Downloads/bilan-annuel.html">
+  <div class="sec-title">Bilans & analyses</div>
+  <div class="grid-2">
+    <a class="mod-card c-blue" href="bilans.html">
       <div class="mod-icon">📊</div>
-      <div class="mod-label">Bilan annuel</div>
-      <div class="mod-desc">Statistiques annuelles</div>
-      <div class="mod-status planned">📋 À venir</div>
+      <div class="mod-label">Bilans</div>
+      <div class="mod-desc">Mensuel · Annuel · Synthèse</div>
     </a>
-
-    <a class="mod-card c-green disabled" href="file:///Users/contephilippe/Downloads/formations.html">
+    <a class="mod-card c-green" href="formations.html">
       <div class="mod-icon">🎓</div>
       <div class="mod-label">Formations</div>
-      <div class="mod-desc">Suivi des qualifications</div>
-      <div class="mod-status planned">📋 À venir</div>
+      <div class="mod-desc">Qualifications & suivi</div>
     </a>
-
+    <a class="mod-card c-amber" href="dji_logs.html">
+      <div class="mod-icon">📁</div>
+      <div class="mod-label">Logs DJI</div>
+      <div class="mod-desc">Import & analyse des vols DJI</div>
+    </a>
   </div>
 
-  <!-- INFOS EXPLOITANT -->
-  <div class="section-title">Informations exploitant</div>
+  <div class="sec-title">Configuration</div>
+  <div class="grid-1">
+    <a class="mod-card c-navy wide" href="config.html">
+      <div class="mod-icon">⚙️</div>
+      <div class="mod-body">
+        <div class="mod-label">Config & Export</div>
+        <div class="mod-desc">Exploitant · Drones · Pilotes · API · Export CSV · Rapport PDF · Réinitialisation</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="sec-title">Informations exploitant</div>
   <div class="info-strip">
-    <div class="info-item">
-      <div class="info-label">AlphaTango</div>
-      <div class="info-val">FRAjqq48j12nfy4c</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">UAS enregistré</div>
-      <div class="info-val">UAS-FR-517804</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">CATS</div>
-      <div class="info-val">NLD-RP-q99cvjjh51fz</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Exp. CATS</div>
-      <div class="info-val">15/09/2029</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Assurance</div>
-      <div class="info-val">CDA22411846EUR</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Exp. assurance</div>
-      <div class="info-val">10/04/2027</div>
-    </div>
+    <div class="info-item"><div class="il">AlphaTango</div><div class="iv" id="info-at">FRAjqq48j12nfy4c</div></div>
+    <div class="info-item"><div class="il">UAS enregistré</div><div class="iv" id="info-uas">UAS-FR-517804</div></div>
+    <div class="info-item"><div class="il">CATS</div><div class="iv" id="info-cats">NLD-RP-q99cvjjh51fz</div></div>
+    <div class="info-item"><div class="il">Exp. CATS</div><div class="iv" id="info-cats-exp">15/09/2029</div></div>
+    <div class="info-item"><div class="il">Assurance</div><div class="iv" id="info-assur">CDA22411846EUR</div></div>
+    <div class="info-item"><div class="il">Exp. assurance</div><div class="iv" id="info-assur-exp">10/04/2027</div></div>
   </div>
 
-  <div class="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
+  <div class="version" id="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
 </div>
 
+<script>
+function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
 
+function loadConfig(){
+  const raw=localStorage.getItem('uas_config');
+  if(!raw)return;
+  try{
+    const c=JSON.parse(raw);
+    if(c.nom) document.getElementById('hdr-nom').textContent=c.nom;
+    const drone=(c.drones&&c.drones[0])||{};
+    const dl=[drone.nom,drone.immat].filter(Boolean).join(' · ');
+    document.getElementById('hdr-id').textContent=[c.alphatango,dl].filter(Boolean).join(' · ');
+    if(c.alphatango) document.getElementById('info-at').textContent=c.alphatango;
+    if(drone.immat)  document.getElementById('info-uas').textContent=drone.immat;
+    if(c.cats)       document.getElementById('info-cats').textContent=c.cats;
+    if(c.cats_exp)   document.getElementById('info-cats-exp').textContent=fmtDate(c.cats_exp);
+    if(c.assurance)  document.getElementById('info-assur').textContent=c.assurance;
+    if(c.assurance_exp) document.getElementById('info-assur-exp').textContent=fmtDate(c.assurance_exp);
+    if(c.manex)      document.getElementById('version-line').textContent=`UAS Manager v1.0 · ${c.manex}`;
+    checkAlerts(c);
+  }catch(e){}
+}
 
-</body></html>
+function checkAlerts(c){
+  const alerts=[];
+  const today=new Date();
+  function daysUntil(iso){if(!iso)return null;return Math.floor((new Date(iso)-today)/86400000);}
+  const cd=daysUntil(c.cats_exp), ad=daysUntil(c.assurance_exp);
+  const ac=parseInt(c.alerte_cats)||60, aa=parseInt(c.alerte_assurance)||30;
+  if(cd!==null&&cd<=ac) alerts.push(cd<=0?`🚨 CATS expiré depuis ${Math.abs(cd)} jour(s) !`:`⚠️ CATS expire dans ${cd} jour(s) (${fmtDate(c.cats_exp)})`);
+  if(ad!==null&&ad<=aa) alerts.push(ad<=0?`🚨 Assurance expirée depuis ${Math.abs(ad)} jour(s) !`:`⚠️ Assurance expire dans ${ad} jour(s) (${fmtDate(c.assurance_exp)})`);
+  const bar=document.getElementById('alerts-bar');
+  if(alerts.length){
+    bar.classList.add('has-alerts');
+    bar.innerHTML=alerts.map(a=>`<div class="alert-item">${a}</div>`).join('');
+  }
+  if(cd!==null&&cd<=0){
+    const el=document.getElementById('hdr-cats');
+    el.textContent='🚨 CATS expiré';
+    el.style.cssText='background:rgba(139,32,32,0.35);border-color:rgba(139,32,32,0.5);color:#FF8080;';
+  }
+}
+
+loadConfig();
+window.addEventListener('storage',e=>{if(e.key==='uas_config'||e.key==='uas_config_updated')loadConfig();});
+</script>
+</body>
+</html>
