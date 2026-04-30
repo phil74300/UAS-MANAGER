@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)file:///Users/contephilippe/Downloads/zones.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Zones de vol</title>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="./zones_files/leaflet.min.css">
+<script src="./zones_files/leaflet.min.js"></script>
+
+<style>
+:root {
+  --navy:#0C447C; --blue:#185FA5; --light-blue:#E6F1FB;
+  --green:#1D6B37; --light-green:#E8F5E9;
+  --amber:#BA7517; --light-amber:#FAEEDA;
+  --red:#8B2020; --light-red:#FDECEC;
+  --teal:#006064;
+  --bg:#F0F4FA; --surface:#fff; --text:#0D1220;
+  --text-muted:#5A6478; --border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,0.12);
+  --header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{
+  height:100%;height:-webkit-fill-available;
+  font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+
+/* ─── APP LAYOUT ─── */
+#app{display:flex;flex-direction:column;height:100%;height:-webkit-fill-available;overflow:hidden;}
+
+/* ─── HEADER ─── */
+#header{
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:env(safe-area-inset-top) 14px 0;
+  height:calc(var(--header-h) + env(safe-area-inset-top));
+  flex-shrink:0;z-index:200;
+  box-shadow:0 2px 12px rgba(12,68,124,.25);
+  position:relative;overflow:hidden;
+}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.2px;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;text-decoration:none;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+.hdr-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 11px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s;white-space:nowrap;flex-shrink:0;position:relative;z-index:1;}
+.hdr-btn:active{background:rgba(255,255,255,.28);}
+.hdr-btn.on{background:rgba(29,107,55,.4);border:1px solid rgba(29,107,55,.6);}
+#header-right{display:flex;gap:7px;align-items:center;}
+
+/* ─── TOOLBAR ─── */
+#toolbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:7px;padding:8px 12px;
+  flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:100;
+}
+#toolbar::-webkit-scrollbar{display:none;}
+.tool-btn{
+  background:var(--light-blue);border:1.5px solid var(--border);border-radius:8px;
+  color:var(--navy);padding:6px 11px;font-size:12px;font-weight:600;
+  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;
+  transition:all .15s;flex-shrink:0;font-family:inherit;
+}
+.tool-btn:active{opacity:.75;}
+.tool-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.tool-btn.green{background:var(--green);border-color:var(--green);color:#fff;}
+.tool-btn.amber{background:var(--amber);border-color:var(--amber);color:#fff;}
+.tool-sep{width:1px;height:22px;background:var(--border);flex-shrink:0;}
+
+/* ─── MAP ─── */
+#map-wrap{flex:1;position:relative;overflow:hidden;min-height:0;}
+#map{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+
+/* ─── GPS BADGE ─── */
+#gps-badge{
+  position:absolute;top:10px;left:10px;z-index:400;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:7px 11px;
+  display:flex;align-items:center;gap:7px;
+  box-shadow:var(--shadow);font-size:12px;font-weight:700;
+  pointer-events:none;
+}
+#gps-dot{width:8px;height:8px;border-radius:50%;background:#888;flex-shrink:0;}
+#gps-dot.active{background:var(--green);box-shadow:0 0 0 3px rgba(29,107,55,.25);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(29,107,55,.25);}50%{box-shadow:0 0 0 6px rgba(29,107,55,.1);}}
+#gps-txt{color:var(--text);}
+
+/* ─── LEGENDE ─── */
+#legend{
+  position:absolute;bottom:12px;right:12px;z-index:400;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:9px 12px;
+  box-shadow:var(--shadow);min-width:140px;
+}
+.leg-title{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+.leg-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:11px;font-weight:600;color:var(--text);}
+.leg-row:last-child{margin-bottom:0;}
+.leg-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.15);}
+
+/* ─── INFO PANEL ─── */
+#info-panel{
+  position:absolute;bottom:0;left:0;right:0;z-index:500;
+  background:var(--surface);border-top:1px solid var(--border);
+  border-radius:16px 16px 0 0;
+  padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.34,1.2,.64,1);
+  box-shadow:0 -4px 24px rgba(12,68,124,.12);
+  max-height:55%;overflow-y:auto;
+}
+#info-panel.open{transform:translateY(0);}
+#info-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px;cursor:pointer;}
+#info-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+@media(prefers-color-scheme:dark){#info-title{color:#7EB8F7;}}
+#info-close{position:absolute;top:14px;right:14px;background:var(--light-blue);border:none;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.info-cell{background:var(--bg);border-radius:8px;padding:8px 10px;}
+.info-cell .ic-lbl{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+.info-cell .ic-val{font-size:13px;font-weight:700;color:var(--text);margin-top:2px;}
+.info-cell.full{grid-column:span 2;}
+.zone-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:10px;}
+
+/* ─── TOAST ─── */
+#toast{
+  position:absolute;top:10px;left:50%;
+  transform:translateX(-50%) translateY(-60px);
+  background:var(--navy);color:#fff;padding:8px 16px;
+  border-radius:20px;font-size:12px;font-weight:700;
+  z-index:600;white-space:nowrap;
+  transition:transform .28s cubic-bezier(.34,1.2,.64,1);
+  box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;
+}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.green{background:var(--green);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
+
+/* ─── LEAFLET OVERRIDES ─── */
+.leaflet-control-zoom{border:none!important;box-shadow:var(--shadow)!important;}
+.leaflet-control-zoom a{background:var(--surface)!important;color:var(--navy)!important;border:1px solid var(--border)!important;font-weight:700!important;}
+.leaflet-popup-content-wrapper{border-radius:10px!important;box-shadow:var(--shadow)!important;background:var(--surface)!important;color:var(--text)!important;}
+.leaflet-popup-tip{background:var(--surface)!important;}
+
+/* ─── SPIN ─── */
+.spin{display:inline-block;animation:rot 1s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+/* ─── GEOPORTAIL LINK ─── */
+.geo-ext-link{
+  position:absolute;bottom:12px;left:12px;z-index:400;
+  background:var(--navy);color:#fff;
+  border:none;border-radius:10px;
+  padding:8px 13px;font-size:12px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  text-decoration:none;box-shadow:var(--shadow);
+  transition:opacity .15s;
+}
+.geo-ext-link:active{opacity:.8;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<header id="header">
+  <h1>🗺️ Zones de vol UAS</h1>
+  <div id="header-right">
+    <button class="hdr-btn" id="btn-gps" onclick="toggleGPS()">📍 GPS</button>
+    <a class="back-btn" href="file:///Users/contephilippe/Downloads/index.html">← Accueil</a>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <button class="tool-btn" id="btn-geop" onclick="setLayer(&#39;geoportail&#39;)">🗺️ Géoportail</button>
+  <button class="tool-btn active" id="btn-osm" onclick="setLayer(&#39;osm&#39;)">🌍 OSM</button>
+  <button class="tool-btn" id="btn-sat" onclick="setLayer(&#39;satellite&#39;)">🛰️ Satellite</button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn active" id="btn-zones" onclick="toggleZones()">🚫 Zones UAS</button>
+  <button class="tool-btn" id="btn-thyez" onclick="goThyez()">📍 Thyez</button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn active" id="btn-nature" onclick="toggleNature()">🌿 Zones naturelles</button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn" id="btn-alpha" onclick="openAlphaTango()" style="background:var(--light-amber);border-color:var(--amber);color:var(--amber);">🔗 AlphaTango</button>
+</div>
+
+<!-- MAP -->
+<div id="map-wrap">
+  <div id="map" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0" style="outline-style: none;"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 0.8;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=REGLEMENTATION.DRONE&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.5;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=BDLIM&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.6;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.MN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.55;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.N2000&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.6;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.RNN&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.4;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.ZNIEFF1&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 0.5;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5772524.376096511,724011.5319171895,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5772524.376096511,743579.4111581946,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5752956.496855506,724011.5319171895,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5752956.496855506,743579.4111581946,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5792092.255337515,724011.5319171895,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5792092.255337515,743579.4111581946,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5772524.376096511,704443.6526761844,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5772524.376096511,763147.2903991998,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5752956.496855506,704443.6526761844,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5752956.496855506,763147.2903991998,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=704443.6526761844,5733388.617614502,724011.5319171895,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=724011.5319171895,5733388.617614502,743579.4111581946,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5792092.255337515,704443.6526761844,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5792092.255337515,763147.2903991998,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=684875.7734351794,5733388.617614502,704443.6526761844,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=743579.4111581946,5733388.617614502,763147.2903991998,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5772524.376096511,684875.7734351794,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5772524.376096511,782715.1696402049,5792092.255337515" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5752956.496855506,684875.7734351794,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5752956.496855506,782715.1696402049,5772524.376096511" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5792092.255337515,684875.7734351794,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5792092.255337515,782715.1696402049,5811660.1345785195" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=665307.8941941742,5733388.617614502,684875.7734351794,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img crossorigin="" alt="" src="https://wxs.ign.fr/essentiels/geoportail/r/wms?service=WMS&amp;request=GetMap&amp;layers=PROTECTEDAREAS.APB&amp;styles=&amp;format=image%2Fpng&amp;transparent=true&amp;version=1.3.0&amp;width=256&amp;height=256&amp;crs=EPSG%3A3857&amp;bbox=763147.2903991998,5733388.617614502,782715.1696402049,5752956.496855506" class="leaflet-tile" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./zones_files/728.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(467px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/728(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(723px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/729.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(467px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/729(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(723px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/727.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(467px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/727(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(723px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/728(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(211px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/728(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(979px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/729(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(211px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/729(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(979px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/730.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(467px, 594px, 0px); opacity: 1;"><img alt="" src="./zones_files/730(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(723px, 594px, 0px); opacity: 1;"><img alt="" src="./zones_files/727(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(211px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/727(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(979px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/730(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(211px, 594px, 0px); opacity: 1;"><img alt="" src="./zones_files/730(3).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(979px, 594px, 0px); opacity: 1;"><img alt="" src="./zones_files/728(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-45px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/728(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1235px, 82px, 0px); opacity: 1;"><img alt="" src="./zones_files/729(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-45px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/729(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1235px, 338px, 0px); opacity: 1;"><img alt="" src="./zones_files/727(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-45px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/727(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1235px, -174px, 0px); opacity: 1;"><img alt="" src="./zones_files/730(4).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-45px, 594px, 0px); opacity: 1;"><img alt="" src="./zones_files/730(5).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(1235px, 594px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"><svg pointer-events="none" class="leaflet-zoom-animated" width="1728" height="805" viewBox="-144 -67 1728 805" style="transform: translate3d(-144px, -67px, 0px);"><g><path class="leaflet-interactive" stroke="#185FA5" stroke-opacity="1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="#E6F1FB" fill-opacity="0.25" fill-rule="evenodd" d="M718.6412799999816,335.5904586951947a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0 "></path></g></svg></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -18px; margin-top: -18px; width: 36px; height: 36px; transform: translate3d(720px, 336px, 0px); z-index: 1336;"><div style="
+    position:relative;
+    width:36px;height:36px;
+  ">
+    <div style="
+      width:36px;height:36px;
+      background:#0C447C;border-radius:50%;
+      border:3px solid #fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.4);
+    ">🧑‍✈️</div>
+    <div style="
+      position:absolute;bottom:-2px;right:-2px;
+      width:12px;height:12px;
+      background:#1D6B37;border-radius:50%;
+      border:2px solid #fff;
+      animation:gpspulse 1.5s infinite;
+    "></div>
+  </div>
+  <style>
+    @keyframes gpspulse{0%,100%{box-shadow:0 0 0 2px rgba(29,107,55,.4);}50%{box-shadow:0 0 0 5px rgba(29,107,55,.1);}}
+  </style></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="file:///Users/contephilippe/Downloads/zones.html#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="file:///Users/contephilippe/Downloads/zones.html#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © IGN, © OpenStreetMap</div></div></div></div>
+
+  <!-- Badge GPS -->
+  <div id="gps-badge">
+    <div id="gps-dot"></div>
+    <span id="gps-txt">GPS inactif</span>
+  </div>
+
+  <!-- Légende zones -->
+  <div id="legend">
+    <div class="leg-title">Légende</div>
+    <div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin:6px 0 4px;">Zones UAS</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(139,32,32,0.55);border-color:#8B2020;"></div>Interdites (CTR/TFR/P)</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(186,117,23,0.5);border-color:#BA7517;"></div>Réglementées (R/D)</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(24,95,165,0.4);border-color:#185FA5;"></div>Espaces aériens</div>
+    <div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin:7px 0 4px;">Zones naturelles</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(29,107,55,0.5);border-color:#1D6B37;"></div>Parcs nationaux</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(0,96,100,0.45);border-color:#006064;"></div>Natura 2000</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(100,160,60,0.45);border-color:#5A8C2A;"></div>Réserves naturelles</div>
+    <div class="leg-row"><div class="leg-swatch" style="background:rgba(60,120,180,0.35);border-color:#3C78B4;"></div>ZNIEFF / Biotopes</div>
+  </div>
+
+  <!-- Lien Géoportail complet -->
+  <a class="geo-ext-link" id="link-geoportail" href="https://www.geoportail.gouv.fr/carte?c=6.5016,45.9523&amp;z=12&amp;l0=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2::GEOPORTAIL:OGC:WMTS(1)&amp;l1=BDORTHO::GEOPORTAIL:OGC:WMTS(0.5)&amp;l2=drone_drone::GEOPORTAIL:OGC:WMTS(1)" target="_blank" rel="noopener">
+    🌐 Géoportail complet
+  </a>
+
+  <!-- Panel info zone -->
+  <div id="info-panel">
+    <div id="info-handle" onclick="closePanel()"></div>
+    <button id="info-close" onclick="closePanel()">✕</button>
+    <div id="info-title">Zone</div>
+    <div id="info-content"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="">💡 Tap long → consulter Géoportail</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Zones de vol · Géoportail + GPS temps réel
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+const DEFAULT_LAT = 45.9523;
+const DEFAULT_LON = 6.5016;
+const DEFAULT_ZOOM = 11;
+
+// ─── CONFIG ──────────────────────────────────────────────
+function getConfig() {
+  try { return JSON.parse(localStorage.getItem('uas_config') || '{}'); } catch { return {}; }
+}
+
+// ─── MAP INIT ─────────────────────────────────────────────
+const map = L.map('map', {
+  center: [DEFAULT_LAT, DEFAULT_LON],
+  zoom: DEFAULT_ZOOM,
+  zoomControl: true,
+  attributionControl: true,
+});
+
+// ─── COUCHES DE FOND ──────────────────────────────────────
+const LAYERS = {
+  geoportail: L.tileLayer(
+    'https://wxs.ign.fr/essentiels/geoportail/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+    '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+    '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+    { maxZoom:19, attribution:'© IGN Géoportail', crossOrigin:true }
+  ),
+  osm: L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { maxZoom:19, attribution:'© OpenStreetMap' }
+  ),
+  satellite: L.tileLayer(
+    'https://wxs.ign.fr/essentiels/geoportail/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+    '&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg' +
+    '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+    { maxZoom:19, attribution:'© IGN Géoportail', crossOrigin:true }
+  ),
+};
+
+let currentLayer = 'geoportail';
+LAYERS.geoportail.addTo(map);
+
+// Fallback OSM si Géoportail échoue
+LAYERS.geoportail.on('tileerror', () => {
+  if (currentLayer === 'geoportail') {
+    showToast('⚠️ Géoportail indisponible — bascule OSM', 'amber');
+    setLayer('osm');
+  }
+});
+
+function setLayer(name) {
+  Object.values(LAYERS).forEach(l => { if (map.hasLayer(l)) map.removeLayer(l); });
+  LAYERS[name].addTo(map);
+  currentLayer = name;
+  document.querySelectorAll('#btn-geop,#btn-osm,#btn-sat').forEach(b => b.classList.remove('active'));
+  const ids = {geoportail:'btn-geop', osm:'btn-osm', satellite:'btn-sat'};
+  document.getElementById(ids[name]).classList.add('active');
+}
+
+// ─── COUCHE ZONES UAS (Géoportail WMS) ────────────────────
+// Géoportail expose les zones drone via WMS
+// ─── COUCHES WMS IGN ─────────────────────────────────────
+const WMS_BASE = 'https://wxs.ign.fr/essentiels/geoportail/r/wms';
+const WMS_OPTS = (layers, opacity=0.7) => ({
+  layers, format:'image/png', transparent:true,
+  version:'1.3.0', attribution:'© IGN', opacity, crossOrigin:true,
+});
+
+// Zones réglementées UAS (DGAC)
+const droneZonesWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('REGLEMENTATION.DRONE', 0.8));
+
+// Espaces aériens SIA
+const airspaceWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('BDLIM', 0.5));
+
+// ── ZONES NATURELLES ──
+// Parcs nationaux et régionaux
+const parcsWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.MN', 0.6));
+
+// Natura 2000 (habitats + oiseaux)
+const natura2000WMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.N2000', 0.55));
+
+// Réserves naturelles nationales et régionales
+const reservesWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.RNN', 0.6));
+
+// ZNIEFF (Zones Naturelles d'Intérêt Écologique)
+const znieffWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.ZNIEFF1', 0.4));
+
+// Arrêtés de protection biotope
+const biotopeWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.APB', 0.5));
+
+// ── GESTION VISIBILITÉ ──
+let zonesVisible = true;
+let natureVisible = true;
+
+const UAS_LAYERS   = [droneZonesWMS, airspaceWMS];
+const NATURE_LAYERS = [parcsWMS, natura2000WMS, reservesWMS, znieffWMS, biotopeWMS];
+
+// Activer toutes les couches au démarrage
+UAS_LAYERS.forEach(l => l.addTo(map));
+NATURE_LAYERS.forEach(l => l.addTo(map));
+
+function toggleZones() {
+  zonesVisible = !zonesVisible;
+  const btn = document.getElementById('btn-zones');
+  UAS_LAYERS.forEach(l => zonesVisible ? l.addTo(map) : map.removeLayer(l));
+  btn.classList.toggle('active', zonesVisible);
+  btn.textContent = zonesVisible ? '🚫 Zones UAS' : '👁 UAS masqué';
+}
+
+function toggleNature() {
+  natureVisible = !natureVisible;
+  const btn = document.getElementById('btn-nature');
+  NATURE_LAYERS.forEach(l => natureVisible ? l.addTo(map) : map.removeLayer(l));
+  btn.classList.toggle('active', natureVisible);
+  btn.textContent = natureVisible ? '🌿 Zones naturelles' : '👁 Nature masquée';
+}
+
+// ─── MARQUEUR PILOTE ──────────────────────────────────────
+const pilotIcon = L.divIcon({
+  className: '',
+  html: `<div style="
+    position:relative;
+    width:36px;height:36px;
+  ">
+    <div style="
+      width:36px;height:36px;
+      background:#0C447C;border-radius:50%;
+      border:3px solid #fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.4);
+    ">🧑‍✈️</div>
+    <div style="
+      position:absolute;bottom:-2px;right:-2px;
+      width:12px;height:12px;
+      background:#1D6B37;border-radius:50%;
+      border:2px solid #fff;
+      animation:gpspulse 1.5s infinite;
+    "></div>
+  </div>
+  <style>
+    @keyframes gpspulse{0%,100%{box-shadow:0 0 0 2px rgba(29,107,55,.4);}50%{box-shadow:0 0 0 5px rgba(29,107,55,.1);}}
+  </style>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+});
+
+const accuracyCircle = L.circle([DEFAULT_LAT, DEFAULT_LON], {
+  radius: 50,
+  color: '#185FA5',
+  fillColor: '#E6F1FB',
+  fillOpacity: 0.25,
+  weight: 1.5,
+}).addTo(map);
+
+const pilotMarker = L.marker([DEFAULT_LAT, DEFAULT_LON], {
+  icon: pilotIcon,
+  zIndexOffset: 1000,
+}).addTo(map);
+
+pilotMarker.bindPopup(`
+  <div style="font-size:13px;padding:4px;">
+    <strong>📍 Position pilote</strong><br>
+    Philippe CONTE<br>
+    <span style="font-size:11px;color:#5A6478;">FRAjqq48j12nfy4c</span>
+  </div>
+`);
+
+// Mettre à jour le popup avec le nom depuis config
+try {
+  const c = getConfig();
+  if (c.nom) {
+    pilotMarker.setPopupContent(`
+      <div style="font-size:13px;padding:4px;">
+        <strong>📍 Position pilote</strong><br>
+        ${c.nom}<br>
+        <span style="font-size:11px;color:#5A6478;">${c.alphatango || ''}</span>
+      </div>
+    `);
+  }
+} catch {}
+
+// ─── GPS TEMPS RÉEL ───────────────────────────────────────
+let gpsWatchId = null;
+let gpsActive = false;
+let firstFix = true;
+
+function toggleGPS() {
+  if (gpsActive) stopGPS();
+  else startGPS();
+}
+
+function startGPS() {
+  if (!navigator.geolocation) {
+    showToast('⚠️ Géolocalisation non disponible', 'amber');
+    return;
+  }
+  const btn = document.getElementById('btn-gps');
+  btn.innerHTML = '<span class="spin">⏳</span> Acquisition…';
+  firstFix = true;
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      const { latitude: lat, longitude: lon, accuracy: acc } = pos.coords;
+
+      pilotMarker.setLatLng([lat, lon]);
+      accuracyCircle.setLatLng([lat, lon]);
+      accuracyCircle.setRadius(acc);
+
+      // Badge GPS
+      const dot = document.getElementById('gps-dot');
+      const txt = document.getElementById('gps-txt');
+      dot.className = 'active';
+      txt.textContent = `GPS actif · ±${Math.round(acc)}m`;
+
+      // Mettre à jour lien Géoportail avec position actuelle
+      document.getElementById('link-geoportail').href =
+        `https://www.geoportail.gouv.fr/carte?c=${lon.toFixed(5)},${lat.toFixed(5)}&z=14` +
+        `&l0=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2::GEOPORTAIL:OGC:WMTS(1)` +
+        `&l1=drone_drone::GEOPORTAIL:OGC:WMTS(1)`;
+
+      if (firstFix) {
+        map.setView([lat, lon], 13);
+        showToast('📍 GPS actif · Position acquise', 'green');
+        firstFix = false;
+      }
+
+      gpsActive = true;
+      btn.textContent = '⏹ Arrêter GPS';
+      btn.classList.add('on');
+    },
+    err => {
+      const msgs = { 1:'GPS refusé', 2:'GPS indisponible', 3:'Délai dépassé' };
+      showToast(`❌ ${msgs[err.code] || 'Erreur GPS'}`, 'red');
+      stopGPS();
+    },
+    { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
+  );
+}
+
+function stopGPS() {
+  if (gpsWatchId !== null) {
+    navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId = null;
+  }
+  gpsActive = false;
+  firstFix = true;
+  const btn = document.getElementById('btn-gps');
+  btn.textContent = '📍 GPS';
+  btn.classList.remove('on');
+  document.getElementById('gps-dot').className = '';
+  document.getElementById('gps-txt').textContent = 'GPS inactif';
+  showToast('⏹ Suivi GPS arrêté', 'amber');
+}
+
+// ─── ZONES UAS : CLIC POUR INFO ──────────────────────────
+// WMS GetFeatureInfo au clic sur la carte
+map.on('click', async (e) => {
+  if (!zonesVisible) return;
+  const { lat, lng } = e.latlng;
+
+  // Construire l'URL GetFeatureInfo pour la couche drone
+  const size = map.getSize();
+  const bounds = map.getBounds();
+  const point = map.latLngToContainerPoint(e.latlng);
+
+  const wmsUrl = 'https://wxs.ign.fr/essentiels/geoportail/r/wms';
+  const params = new URLSearchParams({
+    SERVICE: 'WMS',
+    VERSION: '1.3.0',
+    REQUEST: 'GetFeatureInfo',
+    LAYERS: 'REGLEMENTATION.DRONE,PROTECTEDAREAS.MN,PROTECTEDAREAS.N2000,PROTECTEDAREAS.RNN,PROTECTEDAREAS.APB',
+    QUERY_LAYERS: 'REGLEMENTATION.DRONE,PROTECTEDAREAS.MN,PROTECTEDAREAS.N2000,PROTECTEDAREAS.RNN,PROTECTEDAREAS.APB',
+    INFO_FORMAT: 'application/json',
+    FEATURE_COUNT: '5',
+    CRS: 'EPSG:4326',
+    BBOX: `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`,
+    WIDTH: size.x,
+    HEIGHT: size.y,
+    I: Math.round(point.x),
+    J: Math.round(point.y),
+  });
+
+  try {
+    const resp = await fetch(`${wmsUrl}?${params}`, { signal: AbortSignal.timeout(6000) });
+    if (!resp.ok) throw new Error();
+    const data = await resp.json();
+
+    if (data.features && data.features.length > 0) {
+      showZoneInfo(data.features, lat, lng);
+    } else {
+      showToast('✅ Pas de restriction UAS en ce point', 'green');
+    }
+  } catch {
+    // Fallback : ouvrir Géoportail à cet endroit
+    showToast('💡 Tap long → consulter Géoportail', 'amber');
+  }
+});
+
+function showZoneInfo(features, lat, lng) {
+  const f = features[0];
+  const props = f.properties || {};
+
+  const titre = props.nom || props.libelle || props.name || 'Zone réglementée';
+  const type  = props.type_de_zone || props.type || '';
+  const raison = props.raison || props.motif || '';
+  const altitude = props.altitude_max || props.plafond || '';
+  const contact  = props.contact || '';
+
+  // Couleur selon type
+  let badgeColor = '#BA7517';
+  let badgeBg = '#FAEEDA';
+  let emoji = '⚠️';
+  const typeLow = (type + titre).toLowerCase();
+  if (typeLow.includes('interdit') || typeLow.includes('ctr') || typeLow.includes('tfr')) {
+    badgeColor = '#8B2020'; badgeBg = '#FDECEC'; emoji = '🚫';
+  } else if (typeLow.includes('parc national') || typeLow.includes('parc naturel')) {
+    badgeColor = '#1D6B37'; badgeBg = '#E8F5E9'; emoji = '🏔️';
+  } else if (typeLow.includes('natura') || typeLow.includes('n2000') || typeLow.includes('znieff')) {
+    badgeColor = '#006064'; badgeBg = '#E0F2F1'; emoji = '🌿';
+  } else if (typeLow.includes('réserve') || typeLow.includes('reserve')) {
+    badgeColor = '#006064'; badgeBg = '#E0F2F1'; emoji = '🦅';
+  } else if (typeLow.includes('biotope') || typeLow.includes('apb')) {
+    badgeColor = '#3C78B4'; badgeBg = '#E3F0FB'; emoji = '🐦';
+  } else if (typeLow.includes('militaire') || typeLow.includes(' r ') || typeLow.includes(' p ')) {
+    badgeColor = '#8B2020'; badgeBg = '#FDECEC'; emoji = '🪖';
+  }
+  
+  // Avertissement spécifique zones naturelles pour UAS
+  const isNature = ['parc','natura','réserve','reserve','znieff','biotope','apb'].some(k => typeLow.includes(k));
+  const natureWarning = isNature ? `
+    <div style="background:var(--light-amber);border:1px solid var(--amber);border-radius:8px;padding:8px 10px;font-size:11px;font-weight:600;color:var(--amber);margin-bottom:8px;line-height:1.5;">
+      ⚠️ Vol UAS potentiellement soumis à autorisation préfectorale dans cette zone.<br>
+      Consulter l'arrêté préfectoral et AlphaTango avant tout vol.
+    </div>` : '';
+
+  document.getElementById('info-title').textContent = `${emoji} ${titre}`;
+  document.getElementById('info-content').innerHTML = `
+    ${natureWarning}
+    <div class="zone-badge" style="background:${badgeBg};color:${badgeColor};">
+      ${emoji} ${type || 'Zone réglementée UAS'}
+    </div>
+    <div class="info-grid">
+      ${raison ? `<div class="info-cell full"><div class="ic-lbl">Motif</div><div class="ic-val">${raison}</div></div>` : ''}
+      ${altitude ? `<div class="info-cell"><div class="ic-lbl">Altitude max</div><div class="ic-val">${altitude} ft AMSL</div></div>` : ''}
+      <div class="info-cell"><div class="ic-lbl">Coordonnées</div><div class="ic-val">${lat.toFixed(5)}, ${lng.toFixed(5)}</div></div>
+      ${contact ? `<div class="info-cell full"><div class="ic-lbl">Contact</div><div class="ic-val">${contact}</div></div>` : ''}
+      ${features.length > 1 ? `<div class="info-cell full"><div class="ic-lbl">Zones superposées</div><div class="ic-val">${features.length} zones en ce point</div></div>` : ''}
+    </div>
+    <div style="margin-top:12px;">
+      <a href="https://www.geoportail.gouv.fr/carte?c=${lng.toFixed(5)},${lat.toFixed(5)}&z=14&l0=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2::GEOPORTAIL:OGC:WMTS(1)&l1=drone_drone::GEOPORTAIL:OGC:WMTS(1)"
+         target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:7px;background:var(--navy);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">
+        🌐 Voir sur Géoportail complet
+      </a>
+    </div>
+  `;
+
+  document.getElementById('info-panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('info-panel').classList.remove('open');
+}
+map.on('click', () => {/* handled above */});
+
+// ─── NAVIGATION ───────────────────────────────────────────
+function goThyez() {
+  map.setView([DEFAULT_LAT, DEFAULT_LON], 13);
+  pilotMarker.openPopup();
+}
+
+function openAlphaTango() {
+  window.open('https://alphatango.aviation-civile.gouv.fr', '_blank', 'noopener');
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+setTimeout(() => { map.invalidateSize(); }, 150);
+setTimeout(() => { map.invalidateSize(); }, 600);
+
+// Cleanup GPS en quittant
+window.addEventListener('pagehide', stopGPS);
+window.addEventListener('beforeunload', stopGPS);
+
+// Lancer GPS auto au démarrage si déjà autorisé
+navigator.permissions && navigator.permissions.query({ name: 'geolocation' }).then(r => {
+  if (r.state === 'granted') startGPS();
+});
+</script>
+
+
+</body></html>
