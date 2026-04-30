@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Briefing Pré-vol</title>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.09);
+  --radius:14px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ─── HEADER ─── */
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+.hdr-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;position:relative;z-index:1;display:flex;align-items:center;gap:5px;transition:background .15s;white-space:nowrap;}
+.hdr-btn:active{background:rgba(255,255,255,.28);}
+
+/* ─── CONTENT ─── */
+#content{max-width:640px;margin:0 auto;padding:14px 12px calc(30px + env(safe-area-inset-bottom));}
+
+/* ─── STATION SELECTOR ─── */
+#station-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);}
+.station-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.station-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
+.station-pill{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text-muted);transition:all .15s;}
+.station-pill.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.station-pill:active{opacity:.7;}
+.station-input-row{display:flex;gap:8px;}
+.station-input-row input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--text);font-family:inherit;text-transform:uppercase;}
+.station-input-row input:focus{outline:none;border-color:var(--blue);}
+.btn-fetch{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;display:flex;align-items:center;gap:6px;}
+.btn-fetch:active{opacity:.8;}
+
+/* ─── GO/NO-GO VERDICT ─── */
+#verdict-card{
+  border-radius:var(--radius);padding:20px 18px;margin-bottom:14px;
+  display:none;text-align:center;
+  box-shadow:0 4px 24px rgba(0,0,0,.12);
+  animation:verdictPop .4s cubic-bezier(.34,1.4,.64,1);
+}
+@keyframes verdictPop{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:scale(1);}}
+#verdict-icon{font-size:52px;margin-bottom:10px;line-height:1;}
+#verdict-label{font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:6px;}
+#verdict-sub{font-size:14px;font-weight:600;opacity:.85;line-height:1.4;}
+#verdict-time{font-size:11px;opacity:.6;margin-top:8px;}
+
+/* ─── CRITÈRES ─── */
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.criteria-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:12px;
+  display:flex;flex-direction:column;gap:4px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.criteria-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c-color,var(--border));}
+.criteria-icon{font-size:20px;line-height:1;}
+.criteria-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+.criteria-val{font-size:20px;font-weight:800;color:var(--c-color,var(--text));line-height:1;}
+.criteria-limit{font-size:10px;color:var(--text-muted);}
+.criteria-status{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+
+/* ─── CARD ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:13px;font-weight:700;color:var(--text);}
+.card-body{padding:12px 14px;}
+
+/* ─── METAR RAW ─── */
+.raw-block{font-family:'SF Mono','Menlo',monospace;font-size:11px;line-height:1.7;background:var(--bg);border-radius:8px;padding:10px 12px;border:1px solid var(--border);word-break:break-all;white-space:pre-wrap;user-select:text;-webkit-user-select:text;}
+
+/* ─── METAR DECODED ─── */
+.decoded-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.decoded-row:last-child{border-bottom:none;}
+.decoded-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center;}
+.decoded-label{font-size:12px;color:var(--text-muted);font-weight:500;flex:0 0 110px;}
+.decoded-val{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+.decoded-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0;}
+
+/* ─── WIND ROSE ─── */
+.wind-wrap{display:flex;justify-content:center;padding:10px 0;}
+#wind-canvas{border-radius:50%;}
+
+/* ─── TAF BLOCK ─── */
+.taf-period{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:7px;border-left:3px solid var(--border);}
+.taf-period.warn{border-left-color:var(--amber);background:var(--light-amber);}
+.taf-period.bad{border-left-color:var(--red);background:var(--light-red);}
+.taf-period-time{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.taf-period-content{font-size:12px;font-weight:600;color:var(--text);line-height:1.6;}
+
+/* ─── LOADING ─── */
+#loading{display:none;text-align:center;padding:40px;color:var(--text-muted);}
+#loading .spin{display:inline-block;font-size:36px;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ─── ERROR ─── */
+#error-msg{display:none;background:var(--light-red);border:1px solid var(--red);border-radius:10px;padding:14px;color:var(--red);font-size:13px;font-weight:600;margin-bottom:14px;text-align:center;}
+
+/* ─── SECTION TITLE ─── */
+.section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 8px;}
+
+/* ─── NO API ─── */
+#no-api{display:none;background:var(--light-amber);border:1px solid var(--amber);border-radius:var(--radius);padding:16px;margin-bottom:14px;text-align:center;}
+#no-api p{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:10px;}
+.btn-config-link{background:var(--amber);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <h1>🌤️ Briefing Pré-vol</h1>
+  <div style="display:flex;gap:7px;align-items:center;position:relative;z-index:1;">
+    <button class="hdr-btn" onclick="refreshData()">🔄</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </div>
+</header>
+
+<div id="content">
+
+  <!-- No API warning -->
+  <div id="no-api">
+    <p>🔑 Clé API CheckWX non configurée. Le briefing automatique n'est pas disponible.</p>
+    <a class="btn-config-link" href="config.html">⚙️ Configurer la clé API</a>
+  </div>
+
+  <!-- Sélection station -->
+  <div id="station-bar">
+    <div class="station-label">Station METAR</div>
+    <div class="station-pills" id="station-pills"></div>
+    <div class="station-input-row">
+      <input type="text" id="custom-icao" placeholder="Code ICAO (ex: LFMN)" maxlength="4">
+      <button class="btn-fetch" onclick="fetchStation()">🔍 Briefing</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading"><div class="spin">⏳</div><div style="margin-top:10px;font-weight:600;">Chargement du briefing…</div></div>
+
+  <!-- Error -->
+  <div id="error-msg"></div>
+
+  <!-- Verdict GO/NO-GO -->
+  <div id="verdict-card">
+    <div id="verdict-icon"></div>
+    <div id="verdict-label"></div>
+    <div id="verdict-sub"></div>
+    <div id="verdict-time"></div>
+  </div>
+
+  <!-- Critères détaillés -->
+  <div id="criteria-section" style="display:none;">
+    <div class="section-title">Critères de vol</div>
+    <div class="criteria-grid" id="criteria-grid"></div>
+  </div>
+
+  <!-- METAR décodé -->
+  <div id="metar-section" style="display:none;">
+    <div class="section-title">METAR décodé</div>
+    <div class="card">
+      <div class="card-header">
+        <h3 id="metar-station-label">METAR</h3>
+        <span id="metar-age" style="font-size:10px;color:var(--text-muted);font-weight:600;"></span>
+      </div>
+      <div class="card-body">
+        <div class="decoded-row" id="metar-decoded-rows"></div>
+        <div style="margin-top:12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Message brut</div>
+          <div class="raw-block" id="metar-raw"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rose des vents -->
+    <div class="card">
+      <div class="card-header"><h3>🧭 Direction du vent</h3></div>
+      <div class="card-body">
+        <div class="wind-wrap"><canvas id="wind-canvas" width="140" height="140"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAF -->
+  <div id="taf-section" style="display:none;">
+    <div class="section-title">TAF — Prévision</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>📋 Prévisions météo</h3>
+        <span id="taf-validity" style="font-size:10px;color:var(--text-muted);font-weight:600;"></span>
+      </div>
+      <div class="card-body">
+        <div id="taf-periods"></div>
+        <div style="margin-top:10px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">TAF brut</div>
+          <div class="raw-block" id="taf-raw"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist pré-vol rapide -->
+  <div id="checklist-section" style="display:none;">
+    <div class="section-title">Checklist pré-vol rapide</div>
+    <div class="card">
+      <div class="card-body" id="preflight-checklist"></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Briefing Pré-vol GO/NO-GO
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+const CHECKWX_BASE = 'https://api.checkwx.com';
+let currentStation = '';
+let currentMetar = null;
+let currentTaf = null;
+
+// ─── CONFIG ──────────────────────────────────────────────
+function getConfig(){
+  try{ return JSON.parse(localStorage.getItem('uas_config')||'{}'); }catch{ return{}; }
+}
+function getCwKey(){
+  const c=getConfig(); return c.api_checkwx||c.checkwx_key||'';
+}
+function getThresholds(){
+  const c=getConfig();
+  return{
+    ventMax:   parseFloat(c.thr_vent)||12,
+    visiMin:   parseFloat(c.thr_visi)||5,
+    plafondMin:parseFloat(c.thr_plafond)||1500,
+    tempMin:   parseFloat(c.thr_temp_min)||-10,
+    tempMax:   parseFloat(c.thr_temp_max)||40,
+  };
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function init(){
+  const key=getCwKey();
+  const c=getConfig();
+
+  if(!key){
+    document.getElementById('no-api').style.display='block';
+    return;
+  }
+
+  // Stations favorites
+  const stations=c.stations||['LFLB','LFLI','LSGG'];
+  const pills=document.getElementById('station-pills');
+  pills.innerHTML=stations.map(s=>`
+    <div class="station-pill" onclick="selectStation('${s}')">${s}</div>
+  `).join('');
+
+  // Charger la première station par défaut
+  if(stations.length>0){
+    selectStation(stations[0]);
+  }
+}
+
+function selectStation(icao){
+  currentStation=icao.toUpperCase();
+  document.querySelectorAll('.station-pill').forEach(p=>{
+    p.classList.toggle('active',p.textContent===currentStation);
+  });
+  document.getElementById('custom-icao').value='';
+  fetchStation();
+}
+
+function fetchStation(){
+  const custom=document.getElementById('custom-icao').value.trim().toUpperCase();
+  if(custom) currentStation=custom;
+  if(!currentStation){ return; }
+  fetchBriefing(currentStation);
+}
+
+async function fetchBriefing(icao){
+  const key=getCwKey();
+  if(!key) return;
+
+  showLoading(true);
+  hideAll();
+
+  try{
+    // METAR
+    const metarResp=await fetch(`${CHECKWX_BASE}/metar/${icao}/decoded`,{
+      headers:{'X-API-Key':key},
+      signal:AbortSignal.timeout(10000)
+    });
+    if(!metarResp.ok) throw new Error(`METAR ${metarResp.status} — Station introuvable ou clé invalide`);
+    const metarData=await metarResp.json();
+
+    if(!metarData.data||metarData.data.length===0) throw new Error('Aucune donnée METAR pour '+icao);
+    currentMetar=metarData.data[0];
+
+    // TAF
+    let tafData=null;
+    try{
+      const tafResp=await fetch(`${CHECKWX_BASE}/taf/${icao}/decoded`,{
+        headers:{'X-API-Key':key},
+        signal:AbortSignal.timeout(8000)
+      });
+      if(tafResp.ok){
+        const td=await tafResp.json();
+        if(td.data&&td.data.length>0) tafData=td.data[0];
+      }
+    }catch{}
+
+    currentTaf=tafData;
+    showLoading(false);
+    renderAll(currentMetar,currentTaf);
+
+  }catch(e){
+    showLoading(false);
+    showError(e.message);
+  }
+}
+
+function refreshData(){ if(currentStation) fetchBriefing(currentStation); }
+
+// ─── RENDU ────────────────────────────────────────────────
+function renderAll(metar,taf){
+  renderVerdict(metar);
+  renderCriteria(metar);
+  renderMetar(metar);
+  if(taf) renderTaf(taf);
+  renderChecklist(metar);
+  document.getElementById('metar-section').style.display='block';
+  document.getElementById('criteria-section').style.display='block';
+  document.getElementById('checklist-section').style.display='block';
+  if(taf) document.getElementById('taf-section').style.display='block';
+}
+
+// ─── VERDICT GO/NO-GO ─────────────────────────────────────
+function renderVerdict(metar){
+  const thr=getThresholds();
+  const issues=[];
+
+  const wind=metar.wind||{};
+  const windSpd=knToMs(wind.speed_kts||0);
+  const windGust=wind.gust_kts?knToMs(wind.gust_kts):windSpd;
+
+  if(windGust>thr.ventMax) issues.push(`Vent rafales ${windGust.toFixed(1)} m/s > seuil ${thr.ventMax} m/s`);
+
+  const visi=metar.visibility;
+  const visiKm=visi?(visi.meters_float/1000):10;
+  if(visiKm<thr.visiMin) issues.push(`Visibilité ${visiKm.toFixed(1)} km < seuil ${thr.visiMin} km`);
+
+  const clouds=metar.clouds||[];
+  let plafond=9999;
+  clouds.forEach(c=>{
+    if(['BKN','OVC'].includes(c.code)&&c.base_feet_agl<plafond) plafond=c.base_feet_agl;
+  });
+  if(plafond<thr.plafondMin) issues.push(`Plafond ${plafond} ft < seuil ${thr.plafondMin} ft`);
+
+  const temp=metar.temperature?.celsius;
+  if(temp!==undefined){
+    if(temp<thr.tempMin) issues.push(`Température ${temp}°C < seuil ${thr.tempMin}°C`);
+    if(temp>thr.tempMax) issues.push(`Température ${temp}°C > seuil ${thr.tempMax}°C`);
+  }
+
+  // Conditions spéciales
+  const wx=metar.conditions||[];
+  const badWx=['TS','FG','FZFG','FZRA','SN','BLSN','FC'];
+  wx.forEach(c=>{ if(badWx.includes(c.code)) issues.push(`Condition ${c.text||c.code}`); });
+
+  const card=document.getElementById('verdict-card');
+  card.style.display='block';
+
+  if(issues.length===0){
+    card.style.background='linear-gradient(135deg,#1D6B37,#2e9e52)';
+    document.getElementById('verdict-icon').textContent='✅';
+    document.getElementById('verdict-label').style.color='#fff';
+    document.getElementById('verdict-label').textContent='GO';
+    document.getElementById('verdict-sub').style.color='rgba(255,255,255,.9)';
+    document.getElementById('verdict-sub').textContent='Conditions météo conformes aux seuils opérationnels';
+  } else {
+    const isHard=issues.some(i=>i.includes('Vent')||i.includes('Condition'));
+    card.style.background=isHard
+      ?'linear-gradient(135deg,#8B2020,#b83030)'
+      :'linear-gradient(135deg,#BA7517,#d4882a)';
+    document.getElementById('verdict-icon').textContent=isHard?'🚫':'⚠️';
+    document.getElementById('verdict-label').style.color='#fff';
+    document.getElementById('verdict-label').textContent=isHard?'NO GO':'CAUTION';
+    document.getElementById('verdict-sub').style.color='rgba(255,255,255,.9)';
+    document.getElementById('verdict-sub').innerHTML=issues.map(i=>`• ${i}`).join('<br>');
+  }
+
+  const obs=metar.observed||'';
+  document.getElementById('verdict-time').style.color='rgba(255,255,255,.6)';
+  document.getElementById('verdict-time').textContent=obs?`METAR du ${formatMetarTime(obs)}`:'';
+}
+
+// ─── CRITÈRES VISUELS ─────────────────────────────────────
+function renderCriteria(metar){
+  const thr=getThresholds();
+  const wind=metar.wind||{};
+  const windSpd=knToMs(wind.speed_kts||0);
+  const windGust=wind.gust_kts?knToMs(wind.gust_kts):windSpd;
+  const visi=metar.visibility;
+  const visiKm=visi?(visi.meters_float/1000):10;
+  const clouds=metar.clouds||[];
+  let plafond=9999;
+  clouds.forEach(c=>{ if(['BKN','OVC'].includes(c.code)&&c.base_feet_agl<plafond) plafond=c.base_feet_agl; });
+  const temp=metar.temperature?.celsius??'—';
+
+  const ok=c=>`<div class="criteria-status" style="background:var(--light-green);color:var(--green);">✓</div>`;
+  const ko=c=>`<div class="criteria-status" style="background:var(--light-red);color:var(--red);">✗</div>`;
+  const warn=c=>`<div class="criteria-status" style="background:var(--light-amber);color:var(--amber);">!</div>`;
+
+  const criteria=[
+    {
+      icon:'💨',label:'Vent rafales',
+      val:`${windGust.toFixed(1)} m/s`,
+      limit:`Seuil : ${thr.ventMax} m/s`,
+      ok:windGust<=thr.ventMax,
+      color:windGust<=thr.ventMax?'var(--green)':windGust<=thr.ventMax*1.2?'var(--amber)':'var(--red)',
+    },{
+      icon:'👁️',label:'Visibilité',
+      val:`${visiKm>=10?'>10':visiKm.toFixed(1)} km`,
+      limit:`Seuil : ${thr.visiMin} km`,
+      ok:visiKm>=thr.visiMin,
+      color:visiKm>=thr.visiMin?'var(--green)':visiKm>=thr.visiMin*0.8?'var(--amber)':'var(--red)',
+    },{
+      icon:'☁️',label:'Plafond nuages',
+      val:plafond>=9000?'Dégagé':`${plafond} ft`,
+      limit:`Seuil : ${thr.plafondMin} ft`,
+      ok:plafond>=thr.plafondMin,
+      color:plafond>=thr.plafondMin?'var(--green)':plafond>=thr.plafondMin*0.8?'var(--amber)':'var(--red)',
+    },{
+      icon:'🌡️',label:'Température',
+      val:temp!=='—'?`${temp}°C`:'—',
+      limit:`${thr.tempMin}°C à ${thr.tempMax}°C`,
+      ok:temp==='—'||(temp>=thr.tempMin&&temp<=thr.tempMax),
+      color:(temp==='—'||(temp>=thr.tempMin&&temp<=thr.tempMax))?'var(--green)':'var(--amber)',
+    },
+  ];
+
+  // Ajouter vent moyen séparément
+  criteria.push({
+    icon:'🌬️',label:'Vent moyen',
+    val:`${windSpd.toFixed(1)} m/s`,
+    limit:`Dir: ${wind.degrees||'—'}°`,
+    ok:windSpd<=thr.ventMax,
+    color:windSpd<=thr.ventMax?'var(--green)':'var(--red)',
+  });
+  criteria.push({
+    icon:'📊',label:'Pression',
+    val:metar.barometer?.hpa?`${metar.barometer.hpa} hPa`:'—',
+    limit:'QNH',
+    ok:true,
+    color:'var(--blue)',
+  });
+
+  document.getElementById('criteria-grid').innerHTML=criteria.map(c=>`
+    <div class="criteria-card" style="--c-color:${c.color};">
+      ${c.ok
+        ?`<div class="criteria-status" style="background:var(--light-green);color:var(--green);">✓</div>`
+        :`<div class="criteria-status" style="background:var(--light-red);color:var(--red);">✗</div>`}
+      <div class="criteria-icon">${c.icon}</div>
+      <div class="criteria-label">${c.label}</div>
+      <div class="criteria-val">${c.val}</div>
+      <div class="criteria-limit">${c.limit}</div>
+    </div>`).join('');
+
+  // Rose des vents
+  drawWindRose(wind.degrees||0,windSpd,windGust);
+}
+
+// ─── METAR DÉCODÉ ─────────────────────────────────────────
+function renderMetar(metar){
+  document.getElementById('metar-station-label').textContent=`METAR — ${metar.icao||currentStation}`;
+  document.getElementById('metar-age').textContent=formatMetarTime(metar.observed||'');
+  document.getElementById('metar-raw').textContent=metar.raw_text||'—';
+
+  const wind=metar.wind||{};
+  const windSpd=knToMs(wind.speed_kts||0);
+  const windGust=wind.gust_kts?knToMs(wind.gust_kts):null;
+  const visi=metar.visibility;
+  const visiKm=visi?(visi.meters_float/1000):null;
+  const clouds=metar.clouds||[];
+  const wx=metar.conditions||[];
+
+  const rows=[
+    {icon:'💨',label:'Vent',val:`${windSpd.toFixed(1)} m/s ${wind.degrees!==undefined?'de '+wind.degrees+'°':''} ${windGust?'(rafales '+windGust.toFixed(1)+' m/s)':''}`},
+    {icon:'👁️',label:'Visibilité',val:visiKm!=null?(visiKm>=10?'>10 km':visiKm.toFixed(1)+' km'):'—'},
+    {icon:'☁️',label:'Nuages',val:clouds.length>0?clouds.map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · '):'CAVOK / Dégagé'},
+    {icon:'🌡️',label:'Température',val:metar.temperature?.celsius!==undefined?`${metar.temperature.celsius}°C / Point de rosée ${metar.dewpoint?.celsius||'—'}°C`:'—'},
+    {icon:'📊',label:'QNH',val:metar.barometer?.hpa?`${metar.barometer.hpa} hPa / ${metar.barometer.inhg||'—'} inHg`:'—'},
+    {icon:'⚡',label:'Phénomènes',val:wx.length>0?wx.map(w=>w.text||w.code).join(', '):'Aucun'},
+    {icon:'📋',label:'Catégorie',val:metar.flight_category||'—'},
+  ];
+
+  document.getElementById('metar-decoded-rows').outerHTML=`<div id="metar-decoded-rows">${
+    rows.map(r=>`<div class="decoded-row">
+      <div class="decoded-icon">${r.icon}</div>
+      <div class="decoded-label">${r.label}</div>
+      <div class="decoded-val">${r.val}</div>
+    </div>`).join('')
+  }</div>`;
+}
+
+// ─── ROSE DES VENTS ───────────────────────────────────────
+function drawWindRose(deg,spd,gust){
+  const canvas=document.getElementById('wind-canvas');
+  const ctx=canvas.getContext('2d');
+  const cx=70,cy=70,r=55;
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const textColor=isDark?'#E8EEF8':'#0D1220';
+  const borderColor=isDark?'#253050':'#D0DCF0';
+  const bgColor=isDark?'#1C2840':'#F8FAFD';
+
+  ctx.clearRect(0,0,140,140);
+  ctx.fillStyle=bgColor;
+  ctx.beginPath();ctx.arc(cx,cy,r+5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=borderColor;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,r*0.6,0,Math.PI*2);ctx.stroke();
+
+  // Cardinal points
+  const dirs=['N','E','S','O'];
+  const angles=[0,90,180,270];
+  ctx.fillStyle=textColor;ctx.font='bold 11px -apple-system';ctx.textAlign='center';ctx.textBaseline='middle';
+  dirs.forEach((d,i)=>{
+    const rad=(angles[i]-90)*Math.PI/180;
+    const x=cx+Math.cos(rad)*(r+14);
+    const y=cy+Math.sin(rad)*(r+14);
+    ctx.fillStyle=d==='N'?'#8B2020':textColor;
+    ctx.fillText(d,x,y);
+  });
+
+  // Flèche vent
+  const rad=(deg-90)*Math.PI/180;
+  const arrowLen=r*0.7;
+  const ax=cx+Math.cos(rad)*arrowLen;
+  const ay=cy+Math.sin(rad)*arrowLen;
+  ctx.strokeStyle='#185FA5';ctx.lineWidth=3;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ax,ay);ctx.stroke();
+  // Pointe
+  ctx.fillStyle='#185FA5';
+  ctx.beginPath();
+  const hx=ax+Math.cos(rad)*8;
+  const hy=ay+Math.sin(rad)*8;
+  const p1x=ax+Math.cos(rad+Math.PI/2)*5;
+  const p1y=ay+Math.sin(rad+Math.PI/2)*5;
+  const p2x=ax+Math.cos(rad-Math.PI/2)*5;
+  const p2y=ay+Math.sin(rad-Math.PI/2)*5;
+  ctx.moveTo(hx,hy);ctx.lineTo(p1x,p1y);ctx.lineTo(p2x,p2y);ctx.closePath();ctx.fill();
+
+  // Vitesse au centre
+  ctx.fillStyle=textColor;ctx.font='bold 13px -apple-system';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(`${spd.toFixed(1)}`,cx,cy-7);
+  ctx.font='10px -apple-system';ctx.fillStyle=isDark?'#7A8BAA':'#5A6478';
+  ctx.fillText('m/s',cx,cy+7);
+}
+
+// ─── TAF ──────────────────────────────────────────────────
+function renderTaf(taf){
+  document.getElementById('taf-raw').textContent=taf.raw_text||'—';
+  const lines=taf.forecast||[];
+  const thr=getThresholds();
+
+  document.getElementById('taf-validity').textContent=taf.timestamp?.from?
+    `Valide ${formatMetarTime(taf.timestamp.from)} → ${formatMetarTime(taf.timestamp.to)}`:'';
+
+  const periods=document.getElementById('taf-periods');
+  if(lines.length===0){
+    periods.innerHTML='<div style="font-size:12px;color:var(--text-muted);">Pas de prévision disponible</div>';
+    return;
+  }
+
+  periods.innerHTML=lines.map(l=>{
+    const wind=l.wind||{};
+    const ws=knToMs(wind.speed_kts||0);
+    const wg=wind.gust_kts?knToMs(wind.gust_kts):ws;
+    const visi=l.visibility?.meters_float?l.visibility.meters_float/1000:10;
+    const clouds=l.clouds||[];
+    let plaf=9999;
+    clouds.forEach(c=>{if(['BKN','OVC'].includes(c.code)&&c.base_feet_agl<plaf)plaf=c.base_feet_agl;});
+
+    const isBad=wg>thr.ventMax||visi<thr.visiMin||plaf<thr.plafondMin;
+    const isWarn=wg>thr.ventMax*0.8||visi<thr.visiMin*1.2;
+
+    const from=formatMetarTime(l.timestamp?.from||'');
+    const to=formatMetarTime(l.timestamp?.to||'');
+    const wx=l.conditions||[];
+
+    return`<div class="taf-period ${isBad?'bad':isWarn?'warn':''}">
+      <div class="taf-period-time">${l.change?.indicator?.code||'FM'} · ${from} → ${to}</div>
+      <div class="taf-period-content">
+        💨 ${ws.toFixed(1)} m/s${wg>ws?' (rafales '+wg.toFixed(1)+' m/s)':''} · 
+        👁 ${visi>=10?'>10':visi.toFixed(1)} km · 
+        ☁ ${plaf>=9000?'Dégagé':plaf+' ft'}
+        ${wx.length>0?'· '+wx.map(w=>w.text||w.code).join(', '):''}
+        ${isBad?'<br>⚠️ <strong>Hors seuils — vol non recommandé</strong>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── CHECKLIST PRÉ-VOL ────────────────────────────────────
+function renderChecklist(metar){
+  const c=getConfig();
+  const wind=metar.wind||{};
+  const windSpd=knToMs(wind.speed_kts||0);
+  const thr=getThresholds();
+
+  const items=[
+    {ok:true, label:'Documents exploitant vérifiés (CATS, assurance, AlphaTango)'},
+    {ok:true, label:'Drone inspecté — batterie chargée — hélices OK'},
+    {ok:windSpd<=thr.ventMax, label:`Vent dans les limites (${windSpd.toFixed(1)} m/s / seuil ${thr.ventMax} m/s)`},
+    {ok:true, label:'Zone de vol vérifiée (AlphaTango / Géoportail)'},
+    {ok:true, label:'Notification préfecture effectuée si requise'},
+    {ok:true, label:'NOTAM consultés (SOFIA Briefing)'},
+    {ok:true, label:'Briefing météo effectué ✓'},
+    {ok:true, label:'Périmètre de sécurité établi'},
+    {ok:true, label:'Contacts urgence disponibles'},
+  ];
+
+  document.getElementById('preflight-checklist').innerHTML=`
+    ${items.map(item=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:${item.ok?'var(--light-green)':'var(--light-red)'};color:${item.ok?'var(--green)':'var(--red)'};">
+          ${item.ok?'✓':'✗'}
+        </div>
+        <div style="font-size:13px;font-weight:${item.ok?'500':'700'};color:${item.ok?'var(--text)':'var(--red)'};">${item.label}</div>
+      </div>`).join('')}
+    <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">Données météo : CheckWX · Station ${currentStation} · ${new Date().toLocaleTimeString('fr-FR')}</div>
+  `;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function knToMs(kts){ return kts*0.514444; }
+
+function formatMetarTime(str){
+  if(!str)return'—';
+  try{
+    const d=new Date(str);
+    return d.toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }catch{return str;}
+}
+
+function showLoading(v){
+  document.getElementById('loading').style.display=v?'block':'none';
+}
+
+function showError(msg){
+  const el=document.getElementById('error-msg');
+  el.textContent='❌ '+msg;
+  el.style.display='block';
+}
+
+function hideAll(){
+  ['verdict-card','criteria-section','metar-section','taf-section','checklist-section','error-msg']
+    .forEach(id=>{ const el=document.getElementById(id); if(el)el.style.display='none'; });
+}
+
+// ─── START ────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

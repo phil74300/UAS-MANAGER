@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --purple:#5C35A0;--light-purple:#EDE7F6;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.09);
+  --radius:14px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-purple:#1E1535;--light-teal:#00191C;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ─── HEADER ─── */
+#header{
+  background:linear-gradient(135deg,var(--navy) 0%,#1a5fa8 100%);
+  padding:env(safe-area-inset-top) 16px 0;
+  height:calc(var(--header-h) + env(safe-area-inset-top));
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 16px rgba(12,68,124,.3);
+  overflow:hidden;
+}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 50%,rgba(255,255,255,.06) 0%,transparent 70%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+
+/* ─── CONTENT ─── */
+#content{padding:14px 12px calc(30px + env(safe-area-inset-bottom));max-width:680px;margin:0 auto;}
+
+/* ─── GREETING BANNER ─── */
+#greeting-banner{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);
+  border-radius:var(--radius);padding:16px;margin-bottom:14px;color:#fff;
+  position:relative;overflow:hidden;
+}
+#greeting-banner::after{content:'🛸';position:absolute;right:16px;bottom:-4px;font-size:52px;opacity:.15;}
+.greeting-sub{font-size:12px;opacity:.65;margin-top:3px;}
+.greeting-name{font-size:20px;font-weight:800;margin-top:4px;}
+
+/* ─── ALERTES ─── */
+#alertes-section{margin-bottom:14px;}
+.alerte-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 13px;border-radius:10px;
+  margin-bottom:7px;cursor:pointer;
+  transition:opacity .15s;
+}
+.alerte-item:active{opacity:.75;}
+.alerte-icon{font-size:18px;flex-shrink:0;}
+.alerte-body{flex:1;}
+.alerte-title{font-size:13px;font-weight:700;}
+.alerte-sub{font-size:11px;margin-top:1px;opacity:.8;}
+.alerte-arrow{font-size:12px;opacity:.5;}
+
+/* ─── KPI GRID ─── */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.kpi-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 13px;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:6px;
+  position:relative;overflow:hidden;
+}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-color,var(--blue));}
+.kpi-icon{font-size:22px;line-height:1;}
+.kpi-val{font-size:28px;font-weight:800;color:var(--kpi-color,var(--navy));line-height:1;}
+.kpi-label{font-size:11px;font-weight:600;color:var(--text-muted);}
+.kpi-sub{font-size:10px;color:var(--text-muted);margin-top:2px;}
+.kpi-trend{position:absolute;top:14px;right:13px;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;}
+.trend-up{background:var(--light-green);color:var(--green);}
+.trend-down{background:var(--light-red);color:var(--red);}
+.trend-flat{background:var(--light-blue);color:var(--blue);}
+
+/* ─── SECTION ─── */
+.section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;display:flex;align-items:center;justify-content:space-between;}
+.section-link{font-size:11px;font-weight:700;color:var(--blue);text-decoration:none;}
+
+/* ─── CARD ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:13px;font-weight:700;color:var(--text);}
+.card-body{padding:13px 14px;}
+
+/* ─── CHART ─── */
+.chart-wrap{position:relative;height:160px;}
+
+/* ─── PROGRESS BAR ─── */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.prog-label{font-size:12px;font-weight:600;color:var(--text);flex:0 0 90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prog-bar-wrap{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.34,1.2,.64,1);}
+.prog-val{font-size:11px;font-weight:700;color:var(--text-muted);flex:0 0 32px;text-align:right;}
+
+/* ─── PROCHAINS VOLS ─── */
+.mission-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.mission-row:last-child{border-bottom:none;}
+.mission-color{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+.mission-info{flex:1;min-width:0;}
+.mission-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mission-meta{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.mission-date-badge{background:var(--light-blue);color:var(--blue);padding:3px 8px;border-radius:7px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+
+/* ─── DERNIERS VOLS ─── */
+.vol-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.vol-row:last-child{border-bottom:none;}
+.vol-date{font-size:12px;font-weight:700;color:var(--text);flex:0 0 70px;}
+.vol-info{flex:1;min-width:0;}
+.vol-site{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vol-meta{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.vol-duree{font-size:12px;font-weight:700;color:var(--green);flex-shrink:0;}
+
+/* ─── STATUS DOTS ─── */
+.status-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.status-row:last-child{border-bottom:none;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.status-label{flex:1;font-size:13px;font-weight:600;color:var(--text);}
+.status-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;}
+
+/* ─── HEURE LOCALE ─── */
+#clock{font-size:13px;font-weight:700;color:rgba(255,255,255,.8);}
+
+/* ─── ANIMATION ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.card{animation:fadeUp .35s both;}
+.card:nth-child(1){animation-delay:.04s;}.card:nth-child(2){animation-delay:.08s;}.card:nth-child(3){animation-delay:.12s;}.card:nth-child(4){animation-delay:.16s;}.card:nth-child(5){animation-delay:.20s;}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <h1>📊 Tableau de bord</h1>
+  <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1;">
+    <span id="clock"></span>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </div>
+</header>
+
+<div id="content">
+
+  <!-- Greeting -->
+  <div id="greeting-banner">
+    <div class="greeting-sub" id="greeting-date"></div>
+    <div class="greeting-name" id="greeting-name">Bonjour, Philippe 👋</div>
+    <div class="greeting-sub" id="greeting-status"></div>
+  </div>
+
+  <!-- Alertes -->
+  <div id="alertes-section"></div>
+
+  <!-- KPIs -->
+  <div class="section-title">Vue d'ensemble</div>
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- Graphique vols par mois -->
+  <div class="section-title">
+    Activité de vol
+    <a class="section-link" href="bilans.html">Voir bilans →</a>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>✈️ Vols par mois (12 derniers mois)</h3></div>
+    <div class="card-body">
+      <div class="chart-wrap"><canvas id="chart-vols"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Répartition scénarios -->
+  <div class="section-title">Répartition missions</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-header"><h3>📋 Scénarios</h3></div>
+      <div class="card-body">
+        <div style="position:relative;height:110px;display:flex;align-items:center;justify-content:center;">
+          <canvas id="chart-scenarios"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-header"><h3>⏱ Durée totale</h3></div>
+      <div class="card-body" id="duree-stats"></div>
+    </div>
+  </div>
+
+  <!-- Prochaines missions -->
+  <div class="section-title">
+    Prochaines missions
+    <a class="section-link" href="planificateur.html">Voir tout →</a>
+  </div>
+  <div class="card">
+    <div class="card-body" id="prochaines-missions"></div>
+  </div>
+
+  <!-- Derniers vols -->
+  <div class="section-title">
+    Derniers vols enregistrés
+    <a class="section-link" href="vols.html">Carnet →</a>
+  </div>
+  <div class="card">
+    <div class="card-body" id="derniers-vols"></div>
+  </div>
+
+  <!-- État de la flotte -->
+  <div class="section-title">
+    État de la flotte
+    <a class="section-link" href="maintenance.html">Maintenance →</a>
+  </div>
+  <div class="card">
+    <div class="card-body" id="etat-flotte"></div>
+  </div>
+
+  <!-- Certifications -->
+  <div class="section-title">Certifications & Documents</div>
+  <div class="card">
+    <div class="card-body" id="certifications"></div>
+  </div>
+
+  <!-- Top sites -->
+  <div class="section-title">Sites fréquentés</div>
+  <div class="card">
+    <div class="card-header"><h3>📍 Top 5 zones de vol</h3></div>
+    <div class="card-body" id="top-sites"></div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Tableau de bord
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+// ─── UTILS ───────────────────────────────────────────────
+function getConfig(){ try{return JSON.parse(localStorage.getItem('uas_config')||'{}');}catch{return{};} }
+function getVols(){ try{return JSON.parse(localStorage.getItem('uas_vols')||'[]');}catch{return[];} }
+function getMissions(){ try{return JSON.parse(localStorage.getItem('uas_missions')||'[]');}catch{return[];} }
+function getMaint(){ try{return JSON.parse(localStorage.getItem('uas_maintenance')||'[]');}catch{return[];} }
+function getRex(){ try{return JSON.parse(localStorage.getItem('uas_rex')||'[]');}catch{return[];} }
+
+function fmtDate(iso){ if(!iso)return'—'; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
+
+function daysUntil(iso){
+  if(!iso)return null;
+  return Math.floor((new Date(iso)-new Date())/86400000);
+}
+
+// Couleurs Chart.js dark-mode friendly
+function chartColor(alpha=1){ return `rgba(24,95,165,${alpha})`; }
+
+// ─── HORLOGE ──────────────────────────────────────────────
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// ─── GREETING ─────────────────────────────────────────────
+function renderGreeting(){
+  const c=getConfig();
+  const now=new Date();
+  const h=now.getHours();
+  const greeting = h<12 ? 'Bonjour' : h<18 ? 'Bon après-midi' : 'Bonsoir';
+  const prenom=(c.nom||'Philippe').split(' ').pop();
+  document.getElementById('greeting-name').textContent=`${greeting}, ${prenom} 👋`;
+  document.getElementById('greeting-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Status du jour
+  const missions=getMissions();
+  const todayStr=now.toISOString().slice(0,10);
+  const todayMissions=missions.filter(m=>m.dateDebut===todayStr||
+    (m.dateFin&&todayStr>=m.dateDebut&&todayStr<=m.dateFin));
+  if(todayMissions.length>0){
+    document.getElementById('greeting-status').textContent=`📅 ${todayMissions.length} mission(s) aujourd'hui`;
+  } else {
+    const vols=getVols();
+    const last=vols[0];
+    document.getElementById('greeting-status').textContent=last
+      ? `Dernier vol : ${fmtDate(last.date||last.dateVol||last.Date||'')} — ${last.site||last.Site||'—'}`
+      : 'Aucun vol enregistré récemment';
+  }
+}
+
+// ─── ALERTES ──────────────────────────────────────────────
+function renderAlertes(){
+  const c=getConfig();
+  const alertes=[];
+
+  // CATS
+  const cd=daysUntil(c.cats_exp);
+  const ac=parseInt(c.alerte_cats)||60;
+  if(cd!==null&&cd<=ac){
+    alertes.push({
+      icon:'📋',color:'var(--light-amber)',textColor:'var(--amber)',
+      title: cd<=0 ? `🚨 CATS expiré depuis ${Math.abs(cd)} jour(s)` : `CATS expire dans ${cd} jour(s)`,
+      sub:`Renouveler avant le ${fmtDate(c.cats_exp)}`,
+      link:'config.html'
+    });
+  }
+
+  // Assurance
+  const ad=daysUntil(c.assurance_exp);
+  const aa=parseInt(c.alerte_assurance)||30;
+  if(ad!==null&&ad<=aa){
+    alertes.push({
+      icon:'🛡️',color:'var(--light-amber)',textColor:'var(--amber)',
+      title: ad<=0 ? `🚨 Assurance expirée` : `Assurance expire dans ${ad} jour(s)`,
+      sub:`${c.assureur||'COVERDRONE'} — ${c.assurance||''}`,
+      link:'config.html'
+    });
+  }
+
+  // Incidents non clôturés
+  const rex=getRex();
+  const openRex=rex.filter(r=>r.statut&&r.statut!=='cloture'&&r.statut!=='fermé').length;
+  if(openRex>0){
+    alertes.push({
+      icon:'⚠️',color:'var(--light-red)',textColor:'var(--red)',
+      title:`${openRex} incident(s) REX non clôturé(s)`,
+      sub:'Action requise — traiter les incidents ouverts',
+      link:'rex.html'
+    });
+  }
+
+  // Missions du jour
+  const missions=getMissions();
+  const todayStr=new Date().toISOString().slice(0,10);
+  const todayMs=missions.filter(m=>m.dateDebut===todayStr);
+  todayMs.forEach(m=>{
+    alertes.push({
+      icon:'📅',color:'var(--light-green)',textColor:'var(--green)',
+      title:`Mission aujourd'hui : ${m.titre}`,
+      sub:`${m.heureDebut||''}${m.heureFin?' → '+m.heureFin:''} — ${m.lieu||m.scenario||''}`,
+      link:'planificateur.html'
+    });
+  });
+
+  const el=document.getElementById('alertes-section');
+  if(alertes.length===0){ el.innerHTML=''; return; }
+  el.innerHTML=alertes.map(a=>`
+    <div class="alerte-item" style="background:${a.color};" onclick="window.location.href='${a.link}'">
+      <div class="alerte-icon">${a.icon}</div>
+      <div class="alerte-body">
+        <div class="alerte-title" style="color:${a.textColor};">${a.title}</div>
+        <div class="alerte-sub" style="color:${a.textColor};">${a.sub}</div>
+      </div>
+      <div class="alerte-arrow">→</div>
+    </div>`).join('');
+}
+
+// ─── KPIs ─────────────────────────────────────────────────
+function renderKPIs(){
+  const vols=getVols();
+  const missions=getMissions();
+  const rex=getRex();
+  const maint=getMaint();
+
+  const now=new Date();
+  const monthStr=now.toISOString().slice(0,7);
+  const lastMonthStr=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);
+
+  const volsMois=vols.filter(v=>(v.date||v.dateVol||v.Date||'').startsWith(monthStr)).length;
+  const volsLastMois=vols.filter(v=>(v.date||v.dateVol||v.Date||'').startsWith(lastMonthStr)).length;
+
+  const dureeTotal=vols.reduce((s,v)=>s+(parseFloat(v.duree||v['Durée (min)']||v.Duree||0)),0);
+  const dureeMois=vols.filter(v=>(v.date||v.dateVol||v.Date||'').startsWith(monthStr))
+    .reduce((s,v)=>s+(parseFloat(v.duree||v['Durée (min)']||v.Duree||0)),0);
+
+  const missionsAVenir=missions.filter(m=>m.dateDebut>=now.toISOString().slice(0,10)&&!['effectue','annule'].includes(m.statut)).length;
+
+  const trend=(curr,prev)=>{
+    if(prev===0&&curr===0)return'';
+    if(prev===0)return`<div class="kpi-trend trend-up">+${curr}</div>`;
+    const pct=Math.round((curr-prev)/prev*100);
+    if(pct>0)return`<div class="kpi-trend trend-up">+${pct}%</div>`;
+    if(pct<0)return`<div class="kpi-trend trend-down">${pct}%</div>`;
+    return`<div class="kpi-trend trend-flat">stable</div>`;
+  };
+
+  const hTotal=Math.floor(dureeTotal/60);
+  const hMois=Math.floor(dureeMois/60);
+
+  document.getElementById('kpi-grid').innerHTML=`
+    <div class="kpi-card" style="--kpi-color:var(--blue);">
+      <div class="kpi-icon">✈️</div>
+      <div class="kpi-val">${volsMois}</div>
+      <div class="kpi-label">Vols ce mois</div>
+      <div class="kpi-sub">Total : ${vols.length} vols</div>
+      ${trend(volsMois,volsLastMois)}
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--green);">
+      <div class="kpi-icon">⏱</div>
+      <div class="kpi-val">${hTotal}h</div>
+      <div class="kpi-label">Vol total cumulé</div>
+      <div class="kpi-sub">Ce mois : ${hMois}h</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple);">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-val">${missionsAVenir}</div>
+      <div class="kpi-label">Missions à venir</div>
+      <div class="kpi-sub">Planifiées & confirmées</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--red);">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-val">${rex.length}</div>
+      <div class="kpi-label">Incidents REX</div>
+      <div class="kpi-sub">Total enregistrés</div>
+    </div>
+  `;
+}
+
+// ─── CHART VOLS PAR MOIS ─────────────────────────────────
+function renderChartVols(){
+  const vols=getVols();
+  const labels=[], data=[];
+  const now=new Date();
+  for(let i=11;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=d.toISOString().slice(0,7);
+    labels.push(d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'}));
+    data.push(vols.filter(v=>(v.date||v.dateVol||v.Date||'').startsWith(key)).length);
+  }
+
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const ctx=document.getElementById('chart-vols').getContext('2d');
+  new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Vols',data,
+        backgroundColor:'rgba(24,95,165,0.75)',
+        borderColor:'rgba(24,95,165,1)',
+        borderWidth:1.5,borderRadius:5,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:isDark?'#7A8BAA':'#5A6478',font:{size:10}}},
+        y:{grid:{color:isDark?'#253050':'#D0DCF0'},ticks:{color:isDark?'#7A8BAA':'#5A6478',font:{size:10},stepSize:1},beginAtZero:true}
+      }
+    }
+  });
+}
+
+// ─── CHART SCÉNARIOS ─────────────────────────────────────
+function renderChartScenarios(){
+  const vols=getVols();
+  const missions=getMissions();
+  const all=[...vols,...missions];
+  const counts={};
+  all.forEach(v=>{
+    const s=v.scenario||v.Scenario||v['Scénario']||'Non défini';
+    counts[s]=(counts[s]||0)+1;
+  });
+
+  const labels=Object.keys(counts);
+  const data=Object.values(counts);
+  const colors=['#185FA5','#1D6B37','#BA7517','#8B2020','#5C35A0','#006064'];
+
+  if(labels.length===0){
+    document.getElementById('chart-scenarios').parentElement.innerHTML=
+      '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:20px;">Aucune donnée</div>';
+    return;
+  }
+
+  const ctx=document.getElementById('chart-scenarios').getContext('2d');
+  new Chart(ctx,{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}`}}
+      },
+      cutout:'70%'
+    }
+  });
+}
+
+// ─── DURÉE STATS ──────────────────────────────────────────
+function renderDureeStats(){
+  const vols=getVols();
+  const total=vols.reduce((s,v)=>s+(parseFloat(v.duree||v['Durée (min)']||v.Duree||0)),0);
+  const h=Math.floor(total/60);
+  const mn=Math.round(total%60);
+  const avgMin=vols.length>0?Math.round(total/vols.length):0;
+
+  document.getElementById('duree-stats').innerHTML=`
+    <div style="text-align:center;margin-bottom:12px;">
+      <div style="font-size:28px;font-weight:800;color:var(--teal);line-height:1;">${h}h${mn>0?mn+'m':''}</div>
+      <div style="font-size:10px;font-weight:600;color:var(--text-muted);margin-top:3px;">TOTAL VOL</div>
+    </div>
+    <div style="display:flex;justify-content:space-around;margin-top:4px;">
+      <div style="text-align:center;">
+        <div style="font-size:16px;font-weight:800;color:var(--text);">${vols.length}</div>
+        <div style="font-size:9px;color:var(--text-muted);font-weight:600;">VOLS</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:16px;font-weight:800;color:var(--text);">${avgMin}mn</div>
+        <div style="font-size:9px;color:var(--text-muted);font-weight:600;">MOY/VOL</div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── PROCHAINES MISSIONS ──────────────────────────────────
+function renderProchaines(){
+  const missions=getMissions();
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=missions
+    .filter(m=>m.dateDebut>=today&&!['effectue','annule'].includes(m.statut))
+    .sort((a,b)=>a.dateDebut.localeCompare(b.dateDebut))
+    .slice(0,5);
+
+  const el=document.getElementById('prochaines-missions');
+  if(upcoming.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px;">Aucune mission planifiée · <a href="planificateur.html" style="color:var(--blue);font-weight:700;">+ Ajouter</a></div>';
+    return;
+  }
+
+  const now=new Date();
+  el.innerHTML=upcoming.map(m=>{
+    const d=new Date(m.dateDebut);
+    const daysLeft=Math.floor((d-now)/86400000);
+    const badge=daysLeft===0?'Aujourd\'hui':daysLeft===1?'Demain':`J-${daysLeft}`;
+    const isUrgent=daysLeft<=2;
+    return`<div class="mission-row">
+      <div class="mission-color" style="background:${m.color||'#185FA5'};"></div>
+      <div class="mission-info">
+        <div class="mission-name">${m.titre}</div>
+        <div class="mission-meta">${m.lieu||''} ${m.scenario?'· '+m.scenario:''}</div>
+      </div>
+      <div class="mission-date-badge" style="${isUrgent?'background:var(--light-amber);color:var(--amber);':''}">${badge}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── DERNIERS VOLS ────────────────────────────────────────
+function renderDerniersVols(){
+  const vols=getVols().slice(0,5);
+  const el=document.getElementById('derniers-vols');
+  if(vols.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px;">Aucun vol enregistré · <a href="vols.html" style="color:var(--blue);font-weight:700;">+ Ajouter</a></div>';
+    return;
+  }
+  el.innerHTML=vols.map(v=>{
+    const date=v.date||v.dateVol||v.Date||'';
+    const site=v.site||v.Site||v.commune||v.Commune||'—';
+    const duree=v.duree||v['Durée (min)']||v.Duree||'';
+    const scenario=v.scenario||v.Scenario||v['Scénario']||'';
+    const dureeH=duree?Math.floor(duree/60)+'h'+(duree%60>0?Math.round(duree%60)+'m':''):'—';
+    return`<div class="vol-row">
+      <div class="vol-date">${fmtDate(date)}</div>
+      <div class="vol-info">
+        <div class="vol-site">${site}</div>
+        <div class="vol-meta">${scenario}</div>
+      </div>
+      <div class="vol-duree">${dureeH}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── ÉTAT FLOTTE ──────────────────────────────────────────
+function renderFlotte(){
+  const c=getConfig();
+  const drones=c.drones||[{nom:'DJI Mavic 4 Pro',immat:'UAS-FR-517804',classe:'C2'}];
+  const el=document.getElementById('etat-flotte');
+
+  el.innerHTML=drones.map(d=>{
+    const status=d.primary?'OK':'Actif';
+    return`<div class="status-row">
+      <div class="status-dot" style="background:var(--green);"></div>
+      <div class="status-label">🛸 ${d.nom}</div>
+      <div style="font-size:10px;color:var(--text-muted);margin-right:8px;">${d.immat||''}</div>
+      <div class="status-badge" style="background:var(--light-green);color:var(--green);">${d.primary?'⭐ Principal':'Actif'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── CERTIFICATIONS ───────────────────────────────────────
+function renderCertifications(){
+  const c=getConfig();
+  const el=document.getElementById('certifications');
+
+  const items=[
+    {label:'CATS', value:c.cats||'NLD-RP-q99cvjjh51fz', exp:c.cats_exp, icon:'📋'},
+    {label:'Assurance', value:c.assurance||'CDA22411846EUR', exp:c.assurance_exp, icon:'🛡️'},
+  ];
+
+  el.innerHTML=items.map(item=>{
+    const d=daysUntil(item.exp);
+    let badge='', badgeStyle='';
+    if(d!==null){
+      if(d<=0){badge='EXPIRÉ';badgeStyle='background:var(--light-red);color:var(--red)';}
+      else if(d<=30){badge=`${d}j`;badgeStyle='background:var(--light-amber);color:var(--amber)';}
+      else{badge=`${d}j`;badgeStyle='background:var(--light-green);color:var(--green)';}
+    }
+    return`<div class="status-row">
+      <div class="status-dot" style="background:${d!==null&&d<=0?'var(--red)':d!==null&&d<=30?'var(--amber)':'var(--green)'};"></div>
+      <div class="status-label">${item.icon} ${item.label} <span style="font-size:10px;color:var(--text-muted);font-weight:500;">${item.value}</span></div>
+      ${badge?`<div class="status-badge" style="${badgeStyle};">${badge}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ─── TOP SITES ────────────────────────────────────────────
+function renderTopSites(){
+  const vols=getVols();
+  const sites={};
+  vols.forEach(v=>{
+    const s=v.site||v.Site||v.commune||v.Commune||'Non renseigné';
+    sites[s]=(sites[s]||0)+1;
+  });
+  const sorted=Object.entries(sites).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const max=sorted[0]?.[1]||1;
+  const colors=['var(--blue)','var(--green)','var(--amber)','var(--teal)','var(--purple)'];
+
+  const el=document.getElementById('top-sites');
+  if(sorted.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px;">Aucun vol enregistré</div>';
+    return;
+  }
+  el.innerHTML=sorted.map(([site,count],i)=>`
+    <div class="prog-row">
+      <div class="prog-label">${site}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${Math.round(count/max*100)}%;background:${colors[i]};"></div></div>
+      <div class="prog-val">${count}</div>
+    </div>`).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function init(){
+  renderGreeting();
+  renderAlertes();
+  renderKPIs();
+  renderDureeStats();
+  renderProchaines();
+  renderDerniersVols();
+  renderFlotte();
+  renderCertifications();
+  renderTopSites();
+  // Charts en dernier (besoin du DOM)
+  setTimeout(()=>{
+    renderChartVols();
+    renderChartScenarios();
+  },100);
+}
+
+init();
+
+// Refresh toutes les 60s
+setInterval(()=>{
+  renderAlertes();
+  renderKPIs();
+  renderProchaines();
+},60000);
+</script>
+</body>
+</html>
