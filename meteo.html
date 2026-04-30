@@ -1105,7 +1105,35 @@ function init() {
 function getConfig() {
   try { return JSON.parse(localStorage.getItem('uas_config') || '{}'); } catch { return {}; }
 }
-function getCwKey() { return getConfig().checkwx_key || ''; }
+function getCwKey() { const c = getConfig(); return c.api_checkwx || c.checkwx_key || ''; }
+
+// ══════════════════════════════════════════════════════════
+//  KEY STATUS INDICATOR
+// ══════════════════════════════════════════════════════════
+function showKeyStatus() {
+  const key = getCwKey();
+  // Try to find an existing status indicator or inject one in header
+  let el = document.getElementById('key-status-badge');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'key-status-badge';
+    el.style.cssText = 'font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0;';
+    const hdr = document.querySelector('header');
+    if (hdr) hdr.appendChild(el);
+  }
+  if (key) {
+    el.textContent = '🔑 API OK';
+    el.style.background = 'rgba(29,107,55,0.3)';
+    el.style.color = '#6FD492';
+  } else {
+    el.textContent = '🔑 Clé manquante';
+    el.style.background = 'rgba(186,117,23,0.3)';
+    el.style.color = '#F0A020';
+    el.style.cursor = 'pointer';
+    el.onclick = () => window.location.href = 'config.html';
+    el.title = 'Configurer la clé CheckWX';
+  }
+}
 
 // ══════════════════════════════════════════════════════════
 //  CACHE
@@ -1271,7 +1299,7 @@ async function doRefresh(force = true) {
 
   const key = getCwKey();
   if (!key) {
-    showMetarError('Clé CheckWX non configurée — ⚙️ Config');
+    showMetarError('🔑 Clé CheckWX non configurée — <a href="config.html" style="color:var(--blue);font-weight:700;">⚙️ Ouvrir Config</a>');
     showTafError();
     setUpdateBar(Date.now(), false);
     btn.classList.remove('loading'); btn.disabled = false;
