@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_14.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UAS Manager">
+<title>UAS Manager — Accueil</title>
+<style>
+  :root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--light-red:#FDECEC;--teal:#006064;--bg:#F0F4FA;--surface:#FFFFFF;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
+  @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;}}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%;font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+  /* ─── HEADER ─── */
+  #header{background:var(--navy);padding:env(safe-area-inset-top) 0 0;position:relative;overflow:hidden;}
+  #header::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(24,95,165,0.45) 0%,transparent 60%),radial-gradient(circle at 10% 80%,rgba(0,96,100,0.3) 0%,transparent 50%);pointer-events:none;}
+  #header::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+
+  /* Barre top : titre + bouton config */
+  .header-topbar{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;padding:18px 18px 0;}
+  .header-titles{}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:.5px;margin-bottom:8px;}
+  .header-topbar h1{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.1;}
+  .header-topbar h1 span{color:#7EB8F7;}
+  .header-sub{font-size:12px;color:rgba(255,255,255,0.55);margin-top:5px;font-weight:500;}
+
+  /* Bouton config ⚙️ */
+  #btn-config{
+    background:rgba(255,255,255,0.13);
+    border:1.5px solid rgba(255,255,255,0.22);
+    border-radius:12px;
+    width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    text-decoration:none;
+    flex-shrink:0;
+    margin-left:12px;
+    margin-top:2px;
+    transition:background .15s,transform .1s;
+    -webkit-backdrop-filter:blur(4px);
+    backdrop-filter:blur(4px);
+  }
+  #btn-config:active{background:rgba(255,255,255,0.28);transform:scale(.93);}
+
+  /* ─── PILOT STRIP ─── */
+  .pilot-strip{
+    position:relative;z-index:2;
+    padding:14px 18px 18px;
+    display:flex;align-items:center;gap:14px;
+  }
+
+  /* Avatar photo */
+  .pilot-avatar-wrap{position:relative;flex-shrink:0;cursor:pointer;}
+  .pilot-avatar{
+    width:52px;height:52px;
+    border-radius:50%;
+    border:2.5px solid rgba(255,255,255,0.5);
+    object-fit:cover;
+    display:block;
+    background:rgba(255,255,255,0.15);
+    font-size:24px;
+    line-height:52px;
+    text-align:center;
+  }
+  .avatar-edit-badge{
+    position:absolute;bottom:-2px;right:-2px;
+    width:18px;height:18px;
+    background:var(--blue);
+    border:2px solid var(--navy);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;
+    color:#fff;
+    pointer-events:none;
+  }
+  #avatar-input{display:none;}
+
+  .pilot-info{flex:1;min-width:0;}
+  .pilot-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.2px;}
+  .pilot-id{font-size:10px;color:rgba(255,255,255,0.5);font-family:'SF Mono',monospace;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pilot-cats{background:rgba(29,107,55,0.35);border:1px solid rgba(29,107,55,0.5);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;color:#6FD492;white-space:nowrap;flex-shrink:0;}
+
+  /* ─── ALERTS ─── */
+  #alerts-bar{display:none;padding:10px 14px;gap:7px;flex-direction:column;}
+  #alerts-bar.has-alerts{display:flex;}
+  .alert-item{display:flex;align-items:center;gap:8px;background:var(--light-amber);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--amber);}
+
+  /* ─── CONTENT ─── */
+  #content{padding:14px 14px;padding-bottom:calc(24px + env(safe-area-inset-bottom));max-width:600px;margin:0 auto;}
+  .sec-title{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}
+  .sec-title:first-child{margin-top:0;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .grid-1{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:540px){.grid-2{grid-template-columns:1fr 1fr 1fr;}}
+
+  /* ─── MODULE CARDS ─── */
+  .mod-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 13px 12px;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;transition:transform .15s;-webkit-user-select:none;user-select:none;animation:fadeUp .35s both;}
+  .mod-card:active{transform:scale(0.96);}
+  .mod-card::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--accent,var(--blue));}
+  .mod-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 10%,var(--glow,transparent) 0%,transparent 65%);pointer-events:none;}
+  .mod-icon{font-size:24px;line-height:1;position:relative;z-index:1;}
+  .mod-label{font-size:13px;font-weight:700;color:var(--text);position:relative;z-index:1;line-height:1.2;}
+  .mod-desc{font-size:10.5px;color:var(--text-muted);font-weight:500;position:relative;z-index:1;line-height:1.3;}
+  .c-blue{--accent:var(--blue);--glow:rgba(24,95,165,0.06);}
+  .c-green{--accent:var(--green);--glow:rgba(29,107,55,0.06);}
+  .c-amber{--accent:var(--amber);--glow:rgba(186,117,23,0.06);}
+  .c-red{--accent:var(--red);--glow:rgba(139,32,32,0.06);}
+  .c-teal{--accent:var(--teal);--glow:rgba(0,96,100,0.06);}
+  .c-navy{--accent:var(--navy);--glow:rgba(12,68,124,0.06);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .mod-card:nth-child(1){animation-delay:.04s;}.mod-card:nth-child(2){animation-delay:.08s;}.mod-card:nth-child(3){animation-delay:.12s;}.mod-card:nth-child(4){animation-delay:.16s;}.mod-card:nth-child(5){animation-delay:.20s;}.mod-card:nth-child(6){animation-delay:.24s;}.mod-card:nth-child(7){animation-delay:.28s;}.mod-card:nth-child(8){animation-delay:.32s;}
+
+  /* ─── INFO STRIP ─── */
+  .info-strip{background:var(--light-blue);border:1px solid var(--border);border-radius:12px;padding:11px 13px;margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+  .info-item .il{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;}
+  .info-item .iv{font-size:11px;font-weight:700;color:var(--navy);margin-top:1px;font-family:'SF Mono',monospace;}
+  @media(prefers-color-scheme:dark){.info-item .iv{color:#7EB8F7;}}
+  .version{text-align:center;font-size:10px;color:var(--text-muted);margin-top:20px;padding-bottom:4px;}
+
+  /* ─── TOAST ─── */
+  #toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
+  #toast.visible{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header id="header">
+
+  <!-- Barre supérieure : titre + ⚙️ -->
+  <div class="header-topbar">
+    <div class="header-titles">
+      <div class="header-badge">🛸 UAS Manager · PWA</div>
+      <h1>Tableau de<br><span>bord opérateur</span></h1>
+      <p class="header-sub">Gestion des vols UAS · PDRA-S01 / PDRA-S02</p>
+    </div>
+    <a id="btn-config" href="file:///Users/contephilippe/Downloads/config.html" title="Configuration">⚙️</a>
+  </div>
+
+  <!-- Bande pilote : avatar + infos -->
+  <div class="pilot-strip">
+    <!-- Avatar cliquable → changer la photo -->
+    <div class="pilot-avatar-wrap" onclick="document.getElementById(&#39;avatar-input&#39;).click()" title="Changer la photo">
+      <img id="pilot-avatar-img" class="pilot-avatar" src="file:///Users/contephilippe/Downloads/index_14.html" alt="👨‍✈️" onerror="this.style.display=&#39;none&#39;;document.getElementById(&#39;pilot-avatar-emoji&#39;).style.display=&#39;flex&#39;" style="display: none;">
+      <div id="pilot-avatar-emoji" class="pilot-avatar" style="display:flex;align-items:center;justify-content:center;">👨‍✈️</div>
+      <div class="avatar-edit-badge">✏️</div>
+    </div>
+    <input type="file" id="avatar-input" accept="image/*" onchange="changeAvatar(this)">
+
+    <div class="pilot-info">
+      <div class="pilot-name" id="hdr-nom">Philippe CONTE</div>
+      <div class="pilot-id" id="hdr-id">FRAjqq48j12nfy4c · DJI Mavic 4 Pro · UAS-FR-517804</div>
+    </div>
+    <div class="pilot-cats" id="hdr-cats">✅ CATS valide</div>
+  </div>
+
+</header>
+
+<div id="alerts-bar"></div>
+
+<div id="content">
+
+  <div class="sec-title">Modules opérationnels</div>
+  <div class="grid-2">
+    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/vols.html">
+      <div class="mod-icon">✈️</div>
+      <div class="mod-label">Carnet de vol</div>
+      <div class="mod-desc">Enregistrement &amp; suivi des vols</div>
+    </a>
+    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/maintenance.html">
+      <div class="mod-icon">🔧</div>
+      <div class="mod-label">Maintenance</div>
+      <div class="mod-desc">Interventions &amp; suivi UAS</div>
+    </a>
+    <a class="mod-card c-amber" href="file:///Users/contephilippe/Downloads/checklist.html">
+      <div class="mod-icon">☑️</div>
+      <div class="mod-label">Check-list</div>
+      <div class="mod-desc">Pré-vol · Post-vol · Urgence</div>
+    </a>
+    <a class="mod-card c-red" href="file:///Users/contephilippe/Downloads/rex.html">
+      <div class="mod-icon">⚠️</div>
+      <div class="mod-label">REX / Incidents</div>
+      <div class="mod-desc">Retours d'expérience</div>
+    </a>
+    <a class="mod-card c-teal" href="file:///Users/contephilippe/Downloads/meteo.html">
+      <div class="mod-icon">🌦️</div>
+      <div class="mod-label">Météo &amp; NOTAM</div>
+      <div class="mod-desc">METAR · TAF · Briefing SIA</div>
+    </a>
+    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/adsb.html">
+      <div class="mod-icon">📡</div>
+      <div class="mod-label">ADS-B Trafic</div>
+      <div class="mod-desc">Carte aéronefs temps réel</div>
+    </a>
+    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/zones.html">
+      <div class="mod-icon">🗺️</div>
+      <div class="mod-label">Zones de vol</div>
+      <div class="mod-desc">Géoportail · Zones UAS · GPS pilote</div>
+    </a>
+    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/notification.html">
+      <div class="mod-icon">📋</div>
+      <div class="mod-label">Notification vol</div>
+      <div class="mod-desc">AlphaTango · Préfecture · Récapitulatif</div>
+    </a>
+  </div>
+
+  <div class="sec-title">Bilans &amp; analyses</div>
+  <div class="grid-2">
+    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/bilans.html">
+      <div class="mod-icon">📊</div>
+      <div class="mod-label">Bilans</div>
+      <div class="mod-desc">Mensuel · Annuel · Synthèse</div>
+    </a>
+    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/formations.html">
+      <div class="mod-icon">🎓</div>
+      <div class="mod-label">Formations</div>
+      <div class="mod-desc">Qualifications &amp; suivi</div>
+    </a>
+    <a class="mod-card c-amber" href="file:///Users/contephilippe/Downloads/dji_logs.html">
+      <div class="mod-icon">📁</div>
+      <div class="mod-label">Logs DJI</div>
+      <div class="mod-desc">Import &amp; analyse des vols DJI</div>
+    </a>
+  </div>
+
+  <div class="sec-title">Informations exploitant</div>
+  <div class="info-strip">
+    <div class="info-item"><div class="il">AlphaTango</div><div class="iv" id="info-at">FRAjqq48j12nfy4c</div></div>
+    <div class="info-item"><div class="il">UAS enregistré</div><div class="iv" id="info-uas">UAS-FR-517804</div></div>
+    <div class="info-item"><div class="il">CATS</div><div class="iv" id="info-cats">NLD-RP-q99cvjjh51fz</div></div>
+    <div class="info-item"><div class="il">Exp. CATS</div><div class="iv" id="info-cats-exp">15/09/2029</div></div>
+    <div class="info-item"><div class="il">Assurance</div><div class="iv" id="info-assur">CDA22411846EUR</div></div>
+    <div class="info-item"><div class="il">Exp. assurance</div><div class="iv" id="info-assur-exp">10/04/2027</div></div>
+  </div>
+
+  <div class="version" id="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── UTILS ───────────────────────────────────────────────
+function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
+
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('visible'),2500);
+}
+
+// ─── AVATAR ──────────────────────────────────────────────
+function loadAvatar(){
+  const saved=localStorage.getItem('uas_avatar');
+  const img=document.getElementById('pilot-avatar-img');
+  const emoji=document.getElementById('pilot-avatar-emoji');
+  if(saved){
+    img.src=saved;
+    img.style.display='block';
+    emoji.style.display='none';
+  } else {
+    img.style.display='none';
+    emoji.style.display='flex';
+  }
+}
+
+function changeAvatar(input){
+  const file=input.files[0];
+  if(!file)return;
+  // Limiter à 500ko pour localStorage
+  if(file.size>800000){showToast('⚠️ Image trop grande (max ~600 ko)');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;
+    try{
+      localStorage.setItem('uas_avatar',data);
+      loadAvatar();
+      showToast('✅ Photo mise à jour');
+    }catch(err){
+      showToast('⚠️ Stockage insuffisant — réduire la taille');
+    }
+  };
+  reader.readAsDataURL(file);
+  input.value=''; // reset pour permettre re-sélection
+}
+
+// ─── CONFIG ──────────────────────────────────────────────
+function loadConfig(){
+  const raw=localStorage.getItem('uas_config');
+  if(!raw)return;
+  try{
+    const c=JSON.parse(raw);
+    if(c.nom) document.getElementById('hdr-nom').textContent=c.nom;
+    const drone=(c.drones&&c.drones[0])||{};
+    const dl=[drone.nom,drone.immat].filter(Boolean).join(' · ');
+    document.getElementById('hdr-id').textContent=[c.alphatango,dl].filter(Boolean).join(' · ');
+    if(c.alphatango) document.getElementById('info-at').textContent=c.alphatango;
+    if(drone.immat)  document.getElementById('info-uas').textContent=drone.immat;
+    if(c.cats)       document.getElementById('info-cats').textContent=c.cats;
+    if(c.cats_exp)   document.getElementById('info-cats-exp').textContent=fmtDate(c.cats_exp);
+    if(c.assurance)  document.getElementById('info-assur').textContent=c.assurance;
+    if(c.assurance_exp) document.getElementById('info-assur-exp').textContent=fmtDate(c.assurance_exp);
+    if(c.manex)      document.getElementById('version-line').textContent=`UAS Manager v1.0 · ${c.manex}`;
+    checkAlerts(c);
+  }catch(e){}
+}
+
+function checkAlerts(c){
+  const alerts=[];
+  const today=new Date();
+  function daysUntil(iso){if(!iso)return null;return Math.floor((new Date(iso)-today)/86400000);}
+  const cd=daysUntil(c.cats_exp),ad=daysUntil(c.assurance_exp);
+  const ac=parseInt(c.alerte_cats)||60,aa=parseInt(c.alerte_assurance)||30;
+  if(cd!==null&&cd<=ac) alerts.push(cd<=0?`🚨 CATS expiré depuis ${Math.abs(cd)} jour(s) !`:`⚠️ CATS expire dans ${cd} jour(s) (${fmtDate(c.cats_exp)})`);
+  if(ad!==null&&ad<=aa) alerts.push(ad<=0?`🚨 Assurance expirée depuis ${Math.abs(ad)} jour(s) !`:`⚠️ Assurance expire dans ${ad} jour(s) (${fmtDate(c.assurance_exp)})`);
+  const bar=document.getElementById('alerts-bar');
+  if(alerts.length){
+    bar.classList.add('has-alerts');
+    bar.innerHTML=alerts.map(a=>`<div class="alert-item">${a}</div>`).join('');
+  }
+  if(cd!==null&&cd<=0){
+    const el=document.getElementById('hdr-cats');
+    el.textContent='🚨 CATS expiré';
+    el.style.cssText='background:rgba(139,32,32,0.35);border-color:rgba(139,32,32,0.5);color:#FF8080;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;';
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────
+loadAvatar();
+loadConfig();
+window.addEventListener('storage',e=>{
+  if(e.key==='uas_config'||e.key==='uas_config_updated') loadConfig();
+  if(e.key==='uas_avatar') loadAvatar();
+});
+</script>
+
+
+</body></html>
