@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Confidentialité & RGPD</title>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.09);
+  --radius:14px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+
+#content{max-width:640px;margin:0 auto;padding:14px 12px calc(30px + env(safe-area-inset-bottom));}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card:nth-child(1){animation-delay:.04s;}.card:nth-child(2){animation-delay:.08s;}.card:nth-child(3){animation-delay:.12s;}.card:nth-child(4){animation-delay:.16s;}.card:nth-child(5){animation-delay:.20s;}.card:nth-child(6){animation-delay:.24s;}.card:nth-child(7){animation-delay:.28s;}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:11px 14px;display:flex;align-items:center;gap:8px;}
+.card-header h2{font-size:13px;font-weight:700;color:var(--text);flex:1;}
+.card-icon{font-size:18px;}
+.card-body{padding:13px 14px;}
+
+.sec-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;}
+
+/* ─── DATA ROW ─── */
+.data-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.data-row:last-child{border-bottom:none;}
+.data-info{flex:1;}
+.data-name{font-size:13px;font-weight:600;color:var(--text);}
+.data-desc{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.data-size{font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0;margin-left:10px;}
+@media(prefers-color-scheme:dark){.data-size{color:#7EB8F7;}}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:10px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+
+/* ─── INFO NOTE ─── */
+.info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5;}
+.info-note.warn{background:var(--light-amber);color:var(--amber);}
+.info-note.green{background:var(--light-green);color:var(--green);}
+.info-note.red{background:var(--light-red);color:var(--red);}
+
+/* ─── STORAGE BAR ─── */
+.storage-bar-wrap{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin:8px 0;}
+.storage-bar{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width .6s;}
+.storage-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);font-weight:600;}
+
+/* ─── POLICY TEXT ─── */
+.policy-text{font-size:12px;color:var(--text-muted);line-height:1.7;background:var(--surface2);border-radius:8px;padding:12px;border:1px solid var(--border);}
+.policy-text h3{font-size:12px;font-weight:700;color:var(--text);margin:10px 0 4px;}
+.policy-text h3:first-child{margin-top:0;}
+
+/* ─── DANGER ZONE ─── */
+.danger-zone{background:var(--light-red);border:2px solid var(--red);border-radius:12px;padding:14px;margin-bottom:12px;}
+.danger-zone h3{font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.danger-zone p{font-size:12px;color:var(--red);margin-bottom:10px;line-height:1.5;}
+
+/* ─── CONSENT TOGGLES ─── */
+.consent-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.consent-row:last-child{border-bottom:none;}
+.consent-info{flex:1;}
+.consent-title{font-size:13px;font-weight:600;color:var(--text);}
+.consent-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+.toggle-switch{position:relative;width:46px;height:26px;flex-shrink:0;margin-top:2px;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:26px;cursor:pointer;transition:background .2s;}
+.toggle-slider::before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+input:checked+.toggle-slider{background:var(--green);}
+input:checked+.toggle-slider::before{transform:translateX(20px);}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
+
+/* ─── MODAL ─── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:620px;max-height:85vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);padding:20px 18px;padding-bottom:calc(20px + env(safe-area-inset-bottom));}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <h1>🔒 Confidentialité & RGPD</h1>
+  <a class="back-btn" href="index.html">← Accueil</a>
+</header>
+
+<div id="content">
+
+  <!-- VUE D'ENSEMBLE -->
+  <div class="sec-title">Vue d'ensemble</div>
+  <div class="card">
+    <div class="card-header"><span class="card-icon">🛡️</span><h2>Protection de vos données</h2></div>
+    <div class="card-body">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <div style="font-size:44px;">🔒</div>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:var(--green);margin-bottom:3px;">100% Local</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Toutes vos données sont stockées <strong>uniquement sur votre appareil</strong> (localStorage). Aucune donnée n'est transmise à nos serveurs.</div>
+        </div>
+      </div>
+
+      <div class="storage-bar-wrap" id="storage-bar-wrap">
+        <div class="storage-bar" id="storage-bar" style="width:0%;"></div>
+      </div>
+      <div class="storage-labels">
+        <span id="storage-used">Calcul…</span>
+        <span id="storage-max">~5 Mo max (localStorage)</span>
+      </div>
+
+      <div class="info-note green" style="margin-top:10px;">✅ Aucun compte requis · Aucun serveur · Aucune publicité · Aucun tracking</div>
+    </div>
+  </div>
+
+  <!-- DONNÉES STOCKÉES -->
+  <div class="sec-title">Données stockées sur l'appareil</div>
+  <div class="card">
+    <div class="card-header"><span class="card-icon">💾</span><h2>Inventaire des données</h2></div>
+    <div class="card-body" id="data-inventory"></div>
+  </div>
+
+  <!-- EXPORT DONNÉES -->
+  <div class="sec-title">Droit à la portabilité (RGPD Art. 20)</div>
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📤</span><h2>Exporter toutes mes données</h2></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Téléchargez l'intégralité de vos données personnelles dans un format lisible et portable, conformément au RGPD.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-sm" onclick="exporterJSON()">📦 Export JSON complet</button>
+        <button class="btn btn-outline btn-sm" onclick="exporterCSVAll()">📥 Export CSV (vols)</button>
+      </div>
+      <div class="info-note">Le fichier JSON contient l'intégralité des données : configuration, vols, maintenance, missions, clients, rapports, photos.</div>
+    </div>
+  </div>
+
+  <!-- CONSENTEMENTS -->
+  <div class="sec-title">Gestion des consentements</div>
+  <div class="card">
+    <div class="card-header"><span class="card-icon">✅</span><h2>Mes consentements</h2></div>
+    <div class="card-body">
+      <div class="consent-row">
+        <div class="consent-info">
+          <div class="consent-title">📍 Géolocalisation GPS</div>
+          <div class="consent-sub">Utilisée pour le suivi de position sur la carte ADS-B, les zones de vol, et la complétion automatique des formulaires de vol.</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="consent-gps" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="consent-row">
+        <div class="consent-info">
+          <div class="consent-title">🔔 Notifications</div>
+          <div class="consent-sub">Rappels de missions, alertes d'expiration CATS et assurance, rappels maintenance.</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="consent-notif" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="consent-row">
+        <div class="consent-info">
+          <div class="consent-title">🌐 APIs externes</div>
+          <div class="consent-sub">CheckWX (METAR), OpenWeatherMap, adsb.lol, Géoportail IGN. Vos coordonnées GPS peuvent être transmises à ces services pour obtenir des données météo et de trafic.</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="consent-api" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="consent-row">
+        <div class="consent-info">
+          <div class="consent-title">📷 Photos de mission</div>
+          <div class="consent-sub">Les photos sont compressées et stockées localement dans localStorage. Elles ne quittent jamais l'appareil.</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="consent-photos" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- POLITIQUE DE CONFIDENTIALITÉ -->
+  <div class="sec-title">Politique de confidentialité</div>
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📋</span><h2>Politique de confidentialité UAS Manager</h2></div>
+    <div class="card-body">
+      <div class="policy-text">
+        <h3>1. Responsable du traitement</h3>
+        <p id="policy-responsible">CONTE Philippe · FRAjqq48j12nfy4c · 288, rue de la Concorde, 74300 THYEZ</p>
+
+        <h3>2. Données collectées</h3>
+        <p>UAS Manager collecte uniquement les données que vous saisissez vous-même : informations exploitant, données de vol, coordonnées GPS (avec votre autorisation), photos de missions, informations clients et devis.</p>
+
+        <h3>3. Stockage & sécurité</h3>
+        <p>Toutes les données sont stockées localement sur votre appareil via l'API localStorage du navigateur. Aucune donnée n'est transmise à nos serveurs. Les clés API (CheckWX, OpenWeatherMap) sont stockées de façon chiffrée localement.</p>
+
+        <h3>4. Services tiers</h3>
+        <p>L'application utilise des APIs tierces :<br>
+        • <strong>CheckWX</strong> (checkwx.com) : transmission du code ICAO de la station<br>
+        • <strong>OpenWeatherMap</strong> (openweathermap.org) : transmission de vos coordonnées GPS<br>
+        • <strong>adsb.lol / airplanes.live</strong> : transmission de vos coordonnées GPS et du rayon de recherche<br>
+        • <strong>IGN Géoportail</strong> : accès aux tuiles cartographiques publiques<br>
+        • <strong>OpenStreetMap</strong> : accès aux tuiles cartographiques publiques</p>
+
+        <h3>5. Vos droits (RGPD)</h3>
+        <p>Conformément au RGPD (Règlement UE 2016/679), vous disposez des droits suivants :<br>
+        • <strong>Accès</strong> : export JSON de toutes vos données<br>
+        • <strong>Rectification</strong> : modification via l'interface<br>
+        • <strong>Effacement</strong> : suppression via le module Config → Réinitialisation<br>
+        • <strong>Portabilité</strong> : export JSON et CSV disponibles<br>
+        • <strong>Opposition</strong> : désactivation des APIs dans Config → 🔑 API</p>
+
+        <h3>6. Conservation</h3>
+        <p>Les données sont conservées tant que vous utilisez l'application. La suppression du cache du navigateur ou la réinitialisation de l'application supprime définitivement toutes les données.</p>
+
+        <h3>7. Contact</h3>
+        <p id="policy-contact">Pour toute question relative à vos données : contephil74@gmail.com</p>
+
+        <h3>8. Mise à jour</h3>
+        <p>Dernière mise à jour : <span id="policy-date"></span></p>
+      </div>
+      <div class="btn-group" style="margin-top:10px;">
+        <button class="btn btn-outline btn-sm" onclick="exporterPolitique()">🖨️ Imprimer la politique</button>
+        <button class="btn btn-outline btn-sm" onclick="envoyerPolitique()">📧 Envoyer par email</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPRESSION DONNÉES -->
+  <div class="sec-title">Droit à l'effacement (RGPD Art. 17)</div>
+  <div class="danger-zone">
+    <h3>⚠️ Suppression des données personnelles</h3>
+    <p>Ces actions sont <strong>irréversibles</strong>. Exportez vos données avant de procéder.</p>
+    <div class="btn-group">
+      <button class="btn btn-sm" style="background:rgba(139,32,32,.15);color:var(--red);border:1.5px solid var(--red);" onclick="supprimerDonnees('clients')">👤 Supprimer clients</button>
+      <button class="btn btn-sm" style="background:rgba(139,32,32,.15);color:var(--red);border:1.5px solid var(--red);" onclick="supprimerDonnees('photos')">📷 Supprimer photos</button>
+      <button class="btn btn-sm" style="background:rgba(139,32,32,.15);color:var(--red);border:1.5px solid var(--red);" onclick="supprimerDonnees('config')">⚙️ Supprimer config</button>
+    </div>
+    <div style="margin-top:10px;">
+      <button class="btn btn-red btn-full" onclick="supprimerTout()">🗑️ Supprimer TOUTES les données</button>
+    </div>
+  </div>
+
+  <!-- VERSION -->
+  <div class="card">
+    <div class="card-body" style="padding:13px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);">
+        <span>UAS Manager v1.0</span>
+        <span id="app-version">PWA · iOS Safari</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Conforme RGPD (UE) 2016/679 · Données 100% locales</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EXPORT -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div class="modal-handle"></div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Confidentialité & RGPD
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+const DATA_KEYS = [
+  { key:'uas_config',      name:'Configuration exploitant',  desc:'Données personnelles, certifications, seuils, API keys' },
+  { key:'uas_vols',        name:'Carnet de vol',             desc:'Historique de tous les vols enregistrés' },
+  { key:'uas_maintenance', name:'Maintenance UAS',           desc:'Historique des interventions et pièces' },
+  { key:'uas_rex',         name:'REX / Incidents',           desc:'Retours d\'expérience et incidents' },
+  { key:'uas_formations',  name:'Formations',                desc:'Registre des formations et qualifications' },
+  { key:'uas_missions',    name:'Missions planifiées',       desc:'Calendrier et planification des missions' },
+  { key:'uas_clients',     name:'Clients',                   desc:'Fiches clients et coordonnées' },
+  { key:'uas_devis',       name:'Devis & Factures',          desc:'Documents commerciaux et CA' },
+  { key:'uas_rapports',    name:'Rapports de mission',       desc:'Rapports avec photos et signatures' },
+  { key:'uas_notifications','name':'Notifications de vol',  desc:'Déclarations AlphaTango sauvegardées' },
+  { key:'uas_rappels',     name:'Rappels personnalisés',     desc:'Rappels et alertes configurés' },
+  { key:'uas_avatar',      name:'Photo de profil',           desc:'Avatar pilote (image compressée)' },
+];
+
+function getConfig(){ try{return JSON.parse(localStorage.getItem('uas_config')||'{}');}catch{return{};} }
+
+// ─── INIT ─────────────────────────────────────────────────
+function init(){
+  const c = getConfig();
+
+  // Mise à jour politique
+  document.getElementById('policy-responsible').textContent =
+    `${c.nom||'CONTE Philippe'} · ${c.alphatango||'FRAjqq48j12nfy4c'} · ${c.adresse||''}, ${c.ville||'74300 THYEZ'}`;
+  document.getElementById('policy-contact').textContent =
+    `Pour toute question relative à vos données : ${c.email||'contephil74@gmail.com'}`;
+  document.getElementById('policy-date').textContent =
+    new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+
+  renderStorageStats();
+  renderInventory();
+  loadConsents();
+}
+
+// ─── STORAGE ──────────────────────────────────────────────
+function renderStorageStats(){
+  let totalBytes = 0;
+  Object.keys(localStorage).forEach(k => {
+    totalBytes += new TextEncoder().encode(localStorage.getItem(k)||'').length;
+  });
+  const usedKo = (totalBytes/1024).toFixed(1);
+  const maxKo = 5120;
+  const pct = Math.min(100, Math.round(totalBytes/1024/maxKo*100));
+
+  document.getElementById('storage-used').textContent = `${usedKo} ko utilisés (${pct}%)`;
+  document.getElementById('storage-bar').style.width = pct+'%';
+  document.getElementById('storage-bar').style.background =
+    pct > 80 ? 'linear-gradient(90deg,var(--amber),var(--red))' :
+    pct > 50 ? 'linear-gradient(90deg,var(--green),var(--amber))' :
+    'linear-gradient(90deg,var(--green),var(--blue))';
+}
+
+// ─── INVENTORY ────────────────────────────────────────────
+function renderInventory(){
+  const el = document.getElementById('data-inventory');
+  const rows = DATA_KEYS.map(item => {
+    const raw = localStorage.getItem(item.key);
+    if(!raw) return null;
+    const bytes = new TextEncoder().encode(raw).length;
+    const ko = (bytes/1024).toFixed(1);
+    let count = '—';
+    try {
+      const p = JSON.parse(raw);
+      if(Array.isArray(p)) count = `${p.length} enr.`;
+      else if(typeof p === 'object') count = 'Configuré';
+      else if(typeof raw === 'string' && raw.startsWith('data:')) count = 'Image';
+    } catch {}
+    return { ...item, ko, count };
+  }).filter(Boolean);
+
+  if(rows.length === 0){
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:14px;">Aucune donnée stockée</div>';
+    return;
+  }
+
+  el.innerHTML = rows.map(r => `
+    <div class="data-row">
+      <div class="data-info">
+        <div class="data-name">${r.name}</div>
+        <div class="data-desc">${r.desc} · <span style="font-family:monospace;font-size:10px;">${r.key}</span></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:10px;">
+        <div class="data-size">${r.ko} ko</div>
+        <div style="font-size:10px;color:var(--text-muted);">${r.count}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ─── CONSENTEMENTS ────────────────────────────────────────
+function loadConsents(){
+  const c = JSON.parse(localStorage.getItem('uas_consents')||'{}');
+  ['gps','notif','api','photos'].forEach(id => {
+    const el = document.getElementById(`consent-${id}`);
+    if(el && c[id] !== undefined) el.checked = c[id];
+    if(el) el.addEventListener('change', saveConsents);
+  });
+}
+
+function saveConsents(){
+  const c = {};
+  ['gps','notif','api','photos'].forEach(id => {
+    const el = document.getElementById(`consent-${id}`);
+    if(el) c[id] = el.checked;
+  });
+  localStorage.setItem('uas_consents', JSON.stringify(c));
+  showToast('✅ Consentements sauvegardés');
+}
+
+// ─── EXPORT ───────────────────────────────────────────────
+function exporterJSON(){
+  const exportData = {};
+  DATA_KEYS.forEach(item => {
+    const raw = localStorage.getItem(item.key);
+    if(raw){
+      try{ exportData[item.key] = JSON.parse(raw); }
+      catch{ exportData[item.key] = raw; }
+    }
+  });
+  exportData._meta = {
+    exportedAt: new Date().toISOString(),
+    version: '1.0',
+    app: 'UAS Manager',
+    rgpd: 'Export RGPD Art. 20 — Droit à la portabilité'
+  };
+
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], {type:'application/json;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'),{
+    href:url,
+    download:`UAS_Manager_Export_RGPD_${new Date().toISOString().slice(0,10)}.json`
+  });
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ Export JSON téléchargé');
+}
+
+function exporterCSVAll(){
+  const vols = JSON.parse(localStorage.getItem('uas_vols')||'[]');
+  const BOM = '\uFEFF';
+  const headers = ['Date','Site','Commune','Durée (min)','Scénario','Drone','RPIC','Altitude max','Remarques'];
+  const lines = [headers.join(';')];
+  vols.forEach(v => lines.push([
+    v.date||v.dateVol||v.Date||'',
+    v.site||v.Site||'',
+    v.commune||v.Commune||'',
+    v.duree||v['Durée (min)']||v.Duree||'',
+    v.scenario||v.Scenario||v['Scénario']||'',
+    v.drone||v.Drone||'',
+    v.rpic||v.RPIC||'',
+    v.altMax||v['Altitude max (m)']||'',
+    v.remarques||v.Remarques||''
+  ].join(';')));
+
+  const blob = new Blob([BOM+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'),{href:url,download:`UAS_Vols_${new Date().toISOString().slice(0,10)}.csv`});
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ CSV vols exporté');
+}
+
+// ─── POLITIQUE PDF ────────────────────────────────────────
+function exporterPolitique(){
+  window.print();
+}
+
+function envoyerPolitique(){
+  const c = getConfig();
+  const sujet = encodeURIComponent('Politique de confidentialité — UAS Manager');
+  const body = encodeURIComponent(
+    `Politique de confidentialité UAS Manager\n\n` +
+    `Responsable : ${c.nom||'CONTE Philippe'}\n` +
+    `Toutes les données sont stockées localement sur l'appareil.\n` +
+    `Aucune transmission à des serveurs tiers (sauf APIs météo/ADS-B).\n\n` +
+    `Droits RGPD :\n- Accès : export JSON\n- Effacement : Config → Réinitialisation\n- Portabilité : export CSV/JSON\n\n` +
+    `Contact : ${c.email||'contephil74@gmail.com'}`
+  );
+  window.open(`mailto:?subject=${sujet}&body=${body}`);
+}
+
+// ─── SUPPRESSION ──────────────────────────────────────────
+function supprimerDonnees(type){
+  const labels = { clients:'les données clients', photos:'les photos de mission', config:'la configuration' };
+  const keys = { clients:['uas_clients','uas_devis'], photos:['uas_rapports','uas_avatar'], config:['uas_config'] };
+
+  if(!confirm(`Supprimer définitivement ${labels[type]} ?\nCette action est irréversible.`)) return;
+
+  (keys[type]||[]).forEach(k => localStorage.removeItem(k));
+  renderStorageStats();
+  renderInventory();
+  showToast(`🗑️ ${labels[type]} supprimées`,'amber');
+}
+
+function supprimerTout(){
+  if(!confirm('⚠️ ATTENTION\n\nCette action va supprimer TOUTES vos données UAS Manager.\nCette action est définitive et irréversible.\n\nContinuer ?')) return;
+  if(!confirm('Dernière confirmation : supprimer définitivement toutes les données ?')) return;
+
+  Object.keys(localStorage).filter(k => k.startsWith('uas_')).forEach(k => localStorage.removeItem(k));
+  renderStorageStats();
+  renderInventory();
+  showToast('🗑️ Toutes les données supprimées','red');
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3200);
+}
+
+// ─── FERMER MODAL ─────────────────────────────────────────
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+});
+
+// ─── INIT ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

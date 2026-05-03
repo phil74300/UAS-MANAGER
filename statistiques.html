@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Statistiques</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --purple:#5C35A0;--light-purple:#EDE7F6;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.09);
+  --radius:14px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-purple:#1E1535;--light-teal:#00191C;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+
+/* ─── PERIOD SELECTOR ─── */
+#period-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 12px;display:flex;gap:7px;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;overflow-x:auto;scrollbar-width:none;}
+#period-bar::-webkit-scrollbar{display:none;}
+.period-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text-muted);font-size:12px;font-weight:600;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit;}
+.period-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+#content{max-width:680px;margin:0 auto;padding:14px 12px calc(30px + env(safe-area-inset-bottom));}
+
+/* ─── HERO STATS ─── */
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden;animation:fadeUp .35s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--hc-color,var(--blue));}
+.hc-icon{font-size:24px;margin-bottom:8px;}
+.hc-val{font-size:32px;font-weight:900;color:var(--hc-color,var(--navy));line-height:1;letter-spacing:-1px;}
+.hc-label{font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;}
+.hc-sub{font-size:10px;color:var(--text-muted);margin-top:2px;}
+.hc-trend{position:absolute;top:14px;right:12px;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;}
+
+/* ─── SECTION ─── */
+.sec-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;}
+
+/* ─── CARD ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;animation:fadeUp .35s both;}
+.card:nth-child(1){animation-delay:.05s;}.card:nth-child(2){animation-delay:.10s;}.card:nth-child(3){animation-delay:.15s;}.card:nth-child(4){animation-delay:.20s;}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:13px;font-weight:700;color:var(--text);}
+.card-body{padding:13px 14px;}
+.chart-wrap{position:relative;height:180px;}
+.chart-wrap.sm{height:130px;}
+.chart-wrap.lg{height:220px;}
+
+/* ─── HALF GRID ─── */
+.half-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.half-grid .card{margin-bottom:0;}
+
+/* ─── PROGRESS BAR ─── */
+.prog-row{display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.prog-label{font-size:12px;font-weight:600;color:var(--text);flex:0 0 100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prog-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.34,1.2,.64,1);}
+.prog-val{font-size:11px;font-weight:700;color:var(--text-muted);flex:0 0 30px;text-align:right;}
+
+/* ─── CALENDAR HEATMAP ─── */
+.heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.heatmap{display:grid;grid-template-columns:repeat(52,1fr);gap:2px;min-width:500px;}
+.hm-cell{width:10px;height:10px;border-radius:2px;background:var(--border);}
+.hm-0{background:var(--border);}
+.hm-1{background:rgba(24,95,165,0.3);}
+.hm-2{background:rgba(24,95,165,0.55);}
+.hm-3{background:rgba(24,95,165,0.8);}
+.hm-4{background:#185FA5;}
+.hm-legend{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:10px;color:var(--text-muted);}
+.hm-leg-cell{width:10px;height:10px;border-radius:2px;}
+
+/* ─── RECORD ROW ─── */
+.record-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.record-row:last-child{border-bottom:none;}
+.rec-label{font-size:12px;font-weight:600;color:var(--text);}
+.rec-val{font-size:14px;font-weight:800;color:var(--navy);}
+.rec-date{font-size:10px;color:var(--text-muted);}
+@media(prefers-color-scheme:dark){.rec-val{color:#7EB8F7;}}
+
+/* ─── EXPORT ─── */
+.export-row{display:flex;gap:8px;margin-top:6px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:10px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+.btn-full{width:100%;}
+.btn-green{background:var(--green);color:#fff;}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <h1>📈 Statistiques avancées</h1>
+  <a class="back-btn" href="index.html">← Accueil</a>
+</header>
+
+<div id="period-bar">
+  <button class="period-btn" onclick="setPeriod('7j')">7 jours</button>
+  <button class="period-btn" onclick="setPeriod('30j')">30 jours</button>
+  <button class="period-btn active" onclick="setPeriod('3m')">3 mois</button>
+  <button class="period-btn" onclick="setPeriod('6m')">6 mois</button>
+  <button class="period-btn" onclick="setPeriod('1an')">1 an</button>
+  <button class="period-btn" onclick="setPeriod('tout')">Tout</button>
+</div>
+
+<div id="content">
+
+  <!-- HERO STATS -->
+  <div class="hero-grid" id="hero-grid"></div>
+
+  <!-- VOL TIMELINE -->
+  <div class="sec-title">Activité de vol</div>
+  <div class="card">
+    <div class="card-header"><h3>✈️ Vols & heures de vol</h3></div>
+    <div class="card-body">
+      <div class="chart-wrap lg"><canvas id="chart-timeline"></canvas></div>
+    </div>
+  </div>
+
+  <!-- HEATMAP -->
+  <div class="sec-title">Calendrier d'activité</div>
+  <div class="card">
+    <div class="card-header"><h3>🗓️ Fréquence de vol (52 dernières semaines)</h3></div>
+    <div class="card-body">
+      <div class="heatmap-wrap"><div class="heatmap" id="heatmap"></div></div>
+      <div class="hm-legend">
+        <span>Moins</span>
+        <div class="hm-leg-cell hm-0"></div>
+        <div class="hm-leg-cell hm-1"></div>
+        <div class="hm-leg-cell hm-2"></div>
+        <div class="hm-leg-cell hm-3"></div>
+        <div class="hm-leg-cell hm-4"></div>
+        <span>Plus</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉPARTITION -->
+  <div class="sec-title">Répartition</div>
+  <div class="half-grid">
+    <div class="card">
+      <div class="card-header"><h3>📋 Scénarios</h3></div>
+      <div class="card-body"><div class="chart-wrap sm"><canvas id="chart-scenarios"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>🌤️ Météo vols</h3></div>
+      <div class="card-body"><div class="chart-wrap sm"><canvas id="chart-meteo"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- TOP SITES -->
+  <div class="sec-title">Sites de vol</div>
+  <div class="card">
+    <div class="card-header"><h3>📍 Top 8 zones fréquentées</h3></div>
+    <div class="card-body" id="top-sites"></div>
+  </div>
+
+  <!-- RECORDS -->
+  <div class="sec-title">Records & performances</div>
+  <div class="card">
+    <div class="card-header"><h3>🏆 Records de vol</h3></div>
+    <div class="card-body" id="records"></div>
+  </div>
+
+  <!-- PAR DRONE -->
+  <div class="sec-title">Par drone</div>
+  <div class="card">
+    <div class="card-header"><h3>🛸 Activité par drone</h3></div>
+    <div class="card-body" id="by-drone"></div>
+  </div>
+
+  <!-- TENDANCE MENSUELLE -->
+  <div class="sec-title">Tendance & projection</div>
+  <div class="card">
+    <div class="card-header"><h3>📊 Tendance mensuelle</h3></div>
+    <div class="card-body">
+      <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CA MISSIONS -->
+  <div class="sec-title">Activité commerciale</div>
+  <div class="card">
+    <div class="card-header"><h3>💶 CA missions & devis</h3></div>
+    <div class="card-body">
+      <div class="chart-wrap sm"><canvas id="chart-ca"></canvas></div>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="sec-title">Export des statistiques</div>
+  <div class="card">
+    <div class="card-body" style="padding:13px 14px;">
+      <div class="export-row">
+        <button class="btn btn-outline btn-sm" onclick="exportCSVStats()">📥 Export CSV</button>
+        <button class="btn btn-green btn-sm" onclick="exportPDFStats()">🖨️ Rapport PDF</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Statistiques avancées
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+let activePeriod = '3m';
+const charts = {};
+
+const isDark = () => window.matchMedia('(prefers-color-scheme:dark)').matches;
+const tc = () => isDark() ? '#7A8BAA' : '#5A6478';
+const gc = () => isDark() ? '#253050' : '#D0DCF0';
+
+// ─── DATA ─────────────────────────────────────────────────
+function getVols(){ try{return JSON.parse(localStorage.getItem('uas_vols')||'[]');}catch{return[];} }
+function getMissions(){ try{return JSON.parse(localStorage.getItem('uas_missions')||'[]');}catch{return[];} }
+function getDevis(){ try{return JSON.parse(localStorage.getItem('uas_devis')||'[]');}catch{return[];} }
+function getConfig(){ try{return JSON.parse(localStorage.getItem('uas_config')||'{}');}catch{return{};} }
+
+function fmtDate(iso){ if(!iso)return'—'; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
+
+function getPeriodStart(p){
+  const now = new Date();
+  const map = {'7j':7,'30j':30,'3m':90,'6m':180,'1an':365,'tout':3650};
+  const days = map[p] || 90;
+  return new Date(now.getTime() - days * 86400000).toISOString().slice(0,10);
+}
+
+function filterByPeriod(arr, dateField){
+  const start = getPeriodStart(activePeriod);
+  if(activePeriod === 'tout') return arr;
+  return arr.filter(v => {
+    const d = v[dateField] || v.date || v.dateVol || v.Date || '';
+    return d >= start;
+  });
+}
+
+function getVolDate(v){ return v.date || v.dateVol || v.Date || ''; }
+function getVolDuree(v){ return parseFloat(v.duree || v['Durée (min)'] || v.Duree || 0); }
+function getVolSite(v){ return v.site || v.Site || v.commune || v.Commune || 'Non renseigné'; }
+function getVolScenario(v){ return v.scenario || v.Scenario || v['Scénario'] || 'Non défini'; }
+function getVolDrone(v){ return v.drone || v.Drone || v.uas || 'DJI Mavic 4 Pro'; }
+
+// ─── PERIOD ───────────────────────────────────────────────
+function setPeriod(p){
+  activePeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Détruire les charts existants
+  Object.values(charts).forEach(c => { try{ c.destroy(); }catch{} });
+  Object.keys(charts).forEach(k => delete charts[k]);
+  renderAll();
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────
+function renderAll(){
+  const vols = filterByPeriod(getVols(), 'date');
+  const missions = filterByPeriod(getMissions(), 'dateDebut');
+
+  renderHero(vols, missions);
+  renderTimeline(vols);
+  renderHeatmap();
+  renderScenarios(vols, missions);
+  renderMeteo(vols);
+  renderTopSites(vols);
+  renderRecords(getVols()); // Records sur toute la période
+  renderByDrone(vols);
+  renderTrend(getVols());
+  renderCA();
+}
+
+// ─── HERO ─────────────────────────────────────────────────
+function renderHero(vols, missions){
+  const totalVols = vols.length;
+  const totalMin = vols.reduce((s,v) => s + getVolDuree(v), 0);
+  const totalH = Math.floor(totalMin/60);
+  const totalMn = Math.round(totalMin%60);
+  const avgDuree = totalVols > 0 ? Math.round(totalMin/totalVols) : 0;
+  const missionsOk = missions.filter(m => m.statut === 'effectue').length;
+  const missionsPlanned = missions.filter(m => !['effectue','annule'].includes(m.statut)).length;
+
+  // Comparaison période précédente
+  const allVols = getVols();
+  const start = getPeriodStart(activePeriod);
+  const days = Math.round((new Date() - new Date(start)) / 86400000);
+  const prevStart = new Date(new Date(start).getTime() - days*86400000).toISOString().slice(0,10);
+  const prevVols = allVols.filter(v => getVolDate(v) >= prevStart && getVolDate(v) < start).length;
+  const trendPct = prevVols > 0 ? Math.round((totalVols-prevVols)/prevVols*100) : null;
+  const trendHtml = trendPct !== null
+    ? `<div class="hc-trend" style="background:${trendPct>=0?'var(--light-green)':'var(--light-red)'};color:${trendPct>=0?'var(--green)':'var(--red)'};">${trendPct>=0?'+':''}${trendPct}%</div>`
+    : '';
+
+  document.getElementById('hero-grid').innerHTML = `
+    <div class="hero-card" style="--hc-color:var(--blue);">
+      <div class="hc-icon">✈️</div>
+      <div class="hc-val">${totalVols}</div>
+      <div class="hc-label">Vols effectués</div>
+      <div class="hc-sub">Moy. ${avgDuree} min/vol</div>
+      ${trendHtml}
+    </div>
+    <div class="hero-card" style="--hc-color:var(--green);">
+      <div class="hc-icon">⏱</div>
+      <div class="hc-val">${totalH}h${totalMn>0?totalMn:''}
+        <span style="font-size:16px;">${totalMn>0?'m':''}</span>
+      </div>
+      <div class="hc-label">Temps de vol total</div>
+      <div class="hc-sub">${totalVols>0?(totalMin/totalVols).toFixed(0)+' min/vol en moy.':'—'}</div>
+    </div>
+    <div class="hero-card" style="--hc-color:var(--purple);">
+      <div class="hc-icon">📅</div>
+      <div class="hc-val">${missionsPlanned}</div>
+      <div class="hc-label">Missions planifiées</div>
+      <div class="hc-sub">${missionsOk} effectuée${missionsOk>1?'s':''}</div>
+    </div>
+    <div class="hero-card" style="--hc-color:var(--amber);">
+      <div class="hc-icon">📊</div>
+      <div class="hc-val">${totalVols>0?Math.round(totalVols/Math.max(1,days)*7):0}</div>
+      <div class="hc-label">Vols / semaine</div>
+      <div class="hc-sub">Fréquence moyenne</div>
+    </div>
+  `;
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────
+function renderTimeline(vols){
+  const now = new Date();
+  const nbMonths = activePeriod==='7j'?1:activePeriod==='30j'?1:activePeriod==='3m'?3:activePeriod==='6m'?6:activePeriod==='1an'?12:24;
+  const labels=[], volData=[], heuresData=[];
+
+  for(let i=nbMonths-1;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const key = d.toISOString().slice(0,7);
+    const label = d.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'});
+    const monthVols = vols.filter(v => getVolDate(v).startsWith(key));
+    labels.push(label);
+    volData.push(monthVols.length);
+    heuresData.push(parseFloat((monthVols.reduce((s,v)=>s+getVolDuree(v),0)/60).toFixed(1)));
+  }
+
+  const ctx = document.getElementById('chart-timeline').getContext('2d');
+  charts.timeline = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Vols',data:volData,backgroundColor:'rgba(24,95,165,0.8)',borderColor:'#185FA5',borderWidth:1.5,borderRadius:5,yAxisID:'y'},
+        {label:'Heures',data:heuresData,type:'line',borderColor:'#1D6B37',backgroundColor:'rgba(29,107,55,0.1)',borderWidth:2,pointRadius:3,tension:0.4,fill:true,yAxisID:'y1'},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:tc(),font:{size:11}}}},
+      scales:{
+        x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},
+        y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10},stepSize:1},beginAtZero:true,position:'left',title:{display:true,text:'Vols',color:tc(),font:{size:10}}},
+        y1:{grid:{display:false},ticks:{color:tc(),font:{size:10}},beginAtZero:true,position:'right',title:{display:true,text:'Heures',color:tc(),font:{size:10}}},
+      }
+    }
+  });
+}
+
+// ─── HEATMAP ──────────────────────────────────────────────
+function renderHeatmap(){
+  const allVols = getVols();
+  const byDay = {};
+  allVols.forEach(v => {
+    const d = getVolDate(v);
+    if(d) byDay[d] = (byDay[d]||0) + 1;
+  });
+
+  const grid = document.getElementById('heatmap');
+  grid.innerHTML = '';
+  const now = new Date();
+  // Partir du lundi de la semaine courante - 52 semaines
+  const startDate = new Date(now.getTime() - 364*86400000);
+  // Aligner sur lundi
+  const dow = startDate.getDay();
+  startDate.setDate(startDate.getDate() - (dow===0?6:dow-1));
+
+  for(let w=0;w<52;w++){
+    for(let d=0;d<7;d++){
+      const date = new Date(startDate.getTime() + (w*7+d)*86400000);
+      if(date > now) { const cell=document.createElement('div'); cell.className='hm-cell'; grid.appendChild(cell); continue; }
+      const key = date.toISOString().slice(0,10);
+      const count = byDay[key]||0;
+      const cell = document.createElement('div');
+      cell.className = `hm-cell hm-${Math.min(4,count)}`;
+      cell.title = `${key} : ${count} vol${count>1?'s':''}`;
+      grid.appendChild(cell);
+    }
+  }
+}
+
+// ─── SCÉNARIOS ────────────────────────────────────────────
+function renderScenarios(vols, missions){
+  const counts = {};
+  [...vols,...missions].forEach(v => {
+    const s = getVolScenario(v);
+    counts[s] = (counts[s]||0)+1;
+  });
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const ctx = document.getElementById('chart-scenarios').getContext('2d');
+  const colors = ['#185FA5','#1D6B37','#BA7517','#8B2020','#5C35A0','#006064'];
+  charts.scenarios = new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:colors,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
+  });
+}
+
+// ─── MÉTÉO VOLS ───────────────────────────────────────────
+function renderMeteo(vols){
+  const meteo = {'Bon':0,'Nuageux':0,'Vent':0,'Pluie':0,'Non renseigné':0};
+  vols.forEach(v=>{
+    const m = v.meteo || v.Météo || v.Meteo || '';
+    const ml = m.toLowerCase();
+    if(!m) meteo['Non renseigné']++;
+    else if(ml.includes('pluie')||ml.includes('rain')) meteo['Pluie']++;
+    else if(ml.includes('vent')||ml.includes('wind')||parseFloat(v.vent||0)>8) meteo['Vent']++;
+    else if(ml.includes('nuage')||ml.includes('cloud')) meteo['Nuageux']++;
+    else meteo['Bon']++;
+  });
+  const ctx = document.getElementById('chart-meteo').getContext('2d');
+  const entries = Object.entries(meteo).filter(e=>e[1]>0);
+  charts.meteo = new Chart(ctx,{
+    type:'pie',
+    data:{
+      labels:entries.map(e=>e[0]),
+      datasets:[{data:entries.map(e=>e[1]),backgroundColor:['#1D6B37','#5A6478','#BA7517','#8B2020','#D0DCF0'],borderWidth:0}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:tc(),font:{size:10},boxWidth:10}}}}
+  });
+}
+
+// ─── TOP SITES ────────────────────────────────────────────
+function renderTopSites(vols){
+  const sites = {};
+  const siteDuree = {};
+  vols.forEach(v=>{
+    const s = getVolSite(v);
+    sites[s] = (sites[s]||0)+1;
+    siteDuree[s] = (siteDuree[s]||0)+getVolDuree(v);
+  });
+  const sorted = Object.entries(sites).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max = sorted[0]?.[1]||1;
+  const colors = ['#185FA5','#1D6B37','#BA7517','#8B2020','#5C35A0','#006064','#0C447C','#5A6478'];
+
+  document.getElementById('top-sites').innerHTML = sorted.length
+    ? sorted.map(([site,count],i)=>`
+      <div class="prog-row">
+        <div class="prog-label">${site}</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:${Math.round(count/max*100)}%;background:${colors[i]};"></div></div>
+        <div class="prog-val">${count}</div>
+      </div>`).join('')
+    : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:10px;">Aucune donnée</div>';
+}
+
+// ─── RECORDS ──────────────────────────────────────────────
+function renderRecords(vols){
+  if(!vols.length){ document.getElementById('records').innerHTML='<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:10px;">Aucun vol enregistré</div>'; return; }
+
+  const durees = vols.map(v=>({d:getVolDuree(v),date:getVolDate(v),site:getVolSite(v)})).filter(v=>v.d>0);
+  const maxDuree = durees.length ? durees.reduce((a,b)=>a.d>b.d?a:b) : null;
+
+  // Vol le plus long
+  // Jour le plus actif
+  const byDay = {};
+  vols.forEach(v=>{ const d=getVolDate(v); if(d) byDay[d]=(byDay[d]||0)+1; });
+  const maxDay = Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
+
+  // Mois le plus actif
+  const byMonth = {};
+  vols.forEach(v=>{ const d=getVolDate(v).slice(0,7); if(d) byMonth[d]=(byMonth[d]||0)+1; });
+  const maxMonth = Object.entries(byMonth).sort((a,b)=>b[1]-a[1])[0];
+
+  // Total
+  const totalH = Math.floor(vols.reduce((s,v)=>s+getVolDuree(v),0)/60);
+
+  const records = [
+    {icon:'⏱',label:'Vol le plus long',val:maxDuree?Math.round(maxDuree.d)+' min':'—',sub:maxDuree?`${fmtDate(maxDuree.date)} — ${maxDuree.site}`:''},
+    {icon:'🗓️',label:'Jour le plus actif',val:maxDay?`${maxDay[1]} vol${maxDay[1]>1?'s':''}`:'—',sub:maxDay?fmtDate(maxDay[0]):''},
+    {icon:'📅',label:'Mois le plus actif',val:maxMonth?`${maxMonth[1]} vols`:'—',sub:maxMonth?maxMonth[0]:''},
+    {icon:'🏆',label:'Total heures de vol',val:`${totalH}h`,sub:`${vols.length} vols au total`},
+  ];
+
+  document.getElementById('records').innerHTML = records.map(r=>`
+    <div class="record-row">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:20px;">${r.icon}</div>
+        <div><div class="rec-label">${r.label}</div><div class="rec-date">${r.sub}</div></div>
+      </div>
+      <div class="rec-val">${r.val}</div>
+    </div>`).join('');
+}
+
+// ─── PAR DRONE ────────────────────────────────────────────
+function renderByDrone(vols){
+  const c = getConfig();
+  const drones = (c.drones||[{nom:'DJI Mavic 4 Pro'}]).map(d=>d.nom);
+  const droneVols = {};
+  const droneDuree = {};
+  vols.forEach(v=>{
+    const d = getVolDrone(v);
+    const name = drones.find(n=>d.includes(n.split(' ')[1]||n))||d;
+    droneVols[name]=(droneVols[name]||0)+1;
+    droneDuree[name]=(droneDuree[name]||0)+getVolDuree(v);
+  });
+
+  const max = Math.max(...Object.values(droneVols),1);
+  document.getElementById('by-drone').innerHTML = Object.entries(droneVols).map(([name,count])=>`
+    <div class="prog-row">
+      <div class="prog-label">🛸 ${name.split(' ').slice(-2).join(' ')}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${Math.round(count/max*100)}%;background:var(--navy);"></div></div>
+      <div style="flex:0 0 auto;font-size:11px;font-weight:700;color:var(--text-muted);margin-left:6px;">${count}v · ${Math.floor((droneDuree[name]||0)/60)}h</div>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:10px;">Aucune donnée</div>';
+}
+
+// ─── TENDANCE ─────────────────────────────────────────────
+function renderTrend(vols){
+  const now = new Date();
+  const labels=[], data=[], trendData=[];
+  let sum=0, count=0;
+
+  for(let i=11;i>=0;i--){
+    const d = new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key = d.toISOString().slice(0,7);
+    const n = vols.filter(v=>getVolDate(v).startsWith(key)).length;
+    labels.push(d.toLocaleDateString('fr-FR',{month:'short'}));
+    data.push(n); sum+=n; count++;
+    trendData.push(parseFloat((sum/count).toFixed(1)));
+  }
+
+  const ctx = document.getElementById('chart-trend').getContext('2d');
+  charts.trend = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Vols/mois',data,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.1)',borderWidth:2,pointRadius:4,fill:true,tension:0.4},
+        {label:'Moyenne mobile',data:trendData,borderColor:'#BA7517',borderWidth:1.5,borderDash:[5,5],pointRadius:0,tension:0.4},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:tc(),font:{size:11}}}},
+      scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10},stepSize:1},beginAtZero:true}}
+    }
+  });
+}
+
+// ─── CA ───────────────────────────────────────────────────
+function renderCA(){
+  const devis = getDevis().filter(d=>d.statut==='accepte'||d.statut==='facture');
+  const now = new Date();
+  const labels=[], caData=[];
+  for(let i=5;i>=0;i--){
+    const d = new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key = d.toISOString().slice(0,7);
+    const ca = devis.filter(x=>x.date?.startsWith(key)).reduce((s,x)=>s+(x.total||0),0);
+    labels.push(d.toLocaleDateString('fr-FR',{month:'short'}));
+    caData.push(Math.round(ca));
+  }
+  const ctx = document.getElementById('chart-ca').getContext('2d');
+  charts.ca = new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{label:'CA (€)',data:caData,backgroundColor:'rgba(29,107,55,0.8)',borderColor:'#1D6B37',borderWidth:1.5,borderRadius:5}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10},callback:v=>v+'€'},beginAtZero:true}}
+    }
+  });
+}
+
+// ─── EXPORTS ──────────────────────────────────────────────
+function exportCSVStats(){
+  const vols = getVols();
+  const BOM = '\uFEFF';
+  const headers = ['Date','Site','Durée (min)','Scénario','Drone','RPIC'];
+  const lines = [headers.join(';')];
+  vols.forEach(v => lines.push([getVolDate(v),getVolSite(v),getVolDuree(v),getVolScenario(v),getVolDrone(v),v.rpic||v.RPIC||''].join(';')));
+  const blob = new Blob([BOM+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'),{href:url,download:`UAS_Statistiques_${new Date().toISOString().slice(0,10)}.csv`});
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportPDFStats(){
+  const c = getConfig();
+  const vols = getVols();
+  const totalH = Math.floor(vols.reduce((s,v)=>s+getVolDuree(v),0)/60);
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rapport statistiques UAS</title>
+<style>body{font-family:Arial,sans-serif;font-size:10pt;padding:15mm;} h1{color:#0C447C;} h2{color:#0C447C;font-size:11pt;border-left:3pt solid #0C447C;padding-left:7pt;margin:12pt 0 5pt;} table{width:100%;border-collapse:collapse;font-size:9pt;} td{padding:4pt 7pt;border-bottom:0.5pt solid #eee;} td:first-child{font-weight:bold;color:#444;}</style>
+</head><body>
+<h1>Rapport de statistiques UAS</h1>
+<p style="color:#666;font-size:9pt;">Généré le ${new Date().toLocaleDateString('fr-FR')} · ${c.nom||'CONTE Philippe'} · ${c.alphatango||''}</p>
+<h2>Résumé</h2><table>
+<tr><td>Total vols</td><td>${vols.length}</td></tr>
+<tr><td>Heures de vol</td><td>${totalH}h</td></tr>
+<tr><td>Durée moyenne</td><td>${vols.length?Math.round(vols.reduce((s,v)=>s+getVolDuree(v),0)/vols.length):0} min</td></tr>
+<tr><td>Période d'analyse</td><td>${activePeriod}</td></tr>
+</table>
+</body></html>`);
+  win.document.close(); setTimeout(()=>win.print(),300);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+setTimeout(renderAll, 100);
+</script>
+</body>
+</html>
