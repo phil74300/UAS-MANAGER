@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Replay de vol</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --bg:#0D1220;--surface:#161E30;--surface2:#1C2840;
+  --text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;
+  --shadow:0 2px 14px rgba(0,0,0,0.3);
+  --radius:12px;--header-h:56px;
+}
+/* Force dark pour ce module — ambiance télémétrie */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;height:-webkit-fill-available;font-family:-apple-system,'SF Mono',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+#app{display:flex;flex-direction:column;height:100%;height:-webkit-fill-available;}
+
+/* ─── HEADER ─── */
+#header{background:rgba(12,68,124,0.95);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));flex-shrink:0;z-index:200;border-bottom:1px solid var(--border);}
+#header h1{font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;}
+.back-btn{background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.22);}
+.hdr-btn{background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.hdr-btn:active{background:rgba(255,255,255,.22);}
+#header-right{display:flex;gap:6px;align-items:center;}
+
+/* ─── MAP ─── */
+#map-wrap{flex:1;position:relative;overflow:hidden;min-height:0;}
+#map{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+
+/* ─── HUD OVERLAY ─── */
+#hud{
+  position:absolute;top:10px;left:10px;right:10px;
+  display:flex;gap:8px;z-index:100;pointer-events:none;
+}
+.hud-tile{
+  background:rgba(13,18,32,0.85);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:8px 11px;
+  flex:1;text-align:center;
+}
+.hud-val{font-size:18px;font-weight:800;color:#7EB8F7;line-height:1;}
+.hud-label{font-size:9px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* ─── TIMELINE ─── */
+#timeline-wrap{
+  background:rgba(13,18,32,0.92);
+  backdrop-filter:blur(10px);
+  border-top:1px solid var(--border);
+  padding:10px 12px;
+  flex-shrink:0;z-index:150;
+}
+#timeline-progress{
+  width:100%;height:5px;background:var(--border);border-radius:3px;
+  cursor:pointer;appearance:none;-webkit-appearance:none;
+  margin-bottom:8px;
+}
+#timeline-progress::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:#185FA5;border:2px solid #fff;cursor:pointer;}
+#timeline-controls{display:flex;align-items:center;gap:10px;}
+.ctrl-btn{background:rgba(255,255,255,.1);border:none;border-radius:8px;color:#fff;padding:7px 12px;font-size:14px;cursor:pointer;transition:background .15s;}
+.ctrl-btn:active{background:rgba(255,255,255,.22);}
+.ctrl-btn.play{background:var(--blue);padding:7px 16px;}
+#time-display{font-size:12px;font-weight:700;color:#7EB8F7;font-family:'SF Mono',monospace;flex:1;text-align:center;}
+.speed-btn{background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.7);padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;}
+.speed-btn.active{background:var(--blue);color:#fff;}
+
+/* ─── TELEMETRY PANEL ─── */
+#telemetry-panel{
+  position:absolute;bottom:calc(90px + env(safe-area-inset-bottom));right:10px;
+  background:rgba(13,18,32,0.88);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:10px;
+  z-index:100;min-width:130px;
+}
+.tele-row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.tele-row:last-child{border-bottom:none;}
+.tele-label{font-size:10px;color:rgba(255,255,255,.4);font-weight:600;}
+.tele-val{font-size:11px;font-weight:700;color:#7EB8F7;}
+
+/* ─── UPLOAD ZONE ─── */
+#upload-zone{
+  position:absolute;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);
+  padding:24px;
+}
+.upload-card{background:var(--surface);border:2px dashed var(--border);border-radius:20px;padding:36px 24px;text-align:center;max-width:400px;width:100%;}
+.upload-icon{font-size:56px;margin-bottom:16px;}
+.upload-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.upload-sub{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;}
+.upload-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;}
+.upload-formats{font-size:11px;color:var(--text-muted);margin-top:10px;}
+.demo-btn{background:rgba(255,255,255,.08);color:var(--text-muted);border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;width:100%;}
+
+/* ─── CHART PANEL ─── */
+#chart-panel{
+  position:absolute;bottom:calc(90px + env(safe-area-inset-bottom));left:10px;
+  background:rgba(13,18,32,0.88);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:10px;
+  z-index:100;width:200px;
+}
+#chart-panel canvas{display:block;}
+.chart-title{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+
+/* ─── STATS BAR ─── */
+#stats-bar{
+  position:absolute;top:70px;left:10px;right:10px;
+  background:rgba(13,18,32,0.85);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:8px 12px;
+  z-index:100;display:none;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+}
+.sb-item{text-align:center;}
+.sb-val{font-size:14px;font-weight:800;color:#7EB8F7;}
+.sb-label{font-size:9px;color:rgba(255,255,255,.4);font-weight:600;margin-top:1px;}
+
+/* ─── DRONE MARKER ─── */
+.drone-icon-wrap{display:flex;align-items:center;justify-content:center;}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.3);pointer-events:none;}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header id="header">
+  <h1>🎬 Replay de vol</h1>
+  <div id="header-right">
+    <button class="hdr-btn" onclick="openFile()">📂 Ouvrir</button>
+    <button class="hdr-btn" id="btn-chart" onclick="toggleChart()" style="display:none;">📈</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </div>
+</header>
+
+<div id="map-wrap">
+  <div id="map"></div>
+
+  <!-- Upload zone -->
+  <div id="upload-zone">
+    <div class="upload-card">
+      <div class="upload-icon">🎬</div>
+      <div class="upload-title">Replay de vol DJI</div>
+      <div class="upload-sub">Importez un fichier de telemetry DJI (.csv, .txt) pour rejouer votre vol sur carte avec altitude, vitesse et batterie en temps réel.</div>
+      <input type="file" id="file-input" accept=".csv,.txt,.log" style="display:none;" onchange="loadFile(this)">
+      <button class="upload-btn" onclick="document.getElementById('file-input').click()">📂 Choisir un fichier DJI</button>
+      <button class="demo-btn" onclick="loadDemo()">🎮 Charger une démo (vol fictif)</button>
+      <div class="upload-formats">Formats : DJI Fly .csv · DJI Assistant .txt · CSV générique lat/lon</div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" style="display:none;">
+    <div class="hud-tile">
+      <div class="hud-val" id="hud-alt">0</div>
+      <div class="hud-label">Alt (m)</div>
+    </div>
+    <div class="hud-tile">
+      <div class="hud-val" id="hud-speed">0</div>
+      <div class="hud-label">Vit. (km/h)</div>
+    </div>
+    <div class="hud-tile">
+      <div class="hud-val" id="hud-bat">—</div>
+      <div class="hud-label">Batterie</div>
+    </div>
+    <div class="hud-tile">
+      <div class="hud-val" id="hud-dist">0</div>
+      <div class="hud-label">Dist. (m)</div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div id="stats-bar" style="display:none;">
+    <div class="sb-item"><div class="sb-val" id="stat-alt-max">—</div><div class="sb-label">Alt. max</div></div>
+    <div class="sb-item"><div class="sb-val" id="stat-spd-max">—</div><div class="sb-label">Vit. max</div></div>
+    <div class="sb-item"><div class="sb-val" id="stat-dist-tot">—</div><div class="sb-label">Distance</div></div>
+    <div class="sb-item"><div class="sb-val" id="stat-duree">—</div><div class="sb-label">Durée</div></div>
+  </div>
+
+  <!-- Telemetry panel -->
+  <div id="telemetry-panel" style="display:none;">
+    <div class="tele-row"><span class="tele-label">Latitude</span><span class="tele-val" id="tele-lat">—</span></div>
+    <div class="tele-row"><span class="tele-label">Longitude</span><span class="tele-val" id="tele-lon">—</span></div>
+    <div class="tele-row"><span class="tele-label">Altitude</span><span class="tele-val" id="tele-alt">—</span></div>
+    <div class="tele-row"><span class="tele-label">Vitesse</span><span class="tele-val" id="tele-spd">—</span></div>
+    <div class="tele-row"><span class="tele-label">Cap</span><span class="tele-val" id="tele-heading">—</span></div>
+    <div class="tele-row"><span class="tele-label">Batterie</span><span class="tele-val" id="tele-bat">—</span></div>
+    <div class="tele-row"><span class="tele-label">Satellites</span><span class="tele-val" id="tele-sat">—</span></div>
+  </div>
+
+  <!-- Chart mini -->
+  <div id="chart-panel" style="display:none;">
+    <div class="chart-title">Altitude (m)</div>
+    <canvas id="mini-chart" width="180" height="70"></canvas>
+  </div>
+
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline-wrap" style="display:none;">
+  <input type="range" id="timeline-progress" min="0" max="100" value="0" oninput="seekTo(this.value)">
+  <div id="timeline-controls">
+    <button class="ctrl-btn" onclick="stepBack()">⏮</button>
+    <button class="ctrl-btn play" id="btn-play" onclick="togglePlay()">▶</button>
+    <button class="ctrl-btn" onclick="stepForward()">⏭</button>
+    <div id="time-display">00:00 / 00:00</div>
+    <button class="speed-btn active" onclick="setSpeed(1)" id="spd-1">1×</button>
+    <button class="speed-btn" onclick="setSpeed(2)" id="spd-2">2×</button>
+    <button class="speed-btn" onclick="setSpeed(5)" id="spd-5">5×</button>
+    <button class="speed-btn" onclick="setSpeed(10)" id="spd-10">10×</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Replay de vol DJI
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+let flightData = []; // [{lat, lon, alt, speed, heading, battery, satellites, time}]
+let currentIdx = 0;
+let playing = false;
+let playSpeed = 1;
+let playTimer = null;
+let droneMarker = null;
+let flightPath = null;
+let playedPath = null;
+let miniChart = null;
+let homeMarker = null;
+let showChart = false;
+
+// ─── MAP ──────────────────────────────────────────────────
+const map = L.map('map', { center:[45.9523,6.5016], zoom:13, zoomControl:true, attributionControl:false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
+
+setTimeout(()=>map.invalidateSize(),200);
+
+// ─── FILE HANDLING ────────────────────────────────────────
+function openFile(){ document.getElementById('file-input').click(); }
+
+function loadFile(input){
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const text=e.target.result;
+      const data=parseFlightLog(text,file.name);
+      if(data.length<2) throw new Error('Données insuffisantes — vérifier le format');
+      initFlight(data);
+      showToast(`✅ ${data.length} points · ${file.name}`);
+    }catch(err){
+      showToast('❌ '+err.message,'amber');
+    }
+  };
+  reader.readAsText(file,'UTF-8');
+  input.value='';
+}
+
+// ─── PARSER DJI CSV ───────────────────────────────────────
+function parseFlightLog(text, filename){
+  const lines=text.split('\n').filter(l=>l.trim());
+  if(lines.length<2) throw new Error('Fichier vide');
+
+  // Détect header
+  const header=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/[^a-z0-9_.]/g,''));
+  const find=(...keys)=>keys.map(k=>header.findIndex(h=>h.includes(k))).find(i=>i>=0)??-1;
+
+  const iLat = find('latitude','lat');
+  const iLon = find('longitude','lon','lng');
+  const iAlt = find('altitude','alt','height');
+  const iSpd = find('speed','velocity','vitesse');
+  const iBat = find('battery','bat','percent');
+  const iHead= find('compass','heading','course','yaw');
+  const iSat = find('satellites','sats','gps');
+  const iTime= find('time','timestamp','elapsed');
+
+  if(iLat<0||iLon<0) throw new Error('Colonnes lat/lon introuvables');
+
+  const data=[];
+  let t0=null;
+  lines.slice(1).forEach((line,i)=>{
+    const cols=line.split(',');
+    const lat=parseFloat(cols[iLat]);
+    const lon=parseFloat(cols[iLon]);
+    if(isNaN(lat)||isNaN(lon)||Math.abs(lat)<0.001||Math.abs(lon)<0.001) return;
+
+    const alt=iAlt>=0?parseFloat(cols[iAlt])||0:0;
+    const speed=iSpd>=0?parseFloat(cols[iSpd])||0:0;
+    const battery=iBat>=0?parseFloat(cols[iBat])||null:null;
+    const heading=iHead>=0?parseFloat(cols[iHead])||0:0;
+    const satellites=iSat>=0?parseFloat(cols[iSat])||0:0;
+    const rawTime=iTime>=0?parseFloat(cols[iTime])||i:i;
+    if(t0===null) t0=rawTime;
+
+    data.push({lat,lon,alt,speed,heading,battery,satellites,time:rawTime-t0});
+  });
+
+  if(data.length<2) throw new Error('Pas assez de points GPS valides');
+  return data;
+}
+
+// ─── DEMO DATA ────────────────────────────────────────────
+function loadDemo(){
+  // Générer un vol fictif autour de Thyez
+  const centerLat=45.9523, centerLon=6.5016;
+  const data=[];
+  const totalPoints=300;
+
+  for(let i=0;i<totalPoints;i++){
+    const t=i/totalPoints;
+    const phase=t*Math.PI*2*3; // 3 tours
+    // Trajectoire en spirale montante puis descente
+    const radius=0.003*(t<0.5?t*2:1-(t-0.5)*2);
+    const altPhase=t<0.3?t/0.3:t<0.7?1:(1-t)/0.3;
+    data.push({
+      lat:centerLat+Math.cos(phase)*radius,
+      lon:centerLon+Math.sin(phase)*radius*1.3,
+      alt:Math.round(altPhase*85+Math.sin(i/10)*3),
+      speed:parseFloat((8+Math.sin(i/5)*3).toFixed(1)),
+      heading:Math.round((phase*180/Math.PI+90)%360),
+      battery:Math.round(100-t*45),
+      satellites:Math.round(12+Math.sin(i/30)*2),
+      time:i*1.5, // 1.5s par point → ~7.5min total
+    });
+  }
+  initFlight(data);
+  showToast('🎮 Vol démo chargé — 300 points · 7.5 min');
+}
+
+// ─── INIT FLIGHT ──────────────────────────────────────────
+function initFlight(data){
+  flightData=data;
+  currentIdx=0;
+  playing=false;
+  clearInterval(playTimer);
+
+  // Masquer upload
+  document.getElementById('upload-zone').style.display='none';
+  document.getElementById('hud').style.display='flex';
+  document.getElementById('timeline-wrap').style.display='block';
+  document.getElementById('telemetry-panel').style.display='block';
+  document.getElementById('stats-bar').style.display='grid';
+  document.getElementById('btn-chart').style.display='flex';
+
+  // Tracé complet (gris)
+  if(flightPath) map.removeLayer(flightPath);
+  flightPath=L.polyline(data.map(p=>[p.lat,p.lon]),{
+    color:'rgba(255,255,255,0.2)',weight:2,dashArray:'4 4'
+  }).addTo(map);
+
+  // Tracé joué (bleu)
+  if(playedPath) map.removeLayer(playedPath);
+  playedPath=L.polyline([],{color:'#185FA5',weight:3,opacity:0.9}).addTo(map);
+
+  // Point de départ
+  if(homeMarker) map.removeLayer(homeMarker);
+  homeMarker=L.marker([data[0].lat,data[0].lon],{
+    icon:L.divIcon({className:'',html:'<div style="width:12px;height:12px;background:#1D6B37;border:2px solid #fff;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,.5);"></div>',iconSize:[12,12],iconAnchor:[6,6]})
+  }).addTo(map).bindPopup('<b>🏠 Point de départ</b>');
+
+  // Drone marker
+  updateDroneMarker(data[0]);
+
+  // Fit map
+  map.fitBounds(flightPath.getBounds(),{padding:[40,40]});
+
+  // Stats globales
+  computeStats();
+
+  // Mini chart
+  buildMiniChart();
+
+  // Timeline
+  document.getElementById('timeline-progress').value=0;
+  updateTimeline();
+  updateHUD(data[0]);
+  document.getElementById('btn-play').textContent='▶';
+}
+
+function computeStats(){
+  const altMax=Math.max(...flightData.map(p=>p.alt));
+  const spdMax=Math.max(...flightData.map(p=>p.speed));
+  let distTot=0;
+  for(let i=1;i<flightData.length;i++){
+    distTot+=haversine(flightData[i-1].lat,flightData[i-1].lon,flightData[i].lat,flightData[i].lon);
+  }
+  const duree=flightData[flightData.length-1].time;
+  const min=Math.floor(duree/60);
+  const sec=Math.round(duree%60);
+
+  document.getElementById('stat-alt-max').textContent=altMax+'m';
+  document.getElementById('stat-spd-max').textContent=Math.round(spdMax*3.6)+'km/h';
+  document.getElementById('stat-dist-tot').textContent=distTot>=1000?(distTot/1000).toFixed(1)+'km':Math.round(distTot)+'m';
+  document.getElementById('stat-duree').textContent=`${min}:${String(sec).padStart(2,'0')}`;
+}
+
+function buildMiniChart(){
+  if(miniChart) miniChart.destroy();
+  const step=Math.max(1,Math.floor(flightData.length/60));
+  const labels=[], altData=[];
+  for(let i=0;i<flightData.length;i+=step){
+    labels.push(Math.round(flightData[i].time/60)+'min');
+    altData.push(flightData[i].alt);
+  }
+  const ctx=document.getElementById('mini-chart').getContext('2d');
+  miniChart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data:altData,borderColor:'#185FA5',borderWidth:1.5,fill:true,backgroundColor:'rgba(24,95,165,.2)',pointRadius:0,tension:0.3}]},
+    options:{responsive:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
+  });
+}
+
+function toggleChart(){
+  showChart=!showChart;
+  document.getElementById('chart-panel').style.display=showChart?'block':'none';
+}
+
+// ─── DRONE MARKER ─────────────────────────────────────────
+function updateDroneMarker(point){
+  const heading=point.heading||0;
+  const icon=L.divIcon({
+    className:'',
+    html:`<div style="transform:rotate(${heading}deg);font-size:24px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));">✈️</div>`,
+    iconSize:[28,28],iconAnchor:[14,14]
+  });
+  if(droneMarker) { droneMarker.setLatLng([point.lat,point.lon]); droneMarker.setIcon(icon); }
+  else droneMarker=L.marker([point.lat,point.lon],{icon,zIndexOffset:1000}).addTo(map);
+}
+
+// ─── HUD UPDATE ───────────────────────────────────────────
+function updateHUD(point){
+  document.getElementById('hud-alt').textContent=Math.round(point.alt);
+  document.getElementById('hud-speed').textContent=Math.round(point.speed*3.6);
+  document.getElementById('hud-bat').textContent=point.battery!=null?Math.round(point.battery)+'%':'—';
+  document.getElementById('hud-dist').textContent=Math.round(distFromHome());
+
+  document.getElementById('tele-lat').textContent=point.lat.toFixed(5);
+  document.getElementById('tele-lon').textContent=point.lon.toFixed(5);
+  document.getElementById('tele-alt').textContent=Math.round(point.alt)+' m';
+  document.getElementById('tele-spd').textContent=Math.round(point.speed*3.6)+' km/h';
+  document.getElementById('tele-heading').textContent=Math.round(point.heading||0)+'°';
+  document.getElementById('tele-bat').textContent=point.battery!=null?Math.round(point.battery)+'%':'—';
+  document.getElementById('tele-sat').textContent=Math.round(point.satellites||0);
+
+  // Coloration batterie
+  const bat=point.battery;
+  const batEl=document.getElementById('hud-bat');
+  if(bat!=null){ batEl.style.color=bat<20?'#FF6B6B':bat<40?'#FFA500':'#7EB8F7'; }
+}
+
+function distFromHome(){
+  if(!flightData.length) return 0;
+  const home=flightData[0];
+  const curr=flightData[currentIdx];
+  return haversine(home.lat,home.lon,curr.lat,curr.lon);
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────
+function updateTimeline(){
+  const progress=(currentIdx/Math.max(1,flightData.length-1))*100;
+  document.getElementById('timeline-progress').value=progress;
+
+  const curr=flightData[currentIdx]?.time||0;
+  const total=flightData[flightData.length-1]?.time||0;
+  document.getElementById('time-display').textContent=`${fmt(curr)} / ${fmt(total)}`;
+}
+
+function fmt(s){ const m=Math.floor(s/60),sec=Math.round(s%60); return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+
+function seekTo(pct){
+  const idx=Math.round((pct/100)*(flightData.length-1));
+  jumpTo(idx);
+}
+
+function jumpTo(idx){
+  currentIdx=Math.max(0,Math.min(idx,flightData.length-1));
+  const point=flightData[currentIdx];
+  updateDroneMarker(point);
+  updateHUD(point);
+  updateTimeline();
+
+  // Mettre à jour le tracé joué
+  playedPath.setLatLngs(flightData.slice(0,currentIdx+1).map(p=>[p.lat,p.lon]));
+
+  // Suivre le drone
+  if(playing) map.panTo([point.lat,point.lon],{animate:true,duration:0.5});
+}
+
+function stepBack(){ jumpTo(Math.max(0,currentIdx-Math.round(30/playSpeed))); }
+function stepForward(){ jumpTo(Math.min(flightData.length-1,currentIdx+Math.round(30/playSpeed))); }
+
+// ─── PLAY/PAUSE ───────────────────────────────────────────
+function togglePlay(){
+  if(currentIdx>=flightData.length-1){ jumpTo(0); }
+  playing=!playing;
+  document.getElementById('btn-play').textContent=playing?'⏸':'▶';
+  if(playing) startPlayback();
+  else clearInterval(playTimer);
+}
+
+function startPlayback(){
+  clearInterval(playTimer);
+  // Calculer l'intervalle : 1 frame toutes les (dt entre points) / playSpeed ms
+  playTimer=setInterval(()=>{
+    if(!playing||currentIdx>=flightData.length-1){
+      playing=false;
+      document.getElementById('btn-play').textContent='▶';
+      clearInterval(playTimer);
+      return;
+    }
+    // Avancer d'un nombre de points selon la vitesse
+    const nextIdx=currentIdx+1;
+    const dtMs=flightData.length>1?((flightData[1].time-flightData[0].time)*1000/playSpeed):100;
+    jumpTo(nextIdx);
+  },Math.max(16,(flightData.length>1?((flightData[1]?.time||1)-(flightData[0]?.time||0))*1000/playSpeed:100)));
+}
+
+function setSpeed(s){
+  playSpeed=s;
+  ['1','2','5','10'].forEach(v=>{
+    document.getElementById(`spd-${v}`).classList.toggle('active',parseInt(v)===s);
+  });
+  if(playing){ clearInterval(playTimer); startPlayback(); }
+}
+
+// ─── HAVERSINE ────────────────────────────────────────────
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Alertes & Rappels</title>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --purple:#5C35A0;--light-purple:#EDE7F6;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.09);
+  --radius:14px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-purple:#1E1535;--light-teal:#00191C;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:4px;transition:background .15s;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+
+#content{max-width:640px;margin:0 auto;padding:14px 12px calc(30px + env(safe-area-inset-bottom));}
+
+/* ─── NOTIF PERMISSION BANNER ─── */
+#notif-banner{background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:var(--radius);padding:16px;margin-bottom:14px;color:#fff;display:none;}
+.nb-title{font-size:14px;font-weight:800;margin-bottom:4px;}
+.nb-sub{font-size:12px;opacity:.75;margin-bottom:12px;line-height:1.5;}
+.nb-btn{background:#fff;color:var(--navy);border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* ─── CARD ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px;animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.card-header h2{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px;}
+.card-body{padding:0;}
+
+/* ─── ALERTE ROW ─── */
+.alerte-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.alerte-row:last-child{border-bottom:none;}
+.alerte-row:active{background:var(--light-blue);}
+.alerte-icon-wrap{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.alerte-body{flex:1;min-width:0;}
+.alerte-title{font-size:13px;font-weight:700;color:var(--text);}
+.alerte-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+.alerte-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.alerte-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;}
+.alerte-time{font-size:10px;color:var(--text-muted);font-weight:500;}
+
+/* ─── TOGGLE SWITCH ─── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{flex:1;}
+.toggle-label .tl-main{font-size:13px;font-weight:600;color:var(--text);}
+.toggle-label .tl-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.toggle-switch{position:relative;width:50px;height:28px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:28px;cursor:pointer;transition:background .2s;}
+.toggle-slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+input:checked+.toggle-slider{background:var(--green);}
+input:checked+.toggle-slider::before{transform:translateX(22px);}
+
+/* ─── THRESHOLD ROW ─── */
+.thr-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border);}
+.thr-row:last-child{border-bottom:none;}
+.thr-info{flex:1;}
+.thr-title{font-size:13px;font-weight:600;color:var(--text);}
+.thr-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.thr-input{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:700;padding:6px 10px;width:80px;text-align:center;font-family:inherit;}
+.thr-input:focus{outline:none;border-color:var(--blue);}
+.thr-unit{font-size:10px;color:var(--text-muted);margin-top:2px;text-align:center;}
+
+/* ─── RAPPEL FORM ─── */
+.rappel-form{padding:13px 14px;border-bottom:1px solid var(--border);}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:9px;}
+.field label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.field input,.field select,.field textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;padding:8px 10px;width:100%;font-family:inherit;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:10px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+
+/* ─── SECTION TITLE ─── */
+.sec-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;}
+
+/* ─── STAT STRIP ─── */
+.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px;}
+.stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 10px;text-align:center;box-shadow:var(--shadow);}
+.stat-tile .sv{font-size:22px;font-weight:800;line-height:1;}
+.stat-tile .sl{font-size:10px;font-weight:600;color:var(--text-muted);margin-top:3px;}
+
+/* ─── INFO NOTE ─── */
+.info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin:10px 14px;line-height:1.5;}
+.info-note.warn{background:var(--light-amber);color:var(--amber);}
+.info-note.green{background:var(--light-green);color:var(--green);}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
+</style>
+</head>
+<body>
+
+<header id="header">
+  <h1>🔔 Alertes & Rappels</h1>
+  <a class="back-btn" href="index.html">← Accueil</a>
+</header>
+
+<div id="content">
+
+  <!-- Banner permission notifications -->
+  <div id="notif-banner">
+    <div class="nb-title">🔔 Activer les notifications</div>
+    <div class="nb-sub">Recevez des rappels automatiques pour vos échéances CATS, assurance, maintenance et missions planifiées.</div>
+    <button class="nb-btn" onclick="requestNotifPermission()">Activer les notifications</button>
+  </div>
+
+  <!-- Stat strip -->
+  <div class="stat-strip" id="stat-strip"></div>
+
+  <!-- ALERTES ACTIVES -->
+  <div class="sec-title">🚨 Alertes actives</div>
+  <div class="card">
+    <div class="card-body" id="alertes-actives"></div>
+  </div>
+
+  <!-- RAPPELS PERSONNALISÉS -->
+  <div class="sec-title">📅 Mes rappels</div>
+  <div class="card">
+    <div class="card-header">
+      <h2>🗓️ Rappels personnalisés</h2>
+      <button class="btn btn-primary btn-sm" onclick="toggleRappelForm()">+ Nouveau</button>
+    </div>
+    <div id="rappel-form-wrap" style="display:none;">
+      <div class="rappel-form">
+        <div class="field-row">
+          <div class="field"><label>Titre *</label><input id="rp-titre" placeholder="Ex: Renouveler CATS"></div>
+          <div class="field"><label>Date *</label><input type="date" id="rp-date"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Catégorie</label>
+            <select id="rp-categorie">
+              <option value="cat">📋 Certification</option>
+              <option value="assurance">🛡️ Assurance</option>
+              <option value="maintenance">🔧 Maintenance</option>
+              <option value="mission">✈️ Mission</option>
+              <option value="admin">📑 Administratif</option>
+              <option value="autre">📌 Autre</option>
+            </select>
+          </div>
+          <div class="field"><label>Rappel avant</label>
+            <select id="rp-delai">
+              <option value="0">Le jour même</option>
+              <option value="1">1 jour avant</option>
+              <option value="7">1 semaine avant</option>
+              <option value="14">2 semaines avant</option>
+              <option value="30" selected>1 mois avant</option>
+              <option value="60">2 mois avant</option>
+              <option value="90">3 mois avant</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Note (optionnel)</label><input id="rp-note" placeholder="Détails, contacts, démarches…"></div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn btn-outline btn-sm" onclick="toggleRappelForm()">Annuler</button>
+          <button class="btn btn-primary btn-sm" onclick="addRappel()">💾 Ajouter</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body" id="rappels-list"></div>
+  </div>
+
+  <!-- CONFIGURATION ALERTES AUTO -->
+  <div class="sec-title">⚙️ Alertes automatiques</div>
+  <div class="card">
+    <div class="card-header"><h2>🔔 Notifications actives</h2></div>
+    <div class="card-body">
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">📋 Expiration CATS</div><div class="tl-sub">Alerte avant la date d'expiration</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-cats" checked onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">🛡️ Expiration assurance</div><div class="tl-sub">Alerte avant la date d'expiration</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-assurance" checked onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">✈️ Missions à venir</div><div class="tl-sub">Rappel la veille et 2h avant</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-missions" checked onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">🔧 Maintenance UAS</div><div class="tl-sub">Alerte selon les heures de vol</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-maintenance" checked onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">🌤️ Météo défavorable</div><div class="tl-sub">Alerte si conditions hors seuils la veille</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-meteo" onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><div class="tl-main">⚠️ Incidents REX non clôturés</div><div class="tl-sub">Rappel hebdomadaire</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="tog-rex" checked onchange="saveToggles()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="info-note">💡 Les notifications nécessitent que l'app soit ouverte sur iOS PWA. Pour des rappels en arrière-plan, utilisez l'app Rappels d'Apple via les boutons ci-dessous.</div>
+  </div>
+
+  <!-- SEUILS D'ALERTE -->
+  <div class="sec-title">📐 Seuils d'alerte</div>
+  <div class="card">
+    <div class="card-header"><h2>⏰ Délais de prévenance</h2></div>
+    <div class="card-body">
+      <div class="thr-row">
+        <div class="thr-info"><div class="thr-title">Expiration CATS</div><div class="thr-sub">Alerter X jours avant</div></div>
+        <div><input type="number" class="thr-input" id="thr-cats" value="60" min="7" max="365" onchange="saveSeuils()"><div class="thr-unit">jours</div></div>
+      </div>
+      <div class="thr-row">
+        <div class="thr-info"><div class="thr-title">Expiration assurance</div><div class="thr-sub">Alerter X jours avant</div></div>
+        <div><input type="number" class="thr-input" id="thr-assurance" value="30" min="7" max="365" onchange="saveSeuils()"><div class="thr-unit">jours</div></div>
+      </div>
+      <div class="thr-row">
+        <div class="thr-info"><div class="thr-title">Maintenance drone</div><div class="tl-sub">Alerter X heures de vol avant</div></div>
+        <div><input type="number" class="thr-input" id="thr-maint" value="5" min="1" max="100" onchange="saveSeuils()"><div class="thr-unit">h vol</div></div>
+      </div>
+      <div class="thr-row">
+        <div class="thr-info"><div class="thr-title">Rappel mission</div><div class="thr-sub">Alerter X jours avant</div></div>
+        <div><input type="number" class="thr-input" id="thr-mission" value="1" min="0" max="30" onchange="saveSeuils()"><div class="thr-unit">jours</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORTER VERS RAPPELS APPLE -->
+  <div class="sec-title">📱 Intégration Apple Rappels</div>
+  <div class="card">
+    <div class="card-header"><h2>📱 Exporter vers l'app Rappels</h2></div>
+    <div class="card-body" style="padding:13px 14px;">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Créez des rappels natifs iOS pour vos échéances critiques. Ils fonctionneront même si l'app est fermée.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-outline btn-full" onclick="exportToReminders('cats')">📋 Rappel renouvellement CATS</button>
+        <button class="btn btn-outline btn-full" onclick="exportToReminders('assurance')">🛡️ Rappel renouvellement assurance</button>
+        <button class="btn btn-outline btn-full" onclick="exportToReminders('all')">📅 Tous les rappels critiques</button>
+      </div>
+      <div class="info-note" style="margin:10px 0 0;">Ces boutons ouvrent l'app Rappels d'Apple avec le texte pré-rempli.</div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Alertes & Rappels
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+const RAPPELS_KEY  = 'uas_rappels';
+const TOGGLES_KEY  = 'uas_alertes_toggles';
+const SEUILS_KEY   = 'uas_alertes_seuils';
+
+let rappels = [];
+
+const CAT_ICONS = { cat:'📋', assurance:'🛡️', maintenance:'🔧', mission:'✈️', admin:'📑', autre:'📌' };
+const CAT_COLORS = { cat:'var(--light-blue)', assurance:'var(--light-green)', maintenance:'var(--light-amber)', mission:'var(--light-purple)', admin:'var(--light-teal)', autre:'var(--light-blue)' };
+const CAT_TEXT   = { cat:'var(--blue)', assurance:'var(--green)', maintenance:'var(--amber)', mission:'var(--purple)', admin:'var(--teal)', autre:'var(--blue)' };
+
+function getConfig(){ try{return JSON.parse(localStorage.getItem('uas_config')||'{}');}catch{return{};} }
+function fmtDate(iso){ if(!iso)return'—'; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
+function daysUntil(iso){ if(!iso)return null; return Math.floor((new Date(iso)-new Date())/86400000); }
+
+// ─── LOAD ─────────────────────────────────────────────────
+function load(){
+  try{ rappels=JSON.parse(localStorage.getItem(RAPPELS_KEY)||'[]'); }catch{ rappels=[]; }
+
+  // Charger les seuils depuis config
+  const c=getConfig();
+  document.getElementById('thr-cats').value=parseInt(c.alerte_cats)||60;
+  document.getElementById('thr-assurance').value=parseInt(c.alerte_assurance)||30;
+  document.getElementById('thr-maint').value=parseInt(c.alerte_maintenance)||5;
+  document.getElementById('thr-mission').value=1;
+
+  // Toggles
+  const t=JSON.parse(localStorage.getItem(TOGGLES_KEY)||'{}');
+  ['cats','assurance','missions','maintenance','meteo','rex'].forEach(id=>{
+    const el=document.getElementById(`tog-${id}`);
+    if(el&&t[id]!==undefined) el.checked=t[id];
+  });
+}
+
+function saveToggles(){
+  const t={};
+  ['cats','assurance','missions','maintenance','meteo','rex'].forEach(id=>{
+    const el=document.getElementById(`tog-${id}`);
+    if(el) t[id]=el.checked;
+  });
+  localStorage.setItem(TOGGLES_KEY,JSON.stringify(t));
+  showToast('✅ Paramètres sauvegardés');
+}
+
+function saveSeuils(){
+  const c=JSON.parse(localStorage.getItem('uas_config')||'{}');
+  c.alerte_cats=document.getElementById('thr-cats').value;
+  c.alerte_assurance=document.getElementById('thr-assurance').value;
+  c.alerte_maintenance=document.getElementById('thr-maint').value;
+  localStorage.setItem('uas_config',JSON.stringify(c));
+  showToast('✅ Seuils sauvegardés');
+  renderAll();
+}
+
+// ─── ALERTES ACTIVES ──────────────────────────────────────
+function buildAlertes(){
+  const c=getConfig();
+  const alertes=[];
+
+  // CATS
+  const cd=daysUntil(c.cats_exp);
+  const ac=parseInt(c.alerte_cats)||60;
+  if(cd!==null&&cd<=ac){
+    alertes.push({
+      icon:'📋', bg:'var(--light-amber)', color:'var(--amber)',
+      title:cd<=0?'🚨 CATS EXPIRÉ':`CATS expire dans ${cd} jour${cd>1?'s':''}`,
+      sub:`N° ${c.cats||'—'} · Valide jusqu'au ${fmtDate(c.cats_exp)}`,
+      badge:cd<=0?'EXPIRÉ':cd<=7?'URGENT':cd<=30?'BIENTÔT':'À venir',
+      badgeBg:cd<=0?'var(--red)':cd<=7?'var(--amber)':'var(--light-amber)',
+      badgeColor:cd<=0?'#fff':cd<=7?'#fff':'var(--amber)',
+      link:'config.html',priority:cd<=0?0:1,
+    });
+  }
+
+  // Assurance
+  const ad=daysUntil(c.assurance_exp);
+  const aa=parseInt(c.alerte_assurance)||30;
+  if(ad!==null&&ad<=aa){
+    alertes.push({
+      icon:'🛡️', bg:'var(--light-amber)', color:'var(--amber)',
+      title:ad<=0?'🚨 ASSURANCE EXPIRÉE':`Assurance expire dans ${ad} jour${ad>1?'s':''}`,
+      sub:`${c.assureur||'COVERDRONE'} · ${c.assurance||'—'} · ${fmtDate(c.assurance_exp)}`,
+      badge:ad<=0?'EXPIRÉ':ad<=7?'URGENT':'BIENTÔT',
+      badgeBg:ad<=0?'var(--red)':ad<=7?'var(--amber)':'var(--light-amber)',
+      badgeColor:ad<=0?'#fff':'var(--amber)',
+      link:'config.html',priority:ad<=0?0:1,
+    });
+  }
+
+  // Missions du jour et demain
+  const missions=JSON.parse(localStorage.getItem('uas_missions')||'[]');
+  const today=new Date().toISOString().slice(0,10);
+  const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);
+  missions.filter(m=>m.dateDebut===today||m.dateDebut===tomorrow).forEach(m=>{
+    const isToday=m.dateDebut===today;
+    alertes.push({
+      icon:'✈️', bg:'var(--light-purple)', color:'var(--purple)',
+      title:isToday?`Mission aujourd'hui : ${m.titre}`:`Mission demain : ${m.titre}`,
+      sub:`${m.heureDebut||''}${m.heureFin?' → '+m.heureFin:''} · ${m.lieu||m.scenario||''}`,
+      badge:isToday?"AUJOURD'HUI":'DEMAIN',
+      badgeBg:isToday?'var(--purple)':'var(--light-purple)',
+      badgeColor:isToday?'#fff':'var(--purple)',
+      link:'planificateur.html',priority:isToday?0:2,
+    });
+  });
+
+  // REX non clôturés
+  const rex=JSON.parse(localStorage.getItem('uas_rex')||'[]');
+  const openRex=rex.filter(r=>r.statut&&!['cloture','ferme','fermé'].includes(r.statut.toLowerCase())).length;
+  if(openRex>0){
+    alertes.push({
+      icon:'⚠️', bg:'var(--light-red)', color:'var(--red)',
+      title:`${openRex} incident${openRex>1?'s':''} REX non clôturé${openRex>1?'s':''}`,
+      sub:'Action requise — traiter les retours d\'expérience',
+      badge:'ACTION REQUISE',
+      badgeBg:'var(--red)',badgeColor:'#fff',
+      link:'rex.html',priority:1,
+    });
+  }
+
+  // Rappels personnalisés arrivant
+  const rappelsAVenir=rappels.filter(r=>{
+    const d=daysUntil(r.dateRappel||r.date);
+    return d!==null&&d<=3&&d>=0&&!r.done;
+  });
+  rappelsAVenir.forEach(r=>{
+    const d=daysUntil(r.dateRappel||r.date);
+    alertes.push({
+      icon:CAT_ICONS[r.categorie]||'📌',
+      bg:CAT_COLORS[r.categorie]||'var(--light-blue)',
+      color:CAT_TEXT[r.categorie]||'var(--blue)',
+      title:r.titre,
+      sub:r.note||`Rappel ${d===0?"aujourd'hui":d===1?"demain":`dans ${d}j`}`,
+      badge:d===0?"AUJOURD'HUI":d===1?"DEMAIN":`J-${d}`,
+      badgeBg:d===0?'var(--amber)':'var(--light-amber)',
+      badgeColor:d===0?'#fff':'var(--amber)',
+      link:'',priority:2,
+    });
+  });
+
+  alertes.sort((a,b)=>a.priority-b.priority);
+
+  const el=document.getElementById('alertes-actives');
+  if(alertes.length===0){
+    el.innerHTML=`<div style="text-align:center;padding:20px;font-size:13px;color:var(--green);">✅ Aucune alerte — tout est en ordre !</div>`;
+  } else {
+    el.innerHTML=alertes.map(a=>`
+      <div class="alerte-row" onclick="${a.link?`window.location.href='${a.link}'`:''}">
+        <div class="alerte-icon-wrap" style="background:${a.bg};">${a.icon}</div>
+        <div class="alerte-body">
+          <div class="alerte-title" style="color:${a.color};">${a.title}</div>
+          <div class="alerte-sub">${a.sub}</div>
+        </div>
+        <div class="alerte-right">
+          <div class="alerte-badge" style="background:${a.badgeBg};color:${a.badgeColor};">${a.badge}</div>
+          ${a.link?`<div class="alerte-time">→</div>`:''}
+        </div>
+      </div>`).join('');
+  }
+
+  // Stats
+  const upcoming=rappels.filter(r=>!r.done&&daysUntil(r.dateRappel||r.date)>=0).length;
+  const done=rappels.filter(r=>r.done).length;
+  document.getElementById('stat-strip').innerHTML=`
+    <div class="stat-tile"><div class="sv" style="color:var(--red);">${alertes.length}</div><div class="sl">Alertes actives</div></div>
+    <div class="stat-tile"><div class="sv" style="color:var(--amber);">${upcoming}</div><div class="sl">Rappels à venir</div></div>
+    <div class="stat-tile"><div class="sv" style="color:var(--green);">${done}</div><div class="sl">Clôturés</div></div>
+  `;
+}
+
+// ─── RAPPELS PERSO ────────────────────────────────────────
+function toggleRappelForm(){
+  const wrap=document.getElementById('rappel-form-wrap');
+  const visible=wrap.style.display==='block';
+  wrap.style.display=visible?'none':'block';
+  if(!visible) document.getElementById('rp-date').value=new Date().toISOString().slice(0,10);
+}
+
+function addRappel(){
+  const titre=document.getElementById('rp-titre').value.trim();
+  const date=document.getElementById('rp-date').value;
+  if(!titre||!date){showToast('⚠️ Titre et date requis','amber');return;}
+
+  const delai=parseInt(document.getElementById('rp-delai').value)||0;
+  const rappelDate=new Date(new Date(date).getTime()-delai*86400000).toISOString().slice(0,10);
+
+  rappels.unshift({
+    id:'rp-'+Date.now(),
+    titre, date, dateRappel:rappelDate,
+    categorie:document.getElementById('rp-categorie').value,
+    note:document.getElementById('rp-note').value,
+    delai, done:false,
+    createdAt:new Date().toISOString(),
+  });
+  localStorage.setItem(RAPPELS_KEY,JSON.stringify(rappels));
+  toggleRappelForm();
+  document.getElementById('rp-titre').value='';
+  document.getElementById('rp-note').value='';
+  renderRappels();
+  buildAlertes();
+  showToast('✅ Rappel ajouté');
+}
+
+function markDone(id){
+  const r=rappels.find(x=>x.id===id);
+  if(r){ r.done=!r.done; localStorage.setItem(RAPPELS_KEY,JSON.stringify(rappels)); }
+  renderRappels(); buildAlertes();
+  showToast(r?.done?'✅ Rappel clôturé':'↩️ Rappel réactivé',r?.done?'':'amber');
+}
+
+function deleteRappel(id){
+  rappels=rappels.filter(r=>r.id!==id);
+  localStorage.setItem(RAPPELS_KEY,JSON.stringify(rappels));
+  renderRappels(); buildAlertes();
+  showToast('🗑️ Rappel supprimé','amber');
+}
+
+function renderRappels(){
+  const el=document.getElementById('rappels-list');
+  const active=rappels.filter(r=>!r.done);
+  const done=rappels.filter(r=>r.done);
+  const all=[...active,...done.slice(0,3)];
+
+  if(all.length===0){
+    el.innerHTML=`<div style="padding:14px;font-size:12px;color:var(--text-muted);text-align:center;">Aucun rappel · Appuyez sur + pour en créer un</div>`;
+    return;
+  }
+
+  el.innerHTML=all.map(r=>{
+    const d=daysUntil(r.dateRappel||r.date);
+    const isLate=d!==null&&d<0&&!r.done;
+    const isSoon=d!==null&&d<=3&&d>=0&&!r.done;
+    return`<div class="alerte-row" style="${r.done?'opacity:.5;':''}">
+      <div class="alerte-icon-wrap" style="background:${CAT_COLORS[r.categorie]||'var(--light-blue)'};">${CAT_ICONS[r.categorie]||'📌'}</div>
+      <div class="alerte-body">
+        <div class="alerte-title" style="${r.done?'text-decoration:line-through;':''}">${r.titre}</div>
+        <div class="alerte-sub">${fmtDate(r.date)}${r.note?' · '+r.note:''}</div>
+      </div>
+      <div class="alerte-right">
+        ${isLate?`<div class="alerte-badge" style="background:var(--red);color:#fff;">EN RETARD</div>`:
+          isSoon?`<div class="alerte-badge" style="background:var(--amber);color:#fff;">${d===0?"AUJOURD'HUI":d+'j'}</div>`:
+          r.done?`<div class="alerte-badge" style="background:var(--light-green);color:var(--green);">✅ FAIT</div>`:''}
+        <div style="display:flex;gap:5px;margin-top:3px;">
+          <button onclick="markDone('${r.id}')" style="background:${r.done?'var(--light-blue)':'var(--light-green)'};border:none;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;color:${r.done?'var(--blue)':'var(--green)'};">${r.done?'↩️':'✅'}</button>
+          <button onclick="deleteRappel('${r.id}')" style="background:var(--light-red);border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:var(--red);">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── NOTIFICATIONS WEB ────────────────────────────────────
+function requestNotifPermission(){
+  if(!('Notification' in window)){
+    showToast('⚠️ Notifications non supportées sur ce navigateur','amber');
+    return;
+  }
+  Notification.requestPermission().then(perm=>{
+    document.getElementById('notif-banner').style.display='none';
+    if(perm==='granted'){
+      showToast('✅ Notifications activées');
+      scheduleNotifications();
+    } else {
+      showToast('❌ Permission refusée','red');
+    }
+  });
+}
+
+function scheduleNotifications(){
+  const c=getConfig();
+  const cd=daysUntil(c.cats_exp);
+  if(cd!==null&&cd<=7&&cd>=0){
+    new Notification('⚠️ UAS Manager — CATS', {
+      body:`Votre CATS expire dans ${cd} jour${cd>1?'s':''}. Pensez à le renouveler.`,
+      icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛸</text></svg>'
+    });
+  }
+}
+
+// ─── EXPORT APPLE RAPPELS ─────────────────────────────────
+function exportToReminders(type){
+  const c=getConfig();
+  const items=[];
+
+  if(type==='cats'||type==='all'){
+    if(c.cats_exp){
+      const d=new Date(c.cats_exp);
+      d.setDate(d.getDate()-60); // 60j avant
+      items.push({title:`Renouveler CATS UAS — ${c.cats||''}`,date:fmtDate(c.cats_exp),notes:`Exploitant : ${c.nom||''} · AlphaTango : ${c.alphatango||''}`});
+    }
+  }
+  if(type==='assurance'||type==='all'){
+    if(c.assurance_exp){
+      items.push({title:`Renouveler assurance UAS — ${c.assurance||''}`,date:fmtDate(c.assurance_exp),notes:`Assureur : ${c.assureur||''} · Police : ${c.assurance||''}`});
+    }
+  }
+
+  if(items.length===0){showToast('⚠️ Aucune échéance configurée','amber');return;}
+
+  // Générer un mailto: / URL de partage simplifié
+  const text=items.map(i=>`📅 ${i.title}\nÉchéance : ${i.date}\n${i.notes}`).join('\n\n');
+  const url=`sms:&body=${encodeURIComponent('📋 RAPPELS UAS Manager\n\n'+text)}`;
+
+  // Essayer de créer un rappel via URL scheme
+  window.open(`x-apple-reminderkit://REMCDReminder/?title=${encodeURIComponent(items[0].title)}&notes=${encodeURIComponent(items[0].notes)}`);
+
+  // Fallback : copier dans le presse-papier
+  navigator.clipboard?.writeText(text).then(()=>{
+    showToast('📋 Texte copié — coller dans Rappels');
+  }).catch(()=>{
+    showToast('💡 Ouvrez l\'app Rappels et collez le texte');
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function renderAll(){ buildAlertes(); renderRappels(); }
+
+// Vérifier permission notifications
+if('Notification' in window && Notification.permission==='default'){
+  document.getElementById('notif-banner').style.display='block';
+}
+
+let toastTimer=null;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3000);
+}
+
+load();
+renderAll();
+
+// Refresh toutes les 60s
+setInterval(renderAll,60000);
+</script>
+</body>
+</html>
