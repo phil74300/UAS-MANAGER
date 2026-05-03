@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Planificateur</title>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --purple:#5C35A0;--light-purple:#EDE7F6;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 14px rgba(12,68,124,0.10);
+  --radius:13px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-purple:#1E1535;--light-teal:#00191C;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ─── HEADER ─── */
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));position:sticky;top:0;z-index:300;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;text-decoration:none;transition:background .15s;position:relative;z-index:1;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+#header-right{display:flex;gap:7px;align-items:center;position:relative;z-index:1;}
+.hdr-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 11px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s;white-space:nowrap;}
+.hdr-btn:active{background:rgba(255,255,255,.28);}
+
+/* ─── VIEW TOGGLE ─── */
+#view-toggle{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:8px 12px;gap:7px;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:200;}
+.view-btn{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text-muted);font-size:12px;font-weight:600;padding:8px 4px;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;}
+.view-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* ─── CONTENT ─── */
+#content{max-width:700px;margin:0 auto;padding:14px 12px calc(90px + env(safe-area-inset-bottom));}
+
+/* ─── VIEWS ─── */
+.view{display:none;} .view.active{display:block;}
+
+/* ══════════════════════════════
+   CALENDRIER
+══════════════════════════════ */
+#cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+#cal-month-label{font-size:17px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){#cal-month-label{color:#7EB8F7;}}
+.cal-nav-btn{background:var(--light-blue);border:none;border-radius:8px;padding:7px 13px;font-size:14px;cursor:pointer;color:var(--navy);font-weight:700;}
+.cal-nav-btn:active{opacity:.7;}
+
+/* Grille 7 colonnes */
+#cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px;}
+.cal-day-header{text-align:center;font-size:10px;font-weight:700;color:var(--text-muted);padding:4px 0;text-transform:uppercase;letter-spacing:.5px;}
+.cal-day{
+  min-height:52px;border-radius:9px;padding:4px;
+  background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;transition:background .12s;
+  display:flex;flex-direction:column;gap:2px;
+  position:relative;
+}
+.cal-day:active{background:var(--light-blue);}
+.cal-day.other-month{background:var(--bg);border-color:transparent;}
+.cal-day.other-month .cal-day-num{color:var(--border);}
+.cal-day.today{border-color:var(--blue);border-width:2px;}
+.cal-day.today .cal-day-num{color:var(--blue);font-weight:800;}
+.cal-day.selected{background:var(--light-blue);}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text);line-height:1;}
+.cal-dot-wrap{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px;}
+.cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cal-event-chip{
+  font-size:9px;font-weight:700;padding:1px 4px;
+  border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.4;max-width:100%;
+}
+
+/* ─── LISTE MISSIONS ─── */
+.mission-list{display:flex;flex-direction:column;gap:8px;}
+.mission-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow);cursor:pointer;
+  transition:transform .12s;
+  animation:fadeUp .3s both;
+}
+.mission-card:active{transform:scale(.98);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.mission-card-top{display:flex;align-items:stretch;}
+.mission-color-bar{width:4px;flex-shrink:0;}
+.mission-card-body{flex:1;padding:11px 13px;}
+.mission-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.mission-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;}
+.mission-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+.mission-meta{display:flex;flex-wrap:wrap;gap:8px;}
+.mission-meta-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);font-weight:500;}
+.mission-actions{display:flex;gap:6px;padding:8px 13px;border-top:1px solid var(--border);background:var(--surface2);}
+.mission-action-btn{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-muted);font-family:inherit;transition:all .12s;text-align:center;}
+.mission-action-btn:active{opacity:.7;}
+.mission-action-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.mission-action-btn.danger{background:var(--light-red);border-color:var(--red);color:var(--red);}
+
+/* ─── EMPTY STATE ─── */
+.empty-state{text-align:center;padding:48px 24px;}
+.empty-icon{font-size:48px;margin-bottom:14px;opacity:.6;}
+.empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--text-muted);line-height:1.5;}
+
+/* ─── SECTION HEADER ─── */
+.section-hdr{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;display:flex;align-items:center;justify-content:space-between;}
+
+/* ═══════════════════════════
+   MODAL MISSION
+═══════════════════════════ */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:0;animation:slideUp .28s cubic-bezier(.34,1.2,.64,1);}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+#modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+#modal-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+#modal-title{font-size:16px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){#modal-title{color:#7EB8F7;}}
+#modal-close-btn{background:var(--light-blue);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;color:var(--text-muted);font-weight:700;display:flex;align-items:center;justify-content:center;}
+#modal-body{padding:14px 16px;}
+#modal-footer{padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);display:flex;gap:9px;background:var(--surface2);}
+
+/* ─── FORM ─── */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+.field-row.full{grid-template-columns:1fr;}
+.field-row.tri{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.field input,.field select,.field textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;padding:8px 10px;width:100%;font-family:inherit;transition:border-color .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
+.field textarea{resize:vertical;min-height:64px;}
+
+/* ─── COLOR PICKER ─── */
+.color-options{display:flex;gap:8px;flex-wrap:wrap;}
+.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color .15s;}
+.color-opt.selected{border-color:var(--text);}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:11px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+
+/* ─── FAB ─── */
+#fab{
+  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));right:18px;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--blue);color:#fff;
+  border:none;font-size:26px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(24,95,165,.45);
+  display:flex;align-items:center;justify-content:center;
+  z-index:400;transition:transform .15s,box-shadow .15s;
+}
+#fab:active{transform:scale(.92);box-shadow:0 2px 10px rgba(24,95,165,.3);}
+
+/* ─── STATS BAR ─── */
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 10px;text-align:center;box-shadow:var(--shadow);}
+.stat-tile .sv{font-size:22px;font-weight:800;color:var(--navy);line-height:1;}
+@media(prefers-color-scheme:dark){.stat-tile .sv{color:#7EB8F7;}}
+.stat-tile .sl{font-size:10px;font-weight:600;color:var(--text-muted);margin-top:3px;}
+
+/* ─── INFO NOTE ─── */
+.info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.5;}
+.info-note.warn{background:var(--light-amber);color:var(--amber);}
+.info-note.green{background:var(--light-green);color:var(--green);}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:600;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <h1>🗓️ Planificateur</h1>
+  <div id="header-right">
+    <button class="hdr-btn" onclick="openModal()">+ Mission</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </div>
+</header>
+
+<!-- VIEW TOGGLE -->
+<div id="view-toggle">
+  <button class="view-btn active" onclick="setView('calendar')">📅 Calendrier</button>
+  <button class="view-btn" onclick="setView('list')">📋 Liste</button>
+  <button class="view-btn" onclick="setView('upcoming')">⏰ À venir</button>
+</div>
+
+<div id="content">
+
+  <!-- ── VUE CALENDRIER ── -->
+  <div class="view active" id="view-calendar">
+    <div id="cal-nav">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div id="cal-month-label"></div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div id="cal-grid"></div>
+    <div id="cal-day-missions">
+      <div class="section-hdr" id="cal-selected-label">Sélectionnez un jour</div>
+      <div class="mission-list" id="cal-missions-list"></div>
+    </div>
+  </div>
+
+  <!-- ── VUE LISTE COMPLÈTE ── -->
+  <div class="view" id="view-list">
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="section-hdr">
+      Toutes les missions
+      <span id="total-count" style="background:var(--light-blue);color:var(--blue);padding:2px 8px;border-radius:10px;font-size:10px;">0</span>
+    </div>
+    <div class="mission-list" id="all-missions-list"></div>
+  </div>
+
+  <!-- ── VUE À VENIR ── -->
+  <div class="view" id="view-upcoming">
+    <div class="section-hdr">Cette semaine</div>
+    <div class="mission-list" id="week-missions-list"></div>
+    <div class="section-hdr" style="margin-top:18px;">Ce mois</div>
+    <div class="mission-list" id="month-missions-list"></div>
+    <div class="section-hdr" style="margin-top:18px;">Plus tard</div>
+    <div class="mission-list" id="later-missions-list"></div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="openModal()" title="Nouvelle mission">+</button>
+
+<!-- MODAL NOUVELLE MISSION -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-handle"></div>
+    <div id="modal-header">
+      <div id="modal-title">Nouvelle mission</div>
+      <button id="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body">
+
+      <!-- Couleur -->
+      <div class="field" style="margin-bottom:12px;">
+        <label>Couleur de la mission</label>
+        <div class="color-options" id="color-options">
+          <div class="color-opt selected" data-color="#185FA5" style="background:#185FA5;"></div>
+          <div class="color-opt" data-color="#1D6B37" style="background:#1D6B37;"></div>
+          <div class="color-opt" data-color="#BA7517" style="background:#BA7517;"></div>
+          <div class="color-opt" data-color="#8B2020" style="background:#8B2020;"></div>
+          <div class="color-opt" data-color="#5C35A0" style="background:#5C35A0;"></div>
+          <div class="color-opt" data-color="#006064" style="background:#006064;"></div>
+          <div class="color-opt" data-color="#0D1220" style="background:#0D1220;"></div>
+        </div>
+      </div>
+
+      <div class="field-row full">
+        <div class="field"><label>Titre de la mission *</label>
+          <input id="m-titre" placeholder="Ex: Inspection toiture — Cluses">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Type de mission</label>
+          <select id="m-type">
+            <option value="inspection">🔍 Inspection</option>
+            <option value="tournage">🎬 Tournage / Cinéma</option>
+            <option value="photo">📸 Photographie</option>
+            <option value="topo">📐 Topographie / Cartographie</option>
+            <option value="surveillance">👁️ Surveillance</option>
+            <option value="agriculture">🌾 Agriculture</option>
+            <option value="formation">🎓 Formation</option>
+            <option value="loisir">🎮 Loisir</option>
+            <option value="autre">📋 Autre</option>
+          </select>
+        </div>
+        <div class="field"><label>Statut</label>
+          <select id="m-statut">
+            <option value="planifie">📅 Planifié</option>
+            <option value="confirme">✅ Confirmé</option>
+            <option value="en_cours">🚀 En cours</option>
+            <option value="effectue">✔️ Effectué</option>
+            <option value="annule">❌ Annulé</option>
+            <option value="reporte">🔄 Reporté</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Date début *</label>
+          <input type="date" id="m-date-debut">
+        </div>
+        <div class="field"><label>Date fin</label>
+          <input type="date" id="m-date-fin">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Heure début</label>
+          <input type="time" id="m-heure-debut" value="08:00">
+        </div>
+        <div class="field"><label>Heure fin</label>
+          <input type="time" id="m-heure-fin" value="17:00">
+        </div>
+      </div>
+
+      <div class="field-row full">
+        <div class="field"><label>Lieu / Site</label>
+          <input id="m-lieu" placeholder="Ex: Carrière de Thyez, Barrage de Roselend…">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Client / Commanditaire</label>
+          <input id="m-client" placeholder="Nom du client ou projet">
+        </div>
+        <div class="field"><label>Scénario</label>
+          <select id="m-scenario">
+            <option value="PDRA-S01">PDRA-S01</option>
+            <option value="PDRA-S02">PDRA-S02</option>
+            <option value="A1">Cat. Ouverte A1</option>
+            <option value="A2">Cat. Ouverte A2</option>
+            <option value="A3">Cat. Ouverte A3</option>
+            <option value="STS-01">STS-01</option>
+            <option value="STS-02">STS-02</option>
+            <option value="Spécifique">Spécifique DGAC</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Drone</label>
+          <select id="m-drone"><!-- JS --></select>
+        </div>
+        <div class="field"><label>RPIC</label>
+          <select id="m-rpic"><!-- JS --></select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Durée estimée (h)</label>
+          <input type="number" id="m-duree" min="0.5" max="24" step="0.5" value="2">
+        </div>
+        <div class="field"><label>Budget / Devis (€)</label>
+          <input type="number" id="m-budget" min="0" step="50" placeholder="0">
+        </div>
+      </div>
+
+      <div class="field-row full">
+        <div class="field"><label>Notes & instructions</label>
+          <textarea id="m-notes" placeholder="Contraintes, accès, contacts sur place, points d'attention…"></textarea>
+        </div>
+      </div>
+
+      <!-- Rappels -->
+      <div class="field-row full">
+        <div class="field"><label>Rappel avant le vol</label>
+          <select id="m-rappel">
+            <option value="">Pas de rappel</option>
+            <option value="1h">1 heure avant</option>
+            <option value="2h">2 heures avant</option>
+            <option value="1j">La veille</option>
+            <option value="2j">2 jours avant</option>
+            <option value="7j">1 semaine avant</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="info-note" id="modal-notif-info" style="display:none;"></div>
+
+    </div><!-- /modal-body -->
+
+    <div id="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()" style="flex:0 0 auto;padding:11px 16px;">Annuler</button>
+      <button class="btn btn-primary" onclick="saveMission()" style="flex:1;">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Planificateur de missions
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'uas_missions';
+let missions = [];
+let editingId = null;
+let selectedColor = '#185FA5';
+let currentView = 'calendar';
+let calYear, calMonth;
+let selectedDay = null;
+
+// ─── CONFIG ──────────────────────────────────────────────
+function getConfig() {
+  try { return JSON.parse(localStorage.getItem('uas_config') || '{}'); } catch { return {}; }
+}
+
+// ─── STATUTS ─────────────────────────────────────────────
+const STATUTS = {
+  planifie:  { label:'Planifié',  emoji:'📅', bg:'var(--light-blue)',   color:'var(--blue)' },
+  confirme:  { label:'Confirmé',  emoji:'✅', bg:'var(--light-green)',  color:'var(--green)' },
+  en_cours:  { label:'En cours',  emoji:'🚀', bg:'var(--light-amber)',  color:'var(--amber)' },
+  effectue:  { label:'Effectué',  emoji:'✔️', bg:'var(--light-green)',  color:'var(--green)' },
+  annule:    { label:'Annulé',    emoji:'❌', bg:'var(--light-red)',    color:'var(--red)' },
+  reporte:   { label:'Reporté',   emoji:'🔄', bg:'var(--light-purple)', color:'var(--purple)' },
+};
+
+const TYPES = {
+  inspection:'🔍', tournage:'🎬', photo:'📸', topo:'📐',
+  surveillance:'👁️', agriculture:'🌾', formation:'🎓', loisir:'🎮', autre:'📋',
+};
+
+// ─── LOAD / SAVE ─────────────────────────────────────────
+function load() {
+  try { missions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { missions = []; }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(missions));
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  load();
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  selectedDay = now.toISOString().slice(0,10);
+
+  populateSelects();
+  renderAll();
+  setupColorPicker();
+  setupDateListeners();
+}
+
+function populateSelects() {
+  const c = getConfig();
+  const drones = c.drones || [{ nom:'DJI Mavic 4 Pro' }];
+  const pilots = c.pilots || [{ nom:'CONTE Philippe' }];
+
+  document.getElementById('m-drone').innerHTML =
+    drones.map(d => `<option>${d.primary ? '⭐ ' : ''}${d.nom}</option>`).join('');
+  document.getElementById('m-rpic').innerHTML =
+    pilots.map(p => `<option>${p.primary ? '⭐ ' : ''}${p.nom}</option>`).join('');
+
+  // Dates par défaut
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('m-date-debut').value = today;
+  document.getElementById('m-date-fin').value = today;
+}
+
+function setupColorPicker() {
+  document.querySelectorAll('.color-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selectedColor = opt.dataset.color;
+    });
+  });
+}
+
+function setupDateListeners() {
+  document.getElementById('m-date-debut').addEventListener('change', updateNotifInfo);
+  document.getElementById('m-scenario').addEventListener('change', updateNotifInfo);
+}
+
+function updateNotifInfo() {
+  const scenario = document.getElementById('m-scenario').value;
+  const dateDebut = document.getElementById('m-date-debut').value;
+  const el = document.getElementById('modal-notif-info');
+  const c = getConfig();
+  const delai = parseInt(c.notif_delai) || 10;
+
+  if (!['A1','A2','A3'].includes(scenario) && dateDebut) {
+    const daysLeft = Math.floor((new Date(dateDebut) - new Date()) / 86400000);
+    if (daysLeft < delai * 1.4) {
+      el.innerHTML = `⚠️ Scénario <strong>${scenario}</strong> — notification préfecture requise <strong>${delai} jours ouvrés</strong> avant. Délai potentiellement dépassé !`;
+      el.className = 'info-note warn';
+    } else {
+      el.innerHTML = `ℹ️ N'oubliez pas la notification préfecture <strong>${delai} jours ouvrés</strong> avant le <strong>${new Date(dateDebut).toLocaleDateString('fr-FR')}</strong>.`;
+      el.className = 'info-note';
+    }
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────
+function renderAll() {
+  renderCalendar();
+  renderStats();
+  renderAllList();
+  renderUpcoming();
+}
+
+// ─── CALENDRIER ───────────────────────────────────────────
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('cal-month-label').textContent = `${MONTHS_FR[calMonth]} ${calYear}`;
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = DAYS_FR.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay  = new Date(calYear, calMonth + 1, 0);
+  const todayStr = new Date().toISOString().slice(0,10);
+
+  // Démarrer au lundi (0=lundi en FR)
+  let startDow = firstDay.getDay(); // 0=dim
+  startDow = startDow === 0 ? 6 : startDow - 1;
+
+  // Jours du mois précédent
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = new Date(calYear, calMonth, -i);
+    grid.appendChild(makeDayEl(d, true));
+  }
+
+  // Jours du mois
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const date = new Date(calYear, calMonth, d);
+    grid.appendChild(makeDayEl(date, false));
+  }
+
+  // Compléter à 42 cases
+  const total = startDow + lastDay.getDate();
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const date = new Date(calYear, calMonth + 1, i);
+    grid.appendChild(makeDayEl(date, true));
+  }
+
+  renderCalDayMissions();
+}
+
+function makeDayEl(date, otherMonth) {
+  const dateStr = date.toISOString().slice(0,10);
+  const todayStr = new Date().toISOString().slice(0,10);
+  const dayMissions = missions.filter(m => m.dateDebut === dateStr || (m.dateFin && dateStr >= m.dateDebut && dateStr <= m.dateFin));
+
+  const div = document.createElement('div');
+  div.className = 'cal-day' +
+    (otherMonth ? ' other-month' : '') +
+    (dateStr === todayStr ? ' today' : '') +
+    (dateStr === selectedDay ? ' selected' : '');
+
+  const numEl = document.createElement('div');
+  numEl.className = 'cal-day-num';
+  numEl.textContent = date.getDate();
+  div.appendChild(numEl);
+
+  // Chips missions (max 2)
+  if (dayMissions.length > 0) {
+    const dotWrap = document.createElement('div');
+    dotWrap.className = 'cal-dot-wrap';
+    dayMissions.slice(0, 2).forEach(m => {
+      const chip = document.createElement('div');
+      chip.className = 'cal-event-chip';
+      chip.style.background = m.color + '22';
+      chip.style.color = m.color;
+      chip.style.borderLeft = `2px solid ${m.color}`;
+      chip.textContent = (TYPES[m.type] || '📋') + ' ' + m.titre;
+      dotWrap.appendChild(chip);
+    });
+    if (dayMissions.length > 2) {
+      const more = document.createElement('div');
+      more.className = 'cal-event-chip';
+      more.style.background = 'var(--border)';
+      more.style.color = 'var(--text-muted)';
+      more.textContent = `+${dayMissions.length - 2}`;
+      dotWrap.appendChild(more);
+    }
+    div.appendChild(dotWrap);
+  }
+
+  div.addEventListener('click', () => {
+    selectedDay = dateStr;
+    renderCalendar();
+  });
+
+  return div;
+}
+
+function renderCalDayMissions() {
+  const label = document.getElementById('cal-selected-label');
+  const list  = document.getElementById('cal-missions-list');
+  if (!selectedDay) return;
+
+  const d = new Date(selectedDay);
+  label.textContent = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  const dayMs = missions.filter(m =>
+    m.dateDebut === selectedDay ||
+    (m.dateFin && selectedDay >= m.dateDebut && selectedDay <= m.dateFin)
+  );
+
+  if (dayMs.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px;font-size:13px;color:var(--text-muted);">Aucune mission ce jour · <button onclick="openModal()" style="background:none;border:none;color:var(--blue);font-weight:700;cursor:pointer;font-size:13px;">+ Ajouter</button></div>`;
+  } else {
+    list.innerHTML = dayMs.map(m => missionCardHTML(m)).join('');
+  }
+}
+
+// ─── MISSION CARD ─────────────────────────────────────────
+function missionCardHTML(m) {
+  const s = STATUTS[m.statut] || STATUTS.planifie;
+  const typeEmoji = TYPES[m.type] || '📋';
+  const heures = m.heureDebut ? `${m.heureDebut}${m.heureFin ? ' → ' + m.heureFin : ''}` : '';
+  const dureeLabel = m.duree ? `${m.duree}h` : '';
+  return `
+  <div class="mission-card" style="animation-delay:${Math.random()*0.1}s;">
+    <div class="mission-card-top">
+      <div class="mission-color-bar" style="background:${m.color || '#185FA5'};"></div>
+      <div class="mission-card-body">
+        <div class="mission-card-header">
+          <div class="mission-title">${typeEmoji} ${m.titre}</div>
+          <div class="mission-badge" style="background:${s.bg};color:${s.color};">${s.emoji} ${s.label}</div>
+        </div>
+        <div class="mission-meta">
+          ${m.lieu ? `<div class="mission-meta-item">📍 ${m.lieu}</div>` : ''}
+          ${heures ? `<div class="mission-meta-item">⏰ ${heures}</div>` : ''}
+          ${dureeLabel ? `<div class="mission-meta-item">⌛ ${dureeLabel}</div>` : ''}
+          ${m.drone ? `<div class="mission-meta-item">🛸 ${m.drone}</div>` : ''}
+          ${m.client ? `<div class="mission-meta-item">👤 ${m.client}</div>` : ''}
+          ${m.budget ? `<div class="mission-meta-item">💶 ${m.budget}€</div>` : ''}
+          ${m.scenario ? `<div class="mission-meta-item">📋 ${m.scenario}</div>` : ''}
+        </div>
+        ${m.notes ? `<div style="margin-top:6px;font-size:11px;color:var(--text-muted);line-height:1.4;">${m.notes.slice(0,100)}${m.notes.length>100?'…':''}</div>` : ''}
+      </div>
+    </div>
+    <div class="mission-actions">
+      <button class="mission-action-btn" onclick="editMission('${m.id}')">✏️ Modifier</button>
+      <button class="mission-action-btn" onclick="dupliquerMission('${m.id}')">📋 Dupliquer</button>
+      <button class="mission-action-btn primary" onclick="openNotification('${m.id}')">📤 Notifier</button>
+      <button class="mission-action-btn danger" onclick="deleteMission('${m.id}')">🗑️</button>
+    </div>
+  </div>`;
+}
+
+// ─── LISTE COMPLÈTE ───────────────────────────────────────
+function renderAllList() {
+  const sorted = [...missions].sort((a,b) => a.dateDebut.localeCompare(b.dateDebut));
+  const el = document.getElementById('all-missions-list');
+  document.getElementById('total-count').textContent = missions.length;
+  el.innerHTML = sorted.length
+    ? sorted.map(m => missionCardHTML(m)).join('')
+    : emptyState('Aucune mission', 'Appuyez sur + pour planifier votre première mission.');
+}
+
+// ─── À VENIR ──────────────────────────────────────────────
+function renderUpcoming() {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0,10);
+  const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
+  const weekEndStr = weekEnd.toISOString().slice(0,10);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0,10);
+
+  const upcoming = missions
+    .filter(m => m.dateDebut >= todayStr && !['effectue','annule'].includes(m.statut))
+    .sort((a,b) => a.dateDebut.localeCompare(b.dateDebut));
+
+  const week  = upcoming.filter(m => m.dateDebut <= weekEndStr);
+  const month = upcoming.filter(m => m.dateDebut > weekEndStr && m.dateDebut <= monthEnd);
+  const later = upcoming.filter(m => m.dateDebut > monthEnd);
+
+  const render = (el, ms) => {
+    document.getElementById(el).innerHTML = ms.length
+      ? ms.map(m => missionCardHTML(m)).join('')
+      : `<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">Aucune mission</div>`;
+  };
+  render('week-missions-list', week);
+  render('month-missions-list', month);
+  render('later-missions-list', later);
+}
+
+// ─── STATS ────────────────────────────────────────────────
+function renderStats() {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0,10);
+  const monthStr = now.toISOString().slice(0,7);
+
+  const total = missions.length;
+  const upcoming = missions.filter(m => m.dateDebut >= todayStr && !['effectue','annule'].includes(m.statut)).length;
+  const thisMonth = missions.filter(m => m.dateDebut.startsWith(monthStr)).length;
+  const ca = missions.reduce((s, m) => s + (parseFloat(m.budget) || 0), 0);
+
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat-tile"><div class="sv">${total}</div><div class="sl">Total missions</div></div>
+    <div class="stat-tile"><div class="sv" style="color:var(--green);">${upcoming}</div><div class="sl">À venir</div></div>
+    <div class="stat-tile"><div class="sv" style="color:var(--amber);">${ca > 0 ? ca.toLocaleString('fr-FR') + '€' : thisMonth}</div><div class="sl">${ca > 0 ? 'CA planifié' : 'Ce mois'}</div></div>
+  `;
+}
+
+// ─── MODAL ────────────────────────────────────────────────
+function openModal(prefillDate = null) {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Nouvelle mission';
+  resetForm();
+  if (prefillDate) document.getElementById('m-date-debut').value = prefillDate;
+  if (selectedDay) {
+    document.getElementById('m-date-debut').value = selectedDay;
+    document.getElementById('m-date-fin').value = selectedDay;
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-notif-info').style.display = 'none';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function resetForm() {
+  ['m-titre','m-lieu','m-client','m-notes','m-budget'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('m-type').value = 'inspection';
+  document.getElementById('m-statut').value = 'planifie';
+  document.getElementById('m-heure-debut').value = '08:00';
+  document.getElementById('m-heure-fin').value = '17:00';
+  document.getElementById('m-duree').value = '2';
+  document.getElementById('m-rappel').value = '';
+  document.getElementById('m-scenario').value = 'PDRA-S01';
+  // Reset color
+  selectedColor = '#185FA5';
+  document.querySelectorAll('.color-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.color === selectedColor);
+  });
+}
+
+function editMission(id) {
+  const m = missions.find(x => x.id === id);
+  if (!m) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Modifier la mission';
+  document.getElementById('m-titre').value = m.titre || '';
+  document.getElementById('m-type').value = m.type || 'inspection';
+  document.getElementById('m-statut').value = m.statut || 'planifie';
+  document.getElementById('m-date-debut').value = m.dateDebut || '';
+  document.getElementById('m-date-fin').value = m.dateFin || '';
+  document.getElementById('m-heure-debut').value = m.heureDebut || '08:00';
+  document.getElementById('m-heure-fin').value = m.heureFin || '17:00';
+  document.getElementById('m-lieu').value = m.lieu || '';
+  document.getElementById('m-client').value = m.client || '';
+  document.getElementById('m-scenario').value = m.scenario || 'PDRA-S01';
+  document.getElementById('m-duree').value = m.duree || '2';
+  document.getElementById('m-budget').value = m.budget || '';
+  document.getElementById('m-notes').value = m.notes || '';
+  document.getElementById('m-rappel').value = m.rappel || '';
+  // Color
+  selectedColor = m.color || '#185FA5';
+  document.querySelectorAll('.color-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.color === selectedColor);
+  });
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function saveMission() {
+  const titre = document.getElementById('m-titre').value.trim();
+  const dateDebut = document.getElementById('m-date-debut').value;
+  if (!titre) { showToast('⚠️ Titre requis', 'amber'); return; }
+  if (!dateDebut) { showToast('⚠️ Date de début requise', 'amber'); return; }
+
+  const mission = {
+    id: editingId || 'mis-' + Date.now(),
+    color: selectedColor,
+    titre,
+    type: document.getElementById('m-type').value,
+    statut: document.getElementById('m-statut').value,
+    dateDebut,
+    dateFin: document.getElementById('m-date-fin').value || dateDebut,
+    heureDebut: document.getElementById('m-heure-debut').value,
+    heureFin: document.getElementById('m-heure-fin').value,
+    lieu: document.getElementById('m-lieu').value,
+    client: document.getElementById('m-client').value,
+    scenario: document.getElementById('m-scenario').value,
+    drone: document.getElementById('m-drone').value,
+    rpic: document.getElementById('m-rpic').value,
+    duree: document.getElementById('m-duree').value,
+    budget: document.getElementById('m-budget').value,
+    notes: document.getElementById('m-notes').value,
+    rappel: document.getElementById('m-rappel').value,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (editingId) {
+    const idx = missions.findIndex(m => m.id === editingId);
+    if (idx !== -1) missions[idx] = mission;
+    showToast('✅ Mission mise à jour');
+  } else {
+    missions.unshift(mission);
+    showToast('✅ Mission créée');
+  }
+
+  save();
+  closeModal();
+  renderAll();
+}
+
+function deleteMission(id) {
+  if (!confirm('Supprimer cette mission ?')) return;
+  missions = missions.filter(m => m.id !== id);
+  save();
+  renderAll();
+  showToast('🗑️ Mission supprimée', 'amber');
+}
+
+function dupliquerMission(id) {
+  const m = missions.find(x => x.id === id);
+  if (!m) return;
+  const clone = { ...m, id:'mis-'+Date.now(), titre: m.titre + ' (copie)', createdAt: new Date().toISOString() };
+  missions.unshift(clone);
+  save();
+  renderAll();
+  showToast('📋 Mission dupliquée');
+}
+
+function openNotification(id) {
+  // Sauvegarder l'ID de mission et ouvrir la notification
+  localStorage.setItem('uas_notif_from_mission', id);
+  window.location.href = 'notification.html';
+}
+
+// ─── VIEW SWITCH ──────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.view-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`view-${v}`).classList.add('active');
+  event.target.classList.add('active');
+  if (v === 'list') renderAllList();
+  if (v === 'upcoming') renderUpcoming();
+}
+
+// ─── EMPTY STATE ──────────────────────────────────────────
+function emptyState(title, sub) {
+  return `<div class="empty-state"><div class="empty-icon">🗓️</div><div class="empty-title">${title}</div><div class="empty-sub">${sub}</div></div>`;
+}
+
+// ─── MODAL BACKDROP ───────────────────────────────────────
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// ─── TOAST ────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ─── START ────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

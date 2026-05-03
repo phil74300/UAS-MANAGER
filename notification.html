@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Notification vol</title>
+<style>
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;
+  --bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,0.10);
+  --radius:13px;--header-h:56px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;}
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+/* ─── HEADER ─── */
+#header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(var(--header-h) + env(safe-area-inset-top));flex-shrink:0;z-index:200;position:sticky;top:0;box-shadow:0 2px 12px rgba(12,68,124,.25);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 50%,rgba(24,95,165,.4) 0%,transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;text-decoration:none;transition:background .15s;position:relative;z-index:1;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+
+/* ─── STEP NAV ─── */
+#step-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:0;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;}
+.step-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;}
+.step-item:not(:last-child)::after{content:'';position:absolute;top:12px;right:-50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.step-item.done:not(:last-child)::after{background:var(--green);}
+.step-circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);position:relative;z-index:1;transition:all .2s;}
+.step-item.active .step-circle{border-color:var(--blue);background:var(--blue);color:#fff;}
+.step-item.done .step-circle{border-color:var(--green);background:var(--green);color:#fff;}
+.step-label{font-size:9px;font-weight:600;color:var(--text-muted);text-align:center;white-space:nowrap;}
+.step-item.active .step-label{color:var(--blue);font-weight:700;}
+.step-item.done .step-label{color:var(--green);}
+
+/* ─── CONTENT ─── */
+#content{max-width:620px;margin:0 auto;padding:16px 14px calc(100px + env(safe-area-inset-bottom));}
+
+/* ─── CARD ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card-header{background:var(--surface2);border-bottom:1px solid var(--border);padding:11px 14px;display:flex;align-items:center;gap:8px;}
+.card-header h2{font-size:13px;font-weight:700;color:var(--navy);flex:1;}
+@media(prefers-color-scheme:dark){.card-header h2{color:#7EB8F7;}}
+.card-icon{font-size:17px;}
+.card-body{padding:13px 14px;}
+
+/* ─── FIELDS ─── */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+.field-row.full{grid-template-columns:1fr;}
+.field-row.tri{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.field input,.field select,.field textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;padding:8px 10px;width:100%;font-family:inherit;transition:border-color .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
+.field textarea{resize:vertical;min-height:70px;}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;padding:11px 16px;transition:opacity .15s,transform .1s;font-family:inherit;white-space:nowrap;}
+.btn:active{opacity:.8;transform:scale(.97);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+
+/* ─── STEP SECTIONS ─── */
+.step-section{display:none;} .step-section.active{display:block;}
+
+/* ─── RECAPITULATIF ─── */
+.recap-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.recap-block h3{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.recap-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);}
+.recap-row:last-child{border-bottom:none;}
+.recap-label{font-size:12px;color:var(--text-muted);font-weight:500;white-space:nowrap;}
+.recap-val{font-size:12px;font-weight:700;color:var(--text);text-align:right;}
+
+/* ─── ACTIONS PANEL ─── */
+#actions-panel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:10px;z-index:300;
+  box-shadow:0 -4px 20px rgba(12,68,124,.1);
+}
+#actions-panel .btn{flex:1;}
+
+/* ─── AT LINK BOX ─── */
+.at-box{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);
+  border-radius:14px;padding:18px 16px;color:#fff;margin-bottom:12px;
+  position:relative;overflow:hidden;
+}
+.at-box::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.07);border-radius:50%;}
+.at-box-logo{font-size:28px;margin-bottom:8px;}
+.at-box-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.at-box-sub{font-size:12px;opacity:.7;margin-bottom:14px;line-height:1.5;}
+.at-box-btn{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--navy);border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;transition:opacity .15s;}
+.at-box-btn:active{opacity:.85;}
+
+/* ─── COPY ZONE ─── */
+.copy-zone{background:var(--bg);border:1.5px dashed var(--border);border-radius:10px;padding:12px;font-family:'SF Mono',monospace;font-size:11px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;user-select:text;-webkit-user-select:text;margin-bottom:10px;max-height:280px;overflow-y:auto;}
+
+/* ─── INFO NOTE ─── */
+.info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5;}
+.info-note.warn{background:var(--light-amber);color:var(--amber);}
+.info-note.green{background:var(--light-green);color:var(--green);}
+
+/* ─── DELAI BADGE ─── */
+.delai-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:10px;}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
+#toast.visible{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <h1>📋 Notification de vol</h1>
+  <a class="back-btn" href="index.html">← Accueil</a>
+</header>
+
+<!-- STEPPER -->
+<nav id="step-nav">
+  <div class="step-item active" id="nav-1" onclick="goStep(1)">
+    <div class="step-circle">1</div>
+    <div class="step-label">Zone & dates</div>
+  </div>
+  <div class="step-item" id="nav-2" onclick="goStep(2)">
+    <div class="step-circle">2</div>
+    <div class="step-label">Drone & pilote</div>
+  </div>
+  <div class="step-item" id="nav-3" onclick="goStep(3)">
+    <div class="step-circle">3</div>
+    <div class="step-label">Récapitulatif</div>
+  </div>
+  <div class="step-item" id="nav-4" onclick="goStep(4)">
+    <div class="step-circle">4</div>
+    <div class="step-label">Envoyer</div>
+  </div>
+</nav>
+
+<div id="content">
+
+  <!-- ══ ÉTAPE 1 : Zone & dates ══ -->
+  <div class="step-section active" id="step-1">
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📍</span><h2>Zone d'opération</h2></div>
+      <div class="card-body">
+        <div class="field-row full">
+          <div class="field"><label>Nom du site / Lieu-dit</label>
+            <input id="f-site" placeholder="Ex: Carrière de Thyez, Pied du Bargy…">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Commune</label>
+            <input id="f-commune" placeholder="Ex: Thyez">
+          </div>
+          <div class="field"><label>Département</label>
+            <input id="f-dept" placeholder="Ex: Haute-Savoie (74)">
+          </div>
+        </div>
+        <div class="field-row tri">
+          <div class="field"><label>Latitude (DD)</label>
+            <input type="number" id="f-lat" step="0.0001" placeholder="45.9523">
+          </div>
+          <div class="field"><label>Longitude (DD)</label>
+            <input type="number" id="f-lon" step="0.0001" placeholder="6.5016">
+          </div>
+          <div class="field"><label>Rayon (m)</label>
+            <input type="number" id="f-rayon" value="200" min="50" max="5000" step="50">
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="getGPSPosition()" style="margin-top:4px;">
+          📍 Utiliser ma position GPS
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📅</span><h2>Dates & horaires</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Date de début</label>
+            <input type="date" id="f-date-debut">
+          </div>
+          <div class="field"><label>Date de fin</label>
+            <input type="date" id="f-date-fin">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Heure début (locale)</label>
+            <input type="time" id="f-heure-debut" value="08:00">
+          </div>
+          <div class="field"><label>Heure fin (locale)</label>
+            <input type="time" id="f-heure-fin" value="19:00">
+          </div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Scénario</label>
+            <select id="f-scenario">
+              <option value="PDRA-S01">PDRA-S01 — Zone peuplée, hauteur ≤ 120m</option>
+              <option value="PDRA-S02">PDRA-S02 — Zone peuplée, hauteur ≤ 120m (nuit)</option>
+              <option value="STS-01">STS-01 — VLOS zone peuplée</option>
+              <option value="STS-02">STS-02 — BVLOS avec observateurs</option>
+              <option value="A1">Catégorie Ouverte A1</option>
+              <option value="A2">Catégorie Ouverte A2</option>
+              <option value="A3">Catégorie Ouverte A3</option>
+              <option value="Spécifique">Autorisation spécifique DGAC</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Altitude max (m AGL)</label>
+            <input type="number" id="f-alt-max" value="120" min="0" max="500">
+          </div>
+          <div class="field"><label>Objectif de la mission</label>
+            <input id="f-objectif" placeholder="Ex: Inspection, tournage, topographie…">
+          </div>
+        </div>
+        <div id="delai-info" class="info-note warn" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ ÉTAPE 2 : Drone & pilote ══ -->
+  <div class="step-section" id="step-2">
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">🛸</span><h2>Drone utilisé</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Modèle</label>
+            <select id="f-drone"><!-- rempli par JS --></select>
+          </div>
+          <div class="field"><label>Immatriculation UAS</label>
+            <input id="f-immat" readonly style="background:var(--light-blue);color:var(--text-muted);">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>DRI</label>
+            <input id="f-dri" readonly style="background:var(--light-blue);color:var(--text-muted);">
+          </div>
+          <div class="field"><label>MTOM (g)</label>
+            <input id="f-mtom" readonly style="background:var(--light-blue);color:var(--text-muted);">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">👨‍✈️</span><h2>Équipe de vol</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>RPIC</label>
+            <select id="f-rpic"><!-- rempli par JS --></select>
+          </div>
+          <div class="field"><label>OBS-1 (optionnel)</label>
+            <select id="f-obs1"><option value="">— Aucun —</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>OBS-2 (optionnel)</label>
+            <select id="f-obs2"><option value="">— Aucun —</option></select>
+          </div>
+          <div class="field"><label>OBS-3 (optionnel)</label>
+            <select id="f-obs3"><option value="">— Aucun —</option></select>
+          </div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Notes / Conditions particulières</label>
+            <textarea id="f-notes" placeholder="Ex: Survol de voie ferrée avec accord gestionnaire, présence de personnes non impliquées…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📞</span><h2>Contacts d'urgence</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Tel. pilote</label>
+            <input type="tel" id="f-tel" placeholder="+33 6 XX XX XX XX">
+          </div>
+          <div class="field"><label>Tel. urgence local</label>
+            <input type="tel" id="f-tel-urgence" placeholder="15 / 18 / 112">
+          </div>
+        </div>
+        <div class="field-row full">
+          <div class="field"><label>Fréquence radio (si applicable)</label>
+            <input id="f-freq" placeholder="Ex: 123.500 MHz (approche LFLB)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ ÉTAPE 3 : RÉCAPITULATIF ══ -->
+  <div class="step-section" id="step-3">
+    <div id="recap-content"></div>
+  </div>
+
+  <!-- ══ ÉTAPE 4 : ENVOYER ══ -->
+  <div class="step-section" id="step-4">
+
+    <!-- AlphaTango -->
+    <div class="at-box">
+      <div class="at-box-logo">✈️</div>
+      <div class="at-box-title">AlphaTango — Notification officielle</div>
+      <div class="at-box-sub">Connectez-vous à votre espace AlphaTango pour déclarer votre vol. Vos données sont pré-copiées ci-dessous pour faciliter la saisie.</div>
+      <a id="btn-alphatango" class="at-box-btn"
+         href="https://alphatango.aviation-civile.gouv.fr"
+         target="_blank" rel="noopener">
+        🔗 Ouvrir AlphaTango ↗
+      </a>
+    </div>
+
+    <!-- Données à copier -->
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><h2>Données à copier dans AlphaTango</h2></div>
+      <div class="card-body">
+        <div class="info-note green" style="margin-bottom:10px;">
+          ✅ Appuyez sur "Copier" puis collez directement dans AlphaTango
+        </div>
+        <div class="copy-zone" id="copy-text"></div>
+        <button class="btn btn-primary btn-full" onclick="copyToClipboard()">📋 Copier tout</button>
+      </div>
+    </div>
+
+    <!-- Notification préfecture -->
+    <div class="card" id="card-prefecture" style="display:none;">
+      <div class="card-header"><span class="card-icon">🏛️</span><h2>Notification préfecture requise</h2></div>
+      <div class="card-body">
+        <div class="info-note warn" style="margin-bottom:10px;">
+          ⚠️ Ce vol nécessite une notification préfectorale <strong id="delai-txt"></strong> avant la date de début.
+        </div>
+        <button class="btn btn-amber btn-full" onclick="envoyerPrefecture()">
+          📧 Générer email préfecture
+        </button>
+      </div>
+    </div>
+
+    <!-- Sauvegarder -->
+    <div class="card">
+      <div class="card-header"><span class="card-icon">💾</span><h2>Sauvegarder la notification</h2></div>
+      <div class="card-body">
+        <div class="field-row full" style="margin-bottom:0;">
+          <div class="field"><label>Statut</label>
+            <select id="f-statut">
+              <option value="planifie">Planifié</option>
+              <option value="notifie">Notifié AlphaTango</option>
+              <option value="autorise">Autorisé</option>
+              <option value="effectue">Effectué</option>
+              <option value="annule">Annulé</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-green btn-full" onclick="sauvegarderNotification()">
+            💾 Sauvegarder dans le registre
+          </button>
+        </div>
+        <div class="info-note" style="margin-top:8px;">La notification sera visible dans le carnet de vol.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /content -->
+
+<!-- ACTIONS BAR -->
+<div id="actions-panel">
+  <button class="btn btn-outline" id="btn-prev" onclick="prevStep()" style="display:none;">← Retour</button>
+  <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Suivant →</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  UAS Manager — Notification de vol AlphaTango
+//  © Philippe CONTE · FRAjqq48j12nfy4c
+// ═══════════════════════════════════════════════════════════
+
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+
+// ─── CONFIG ──────────────────────────────────────────────
+function getConfig() {
+  try { return JSON.parse(localStorage.getItem('uas_config') || '{}'); } catch { return {}; }
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  const c = getConfig();
+
+  // Dates par défaut : aujourd'hui
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const tomorrowStr = new Date(today.getTime() + 86400000).toISOString().slice(0, 10);
+  document.getElementById('f-date-debut').value = todayStr;
+  document.getElementById('f-date-fin').value = todayStr;
+
+  // Pré-remplir commune/dept depuis config
+  if (c.ville) {
+    const parts = (c.ville || '').split(' ');
+    document.getElementById('f-commune').value = parts.slice(1).join(' ') || c.ville;
+    document.getElementById('f-dept').value = 'Haute-Savoie (74)';
+  }
+  document.getElementById('f-lat').value = '45.9523';
+  document.getElementById('f-lon').value = '6.5016';
+
+  // Tel pilote depuis config
+  if (c.tel) document.getElementById('f-tel').value = c.tel;
+
+  // Scénario depuis config
+  const sc = document.getElementById('f-scenario');
+  if (c.scenarios && c.scenarios.includes('S01')) sc.value = 'PDRA-S01';
+
+  // Altitude max depuis config
+  if (c.thr_alt_max) document.getElementById('f-alt-max').value = c.thr_alt_max;
+
+  // Populate drones
+  const drones = c.drones || [{ nom:'DJI Mavic 4 Pro', immat:'UAS-FR-517804', dri:'FRAjqq48j12nfy4cvsy', mtom:'956' }];
+  const droneSelect = document.getElementById('f-drone');
+  droneSelect.innerHTML = drones.map((d,i) =>
+    `<option value="${i}">${d.primary ? '⭐ ' : ''}${d.nom}</option>`
+  ).join('');
+  droneSelect.addEventListener('change', () => fillDroneFields(drones));
+  fillDroneFields(drones);
+
+  // Populate pilotes
+  const pilots = c.pilots || [{ nom:'CONTE Philippe' }];
+  const obs = c.observers || [];
+  const rpicSel = document.getElementById('f-rpic');
+  rpicSel.innerHTML = pilots.map(p => `<option value="${p.nom}">${p.primary ? '⭐ ' : ''}${p.nom}</option>`).join('');
+
+  const obsList = [{ nom:'— Aucun —' }, ...obs, ...pilots.filter(p => !p.primary)];
+  ['f-obs1','f-obs2','f-obs3'].forEach(id => {
+    document.getElementById(id).innerHTML = obsList.map(o =>
+      `<option value="${o.nom === '— Aucun —' ? '' : o.nom}">${o.nom}</option>`
+    ).join('');
+  });
+
+  // Délai info
+  updateDelaiInfo();
+  document.getElementById('f-date-debut').addEventListener('change', updateDelaiInfo);
+  document.getElementById('f-scenario').addEventListener('change', updateDelaiInfo);
+}
+
+function fillDroneFields(drones) {
+  const idx = parseInt(document.getElementById('f-drone').value) || 0;
+  const d = drones[idx] || {};
+  document.getElementById('f-immat').value = d.immat || '';
+  document.getElementById('f-dri').value = d.dri || '';
+  document.getElementById('f-mtom').value = d.mtom ? d.mtom + ' g' : '';
+}
+
+// ─── DÉLAI PRÉFECTURE ─────────────────────────────────────
+function updateDelaiInfo() {
+  const c = getConfig();
+  const delai = parseInt(c.notif_delai) || 10;
+  const scenario = document.getElementById('f-scenario').value;
+  const dateDebut = document.getElementById('f-date-debut').value;
+
+  const needsNotif = !['A1','A2','A3'].includes(scenario);
+  const el = document.getElementById('delai-info');
+
+  if (!needsNotif) {
+    el.textContent = '✅ Catégorie Ouverte : pas de notification préfecture requise.';
+    el.className = 'info-note green';
+    return;
+  }
+
+  if (dateDebut) {
+    const debut = new Date(dateDebut);
+    const notifDate = new Date(debut);
+    // Calculer la date limite (jours ouvrés approximatif)
+    let ouvrés = 0;
+    const limit = new Date();
+    while (ouvrés < delai) {
+      limit.setDate(limit.getDate() + 1);
+      const dow = limit.getDay();
+      if (dow !== 0 && dow !== 6) ouvrés++;
+    }
+    const limitStr = limit.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'});
+    const daysLeft = Math.floor((debut - new Date()) / 86400000);
+
+    if (daysLeft < delai * 1.4) {
+      el.innerHTML = `⚠️ Notification préfecture requise <strong>${delai} jours ouvrés</strong> avant le vol. Date limite estimée : <strong>aujourd'hui</strong> (vol trop proche).`;
+      el.className = 'info-note warn';
+    } else {
+      el.innerHTML = `✅ Notification préfecture à envoyer avant le <strong>${limitStr}</strong> (${delai} jours ouvrés avant vol).`;
+      el.className = 'info-note green';
+    }
+  } else {
+    el.innerHTML = `ℹ️ Scénario <strong>${scenario}</strong> — notification préfecture requise <strong>${delai} jours ouvrés</strong> avant le vol.`;
+    el.className = 'info-note';
+  }
+}
+
+// ─── GPS ──────────────────────────────────────────────────
+function getGPSPosition() {
+  if (!navigator.geolocation) { showToast('⚠️ GPS non disponible', 'amber'); return; }
+  showToast('⏳ Acquisition GPS…');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById('f-lat').value = pos.coords.latitude.toFixed(5);
+      document.getElementById('f-lon').value = pos.coords.longitude.toFixed(5);
+      showToast('📍 Position GPS acquise', '');
+    },
+    () => showToast('❌ GPS refusé', 'red'),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+// ─── STEPPER ──────────────────────────────────────────────
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+  currentStep = n;
+  renderStep();
+}
+
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep < TOTAL_STEPS) { currentStep++; renderStep(); }
+}
+
+function prevStep() {
+  if (currentStep > 1) { currentStep--; renderStep(); }
+}
+
+function validateStep(n) {
+  if (n === 1) {
+    const site = document.getElementById('f-site').value.trim();
+    const commune = document.getElementById('f-commune').value.trim();
+    const dateDebut = document.getElementById('f-date-debut').value;
+    if (!site) { showToast('⚠️ Nom du site requis', 'amber'); return false; }
+    if (!commune) { showToast('⚠️ Commune requise', 'amber'); return false; }
+    if (!dateDebut) { showToast('⚠️ Date de début requise', 'amber'); return false; }
+  }
+  return true;
+}
+
+function renderStep() {
+  // Sections
+  document.querySelectorAll('.step-section').forEach((s,i) => {
+    s.classList.toggle('active', i + 1 === currentStep);
+  });
+
+  // Nav items
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const nav = document.getElementById(`nav-${i}`);
+    nav.classList.remove('active','done');
+    if (i === currentStep) nav.classList.add('active');
+    else if (i < currentStep) nav.classList.add('done');
+    // Update circle
+    const circle = nav.querySelector('.step-circle');
+    circle.textContent = i < currentStep ? '✓' : i;
+  }
+
+  // Boutons
+  document.getElementById('btn-prev').style.display = currentStep > 1 ? 'flex' : 'none';
+  const btnNext = document.getElementById('btn-next');
+  if (currentStep === TOTAL_STEPS) {
+    btnNext.style.display = 'none';
+  } else {
+    btnNext.style.display = 'flex';
+    btnNext.textContent = currentStep === 3 ? 'Préparer l\'envoi →' : 'Suivant →';
+  }
+
+  // Étape 3 : générer le récap
+  if (currentStep === 3) buildRecap();
+
+  // Étape 4 : générer le texte à copier
+  if (currentStep === 4) buildCopyText();
+
+  window.scrollTo(0, 0);
+}
+
+// ─── RÉCAPITULATIF ────────────────────────────────────────
+function getFormData() {
+  const c = getConfig();
+  const drones = c.drones || [{}];
+  const droneIdx = parseInt(document.getElementById('f-drone').value) || 0;
+  const drone = drones[droneIdx] || {};
+  return {
+    // Zone
+    site:      document.getElementById('f-site').value,
+    commune:   document.getElementById('f-commune').value,
+    dept:      document.getElementById('f-dept').value,
+    lat:       document.getElementById('f-lat').value,
+    lon:       document.getElementById('f-lon').value,
+    rayon:     document.getElementById('f-rayon').value,
+    // Dates
+    dateDebut: document.getElementById('f-date-debut').value,
+    dateFin:   document.getElementById('f-date-fin').value,
+    heureDebut:document.getElementById('f-heure-debut').value,
+    heureFin:  document.getElementById('f-heure-fin').value,
+    scenario:  document.getElementById('f-scenario').value,
+    altMax:    document.getElementById('f-alt-max').value,
+    objectif:  document.getElementById('f-objectif').value,
+    // Drone
+    drone:     drone.nom || document.getElementById('f-drone').options[document.getElementById('f-drone').selectedIndex]?.text || '',
+    immat:     document.getElementById('f-immat').value,
+    dri:       document.getElementById('f-dri').value,
+    mtom:      document.getElementById('f-mtom').value,
+    // Équipe
+    rpic:      document.getElementById('f-rpic').value,
+    obs1:      document.getElementById('f-obs1').value,
+    obs2:      document.getElementById('f-obs2').value,
+    obs3:      document.getElementById('f-obs3').value,
+    notes:     document.getElementById('f-notes').value,
+    tel:       document.getElementById('f-tel').value,
+    telUrgence:document.getElementById('f-tel-urgence').value,
+    freq:      document.getElementById('f-freq').value,
+    // Config
+    alphatango: c.alphatango || 'FRAjqq48j12nfy4c',
+    nom:        c.nom || 'CONTE Philippe',
+    cats:       c.cats || 'NLD-RP-q99cvjjh51fz',
+    assurance:  c.assurance || 'CDA22411846EUR',
+    assureur:   c.assureur || 'COVERDRONE',
+    manex:      c.manex || 'MANEX_Philippe_V5.1_2026',
+  };
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function buildRecap() {
+  const d = getFormData();
+  const obs = [d.obs1, d.obs2, d.obs3].filter(Boolean).join(', ') || '—';
+
+  document.getElementById('recap-content').innerHTML = `
+    <div class="recap-block">
+      <h3>📍 Zone d'opération</h3>
+      <div class="recap-row"><span class="recap-label">Site</span><span class="recap-val">${d.site}</span></div>
+      <div class="recap-row"><span class="recap-label">Commune</span><span class="recap-val">${d.commune} · ${d.dept}</span></div>
+      <div class="recap-row"><span class="recap-label">Coordonnées</span><span class="recap-val">${d.lat}, ${d.lon}</span></div>
+      <div class="recap-row"><span class="recap-label">Rayon opération</span><span class="recap-val">${d.rayon} m</span></div>
+    </div>
+    <div class="recap-block">
+      <h3>📅 Dates & mission</h3>
+      <div class="recap-row"><span class="recap-label">Début</span><span class="recap-val">${fmtDate(d.dateDebut)} à ${d.heureDebut}</span></div>
+      <div class="recap-row"><span class="recap-label">Fin</span><span class="recap-val">${fmtDate(d.dateFin)} à ${d.heureFin}</span></div>
+      <div class="recap-row"><span class="recap-label">Scénario</span><span class="recap-val">${d.scenario}</span></div>
+      <div class="recap-row"><span class="recap-label">Altitude max</span><span class="recap-val">${d.altMax} m AGL</span></div>
+      <div class="recap-row"><span class="recap-label">Objectif</span><span class="recap-val">${d.objectif || '—'}</span></div>
+    </div>
+    <div class="recap-block">
+      <h3>🛸 Drone & équipe</h3>
+      <div class="recap-row"><span class="recap-label">Drone</span><span class="recap-val">${d.drone}</span></div>
+      <div class="recap-row"><span class="recap-label">Immatriculation</span><span class="recap-val">${d.immat}</span></div>
+      <div class="recap-row"><span class="recap-label">RPIC</span><span class="recap-val">${d.rpic}</span></div>
+      <div class="recap-row"><span class="recap-label">Observateurs</span><span class="recap-val">${obs}</span></div>
+      <div class="recap-row"><span class="recap-label">Tel. pilote</span><span class="recap-val">${d.tel || '—'}</span></div>
+    </div>
+    <div class="recap-block">
+      <h3>📋 Références exploitant</h3>
+      <div class="recap-row"><span class="recap-label">AlphaTango</span><span class="recap-val">${d.alphatango}</span></div>
+      <div class="recap-row"><span class="recap-label">CATS</span><span class="recap-val">${d.cats}</span></div>
+      <div class="recap-row"><span class="recap-label">Assurance</span><span class="recap-val">${d.assurance} · ${d.assureur}</span></div>
+      <div class="recap-row"><span class="recap-label">MANEX</span><span class="recap-val">${d.manex}</span></div>
+    </div>
+  `;
+}
+
+function buildCopyText() {
+  const d = getFormData();
+  const obs = [d.obs1, d.obs2, d.obs3].filter(Boolean).join(' / ') || 'Aucun';
+  const scenario = document.getElementById('f-scenario').value;
+  const needsPref = !['A1','A2','A3'].includes(scenario);
+
+  const c = getConfig();
+  const delai = parseInt(c.notif_delai) || 10;
+
+  // Afficher/masquer carte préfecture
+  document.getElementById('card-prefecture').style.display = needsPref ? 'block' : 'none';
+  document.getElementById('delai-txt').textContent = `${delai} jours ouvrés avant`;
+
+  const text =
+`═══════════════════════════════════════
+NOTIFICATION DE VOL UAS
+${new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'2-digit',month:'long',year:'numeric'})}
+═══════════════════════════════════════
+
+EXPLOITANT
+• Nom         : ${d.nom}
+• AlphaTango  : ${d.alphatango}
+• CATS        : ${d.cats}
+• Assurance   : ${d.assurance} (${d.assureur})
+• MANEX       : ${d.manex}
+• Tél         : ${d.tel || '—'}
+
+ZONE D'OPÉRATION
+• Site        : ${d.site}
+• Commune     : ${d.commune} — ${d.dept}
+• Lat / Lon   : ${d.lat} / ${d.lon}
+• Rayon       : ${d.rayon} m
+
+DATES & HORAIRES
+• Début       : ${fmtDate(d.dateDebut)} à ${d.heureDebut} (heure locale)
+• Fin         : ${fmtDate(d.dateFin)} à ${d.heureFin} (heure locale)
+• Scénario    : ${d.scenario}
+• Alt. max    : ${d.altMax} m AGL
+• Objectif    : ${d.objectif || '—'}
+
+UAS
+• Modèle      : ${d.drone}
+• Immat.      : ${d.immat}
+• DRI         : ${d.dri}
+• MTOM        : ${d.mtom}
+
+ÉQUIPE DE VOL
+• RPIC        : ${d.rpic}
+• Observateurs: ${obs}
+${d.freq ? `• Fréquence   : ${d.freq}` : ''}
+${d.notes ? `\nNOTES\n${d.notes}` : ''}
+
+═══════════════════════════════════════
+Généré par UAS Manager · FRAjqq48j12nfy4c
+═══════════════════════════════════════`;
+
+  document.getElementById('copy-text').textContent = text;
+}
+
+// ─── COPY ─────────────────────────────────────────────────
+async function copyToClipboard() {
+  const text = document.getElementById('copy-text').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('✅ Copié ! Collez dans AlphaTango');
+  } catch {
+    // Fallback sélection manuelle
+    const el = document.getElementById('copy-text');
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    showToast('📋 Texte sélectionné — copier manuellement');
+  }
+}
+
+// ─── EMAIL PRÉFECTURE ─────────────────────────────────────
+function envoyerPrefecture() {
+  const c = getConfig();
+  const d = getFormData();
+  const to = c.notif_pref_email || '';
+  const cc = c.notif_pref_cc || '';
+  const delai = parseInt(c.notif_delai) || 10;
+  const sujet = encodeURIComponent(`[Déclaration zone UAS] ${d.nom} · ${d.alphatango} · ${fmtDate(d.dateDebut)}`);
+  const obs = [d.obs1, d.obs2, d.obs3].filter(Boolean).join(', ') || 'Aucun';
+  const body = encodeURIComponent(
+`Madame, Monsieur,
+
+Conformément à la réglementation UAS en vigueur, je vous informe de la réalisation de vols par aéronef sans pilote à bord dans un délai de ${delai} jours ouvrés.
+
+EXPLOITANT
+Nom : ${d.nom}
+N° AlphaTango : ${d.alphatango}
+N° CATS : ${d.cats}
+Assurance : ${d.assurance} — ${d.assureur}
+Téléphone : ${d.tel || '—'}
+
+ZONE D'OPÉRATION
+Site : ${d.site}
+Commune : ${d.commune} — ${d.dept}
+Coordonnées : ${d.lat}° N / ${d.lon}° E
+Rayon : ${d.rayon} m
+
+DATES & HORAIRES
+Du ${fmtDate(d.dateDebut)} à ${d.heureDebut}
+Au ${fmtDate(d.dateFin)} à ${d.heureFin}
+Scénario : ${d.scenario}
+Altitude maximale : ${d.altMax} m AGL
+Objectif : ${d.objectif || 'Non précisé'}
+
+UAS UTILISÉ
+Modèle : ${d.drone}
+Immatriculation : ${d.immat}
+MTOM : ${d.mtom}
+
+RPIC : ${d.rpic}
+Observateurs : ${obs}
+
+Je reste à votre disposition pour tout renseignement complémentaire.
+
+Cordialement,
+${d.nom}
+${d.tel || ''}
+`);
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  if (!to) {
+    showToast('⚠️ Email préfecture non configuré — voir Config', 'amber');
+    return;
+  }
+  window.open(`mailto:${to}${ccPart}?subject=${sujet}&body=${body}`);
+}
+
+// ─── SAUVEGARDER ─────────────────────────────────────────
+function sauvegarderNotification() {
+  const d = getFormData();
+  const statut = document.getElementById('f-statut').value;
+  try {
+    const existing = JSON.parse(localStorage.getItem('uas_notifications') || '[]');
+    const notif = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      statut,
+      site: d.site,
+      commune: d.commune,
+      dateDebut: d.dateDebut,
+      dateFin: d.dateFin,
+      heureDebut: d.heureDebut,
+      heureFin: d.heureFin,
+      scenario: d.scenario,
+      altMax: d.altMax,
+      objectif: d.objectif,
+      drone: d.drone,
+      immat: d.immat,
+      rpic: d.rpic,
+      obs1: d.obs1,
+      obs2: d.obs2,
+      obs3: d.obs3,
+      lat: d.lat,
+      lon: d.lon,
+      rayon: d.rayon,
+      notes: d.notes,
+    };
+    existing.unshift(notif);
+    localStorage.setItem('uas_notifications', JSON.stringify(existing));
+    showToast('✅ Notification sauvegardée');
+  } catch {
+    showToast('❌ Erreur sauvegarde', 'red');
+  }
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `visible ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3200);
+}
+
+// ─── START ────────────────────────────────────────────────
+init();
+renderStep();
+</script>
+</body>
+</html>
