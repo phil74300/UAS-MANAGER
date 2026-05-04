@@ -1,861 +1,422 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///Users/contephilippe/Downloads/rex_3.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>REX Incidents — UAS Manager</title>
+<title>UAS Manager — REX / Incidents</title>
 <style>
-  :root {
-    --navy:        #0C447C;
-    --blue:        #185FA5;
-    --light-blue:  #E6F1FB;
-    --green:       #1D6B37;
-    --light-green: #E8F5E9;
-    --amber:       #BA7517;
-    --light-amber: #FAEEDA;
-    --red:         #8B2020;
-    --light-red:   #FDECEC;
-    --teal:        #006064;
-    --gray:        #6B7280;
-    --bg:          #F5F7FA;
-    --surface:     #FFFFFF;
-    --border:      #DDE3EC;
-    --text:        #1A202C;
-    --text-muted:  #6B7280;
-    --radius:      12px;
-    --shadow:      0 2px 12px rgba(12,68,124,0.10);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0E1620; --surface: #162030; --border: #243248;
-      --text: #E8EEF6; --text-muted: #8A9BB5;
-      --light-blue: #162A42; --light-green: #0F2A1A;
-      --light-amber: #2A1E08; --light-red: #2A0F0F;
-    }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
-    background: var(--bg); color: var(--text);
-    min-height: 100vh;
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  }
-
-  /* ── Header ── */
-  .header {
-    background: var(--navy); color: #fff;
-    padding: calc(env(safe-area-inset-top) + 12px) 16px 14px;
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .header-icon { font-size: 22px; }
-  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
-  .header-sub { font-size: 11px; opacity: .7; margin-top: 1px; }
-
-  /* ── DSAC Critical Banner ── */
-  .dsac-banner {
-    display: none;
-    margin: 12px 16px 0;
-    background: var(--red); color: #fff;
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    font-weight: 700; font-size: 13px;
-    flex-direction: column; gap: 8px;
-    box-shadow: 0 4px 16px rgba(139,32,32,.35);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  .dsac-banner.show { display: flex; }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 4px 16px rgba(139,32,32,.35); }
-    50%       { box-shadow: 0 4px 28px rgba(139,32,32,.70); }
-  }
-  .dsac-banner-title { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-  .dsac-banner-sub   { font-size: 12px; font-weight: 400; opacity: .9; }
-  .dsac-btn {
-    background: #fff; color: var(--red);
-    border: none; border-radius: 8px;
-    padding: 9px 14px; font-size: 13px; font-weight: 700;
-    cursor: pointer; width: 100%; display: flex; align-items: center;
-    justify-content: center; gap: 6px;
-    transition: opacity .15s;
-  }
-  .dsac-btn:active { opacity: .8; }
-
-  /* ── Alert Banner light ── */
-  .alert-banner {
-    display: none; margin: 8px 16px 0;
-    border-radius: var(--radius); padding: 10px 14px;
-    font-size: 13px; font-weight: 600;
-    align-items: center; gap: 8px;
-  }
-  .alert-banner.amber { display: flex; background: var(--light-amber); color: var(--amber); border: 1.5px solid #E8A030; }
-  .alert-banner .alert-icon { font-size: 16px; }
-
-  /* ── Section ── */
-  .section { margin: 14px 16px 0; }
-  .section-title {
-    font-size: 11px; font-weight: 700; color: var(--navy);
-    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px;
-  }
-
-  /* ── Card ── */
-  .card {
-    background: var(--surface); border-radius: var(--radius);
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .card + .card { margin-top: 10px; }
-
-  /* ── Card Row ── */
-  .card-row {
-    display: flex; align-items: center;
-    padding: 13px 16px; gap: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .card-row:last-child { border-bottom: none; }
-  .row-label { font-size: 13px; color: var(--text-muted); min-width: 120px; flex-shrink: 0; }
-  .row-value  { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
-
-  /* ── Badge ── */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
-  }
-  .badge-green  { background: var(--light-green); color: var(--green); }
-  .badge-amber  { background: var(--light-amber); color: var(--amber); }
-  .badge-red    { background: var(--light-red);   color: var(--red); }
-  .badge-gray   { background: var(--border);      color: var(--gray); }
-  .badge-blue   { background: var(--light-blue);  color: var(--blue); }
-
-  /* ── Severity Pill ── */
-  .sev-1 { background: #FFF8E1; color: #F57F17; }
-  .sev-2 { background: #FFF3E0; color: #E65100; }
-  .sev-3 { background: var(--light-red); color: var(--red); }
-
-  /* ── Form ── */
-  .form-row {
-    display: flex; flex-direction: column;
-    padding: 12px 16px; gap: 6px;
-    border-bottom: 1px solid var(--border);
-  }
-  .form-row:last-child { border-bottom: none; }
-  .form-label {
-    font-size: 12px; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: .5px;
-  }
-  .form-input, .form-select, .form-textarea {
-    width: 100%; padding: 10px 12px;
-    background: var(--bg); border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: 15px; color: var(--text);
-    font-family: inherit; -webkit-appearance: none; appearance: none;
-    transition: border-color .2s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    outline: none; border-color: var(--blue);
-  }
-  .form-textarea { min-height: 80px; resize: vertical; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* ── Toggle ── */
-  .toggle-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 16px; border-bottom: 1px solid var(--border);
-  }
-  .toggle-row:last-child { border-bottom: none; }
-  .toggle-label { font-size: 14px; font-weight: 500; }
-  .toggle-sub   { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-  .toggle {
-    position: relative; width: 51px; height: 31px; flex-shrink: 0;
-  }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .toggle-slider {
-    position: absolute; inset: 0; background: var(--border);
-    border-radius: 31px; cursor: pointer; transition: .2s;
-  }
-  .toggle-slider::before {
-    content: ''; position: absolute;
-    width: 27px; height: 27px; left: 2px; bottom: 2px;
-    background: #fff; border-radius: 50%;
-    box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: .2s;
-  }
-  input:checked + .toggle-slider { background: var(--green); }
-  input:checked + .toggle-slider::before { transform: translateX(20px); }
-
-  /* ── Timer ── */
-  .timer-widget {
-    padding: 14px 16px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .timer-ring {
-    width: 56px; height: 56px; flex-shrink: 0;
-    position: relative;
-  }
-  .timer-ring svg { transform: rotate(-90deg); }
-  .timer-ring-text {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: var(--text);
-  }
-  .timer-info-title { font-size: 14px; font-weight: 700; }
-  .timer-info-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-  /* ── Tab Bar ── */
-  
-  .tab-btn {
-    flex: 1; padding: 9px 4px; border: none; border-radius: 8px;
-    background: transparent; cursor: pointer;
-    font-size: 12px; font-weight: 600; color: var(--text-muted);
-    transition: background .2s, color .2s;
-  }
-  .tab-btn.active { background: var(--navy); color: #fff; }
-
-  /* ── Btn ── */
-  .btn {
-    width: 100%; padding: 14px; border-radius: var(--radius); border: none;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-    transition: opacity .15s, transform .1s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn:active { opacity: .8; transform: scale(.98); }
-  .btn-primary { background: var(--blue); color: #fff; }
-  .btn-green   { background: var(--green); color: #fff; }
-  .btn-danger  { background: var(--red); color: #fff; }
-  .btn-ghost   { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); }
-  .btn-amber   { background: var(--amber); color: #fff; }
-
-  /* ── History ── */
-  .history-item {
-    padding: 12px 16px; border-bottom: 1px solid var(--border);
-    display: flex; gap: 12px; align-items: flex-start;
-  }
-  .history-item:last-child { border-bottom: none; }
-  .history-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0; margin-top: 1px;
-  }
-  .history-body { flex: 1; }
-  .history-title { font-size: 14px; font-weight: 600; }
-  .history-meta  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .history-tags  { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-  .history-desc  { font-size: 13px; margin-top: 4px; color: var(--text); font-style: italic; }
-
-  /* ── CRESUS Btn ── */
-  .cresus-btn {
-    background: var(--light-blue); color: var(--blue);
-    border: 1.5px solid var(--blue); border-radius: 8px;
-    padding: 9px 12px; font-size: 13px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; gap: 6px;
-    transition: background .15s;
-  }
-  .cresus-btn:active { background: var(--blue); color: #fff; }
-
-  /* ── Bottom Nav ── */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--surface); border-top: 1px solid var(--border);
-    display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-    box-shadow: 0 -4px 20px rgba(0,0,0,.08); z-index: 200;
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; gap: 2px; text-decoration: none;
-    font-size: 10px; font-weight: 600; color: var(--text-muted); padding: 4px 0;
-  }
-  .nav-item.active { color: var(--blue); }
-  .nav-item .nav-icon { font-size: 22px; line-height: 1; }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed; bottom: calc(90px + env(safe-area-inset-bottom));
-    left: 16px; right: 16px;
-    background: var(--navy); color: #fff;
-    padding: 12px 16px; border-radius: var(--radius);
-    font-size: 14px; font-weight: 600; display: none;
-    align-items: center; gap: 8px; z-index: 500;
-    box-shadow: 0 8px 24px rgba(0,0,0,.2);
-  }
-  .toast.show { display: flex; animation: slideUp .3s ease; }
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-
-  .empty { text-align: center; padding: 32px 16px; color: var(--text-muted); }
-  .empty-icon { font-size: 40px; display: block; margin-bottom: 8px; }
-
-/* ══ UNIFIED BOTTOM NAV ══ */
-
-@media(prefers-color-scheme:dark){
-  
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,.10);
+  --radius:14px;--header-h:56px;
 }
-
-
-
-
-
-
 @media(prefers-color-scheme:dark){
-  
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-teal:#003030;}
 }
-
-
-
-
-  /* ─── BOUTON RETOUR ACCUEIL ─── */
-  .back-btn {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.28); }
-
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+#header{position:sticky;top:0;z-index:200;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 16px 0;height:calc(var(--header-h) + env(safe-area-inset-top));box-shadow:0 2px 12px rgba(12,68,124,.3);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80%,rgba(139,32,32,.3),transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+.hdr-actions{display:flex;gap:8px;align-items:center;position:relative;z-index:1;}
+.btn-hdr{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+.kpi-strip{display:flex;gap:10px;padding:12px 14px 4px;overflow-x:auto;scrollbar-width:none;}
+.kpi-strip::-webkit-scrollbar{display:none;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:10px 13px;min-width:90px;flex:1;}
+.kpi-card.green{border-top-color:var(--green);}
+.kpi-card.amber{border-top-color:var(--amber);}
+.kpi-card.red{border-top-color:var(--red);}
+.kpi-value{font-size:19px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.kpi-value{color:#7EB8F7;}}
+.kpi-label{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.2;}
+.list-toolbar{padding:10px 14px 6px;display:flex;gap:8px;align-items:center;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;outline:none;}
+.search-wrap input:focus{border-color:var(--blue);}
+.search-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+.btn-add{background:var(--red);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+.filter-row{display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+#list-area{padding:0 14px calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.rex-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s both;}
+.rex-card.grave{border-color:var(--red);}
+.rex-card.modere{border-color:var(--amber);}
+.rex-card.cloture{border-color:var(--green);opacity:.85;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.rex-top{display:flex;align-items:flex-start;gap:10px;padding:11px 12px 8px;}
+.rex-grav-pill{width:8px;flex-shrink:0;border-radius:4px;align-self:stretch;margin-top:2px;}
+.rex-main{flex:1;min-width:0;}
+.rex-titre{font-size:14px;font-weight:800;line-height:1.2;}
+.rex-meta{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+.badge-grave{background:var(--light-red);color:var(--red);}
+.badge-modere{background:var(--light-amber);color:var(--amber);}
+.badge-mineur{background:var(--light-blue);color:var(--blue);}
+.badge-info{background:var(--light-teal);color:var(--teal);}
+.badge-cloture{background:var(--light-green);color:var(--green);}
+.rex-body{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px;}
+.rex-field-label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px;}
+.rex-field-val{font-size:12px;color:var(--text);line-height:1.4;}
+.rex-foot{padding:8px 12px;background:rgba(0,0,0,.02);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;}
+.rex-status-row{display:flex;gap:6px;}
+.btn-sm{border:none;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-edit{background:var(--light-blue);color:var(--blue);}
+.btn-del{background:var(--light-red);color:var(--red);}
+.btn-cloture{background:var(--light-green);color:var(--green);}
+.dsac-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--light-amber);color:var(--amber);}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--surface);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.23,1);padding-bottom:calc(28px + env(safe-area-inset-bottom));}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.modal-header{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:5;}
+.modal-title{font-size:17px;font-weight:800;color:var(--red);}
+.btn-close{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);font-family:inherit;}
+.form-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.fsec{font-size:11px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:1px;padding:4px 0 3px;border-bottom:2px solid var(--light-red);margin-top:2px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.frow.tri{grid-template-columns:1fr 1fr 1fr;}
+.frow.full{grid-template-columns:1fr;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+.fgroup label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.fgroup input,.fgroup select,.fgroup textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit;-webkit-appearance:none;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(139,32,32,.12);}
+.fgroup textarea{resize:vertical;min-height:60px;}
+.submit-row{display:flex;gap:10px;margin-top:6px;}
+.btn-submit{flex:1;padding:13px;border-radius:12px;border:none;background:var(--red);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cancel{padding:13px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.confirm-overlay.open{opacity:1;pointer-events:all;}
+.confirm-box{background:var(--surface);border-radius:18px;padding:24px;max-width:320px;width:90%;text-align:center;}
+.confirm-box h3{font-size:17px;font-weight:800;margin-bottom:8px;}
+.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:18px;}
+.confirm-btns{display:flex;gap:10px;}
+.confirm-btns button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-cc{background:var(--bg);color:var(--text);}
+.btn-cd{background:var(--red);color:#fff;}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(50px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-
-<!-- Header -->
-<div class="header">
-  <div class="header-icon">⚠️</div>
-  <div>
-    <h1>REX — Incidents</h1>
-    <div class="header-sub">Retour d'expérience · CONTE Philippe</div>
+<header id="header">
+  <h1>⚠️ REX / Incidents</h1>
+  <div class="hdr-actions">
+    <button class="btn-hdr" onclick="openModal()" title="Nouvel incident">＋</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
   </div>
-  <a class="back-btn" href="index.html">← Accueil</a>
+</header>
+
+<div class="kpi-strip">
+  <div class="kpi-card red"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">Total REX</div></div>
+  <div class="kpi-card amber"><div class="kpi-value" id="kpiOuverts">0</div><div class="kpi-label">Ouverts</div></div>
+  <div class="kpi-card green"><div class="kpi-value" id="kpiClotures">0</div><div class="kpi-label">Clôturés</div></div>
+  <div class="kpi-card"><div class="kpi-value" id="kpiDsac">0</div><div class="kpi-label">Décl. DSAC</div></div>
 </div>
 
-<!-- DSAC Critical Banner -->
-<div class="dsac-banner" id="dsacBanner">
-  <div class="dsac-banner-title">🚨 DÉCLARATION DSAC REQUISE — délai dépassé</div>
-  <div class="dsac-banner-sub" id="dsacBannerSub"></div>
-  <button class="dsac-btn" onclick="openCresus()">
-    🔗 Ouvrir le formulaire CRESUS (PDF)
-  </button>
+<div class="list-toolbar">
+  <div class="search-wrap"><input type="text" id="searchInput" placeholder="Rechercher incident…" oninput="renderList()"></div>
+  <button class="btn-add" onclick="openModal()">＋ REX</button>
 </div>
 
-<!-- Alert Banner (72h restantes) -->
-<div class="alert-banner" id="alertBanner">
-  <span class="alert-icon">⏱</span>
-  <span id="alertText"></span>
+<div class="filter-row">
+  <div class="chip active" data-filter="all" onclick="setFilter(this,'all')">Tous</div>
+  <div class="chip" data-filter="grave" onclick="setFilter(this,'grave')">🔴 Grave</div>
+  <div class="chip" data-filter="modere" onclick="setFilter(this,'modere')">🟠 Modéré</div>
+  <div class="chip" data-filter="mineur" onclick="setFilter(this,'mineur')">🟡 Mineur</div>
+  <div class="chip" data-filter="ouvert" onclick="setFilter(this,'ouvert')">🔓 Ouverts</div>
+  <div class="chip" data-filter="cloture" onclick="setFilter(this,'cloture')">✅ Clôturés</div>
+  <div class="chip" data-filter="dsac" onclick="setFilter(this,'dsac')">📋 DSAC</div>
 </div>
 
-<!-- Tabs -->
-<div class="section">
-  </div>
+<div id="list-area"></div>
 
-<!-- ── TAB : LISTE ── -->
-<div id="pane-liste">
-  <div class="section" style="margin-bottom:16px;">
-    <div class="card" id="incidentsList">
-      <div class="empty"><span class="empty-icon">🛡️</span>Aucun incident enregistré — bonne nouvelle !</div>
+<!-- ═══ MODAL SAISIE ═══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Nouvel incident / REX</span>
+      <button class="btn-close" onclick="closeModal()">Fermer</button>
+    </div>
+    <div class="form-body">
+      <div class="fsec">📋 Identification</div>
+      <div class="frow">
+        <div class="fgroup"><label>Date *</label><input type="date" id="fDate" required></div>
+        <div class="fgroup"><label>Heure</label><input type="time" id="fHeure"></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label>Site de vol</label><input type="text" id="fSite" placeholder="Lieu de l'événement"></div>
+        <div class="fgroup"><label>UAS</label><input type="text" id="fUAS" placeholder="DJI Mavic 4 Pro"></div>
+      </div>
+
+      <div class="fsec">⚠️ Événement</div>
+      <div class="frow">
+        <div class="fgroup">
+          <label>Type d'événement *</label>
+          <select id="fType" required>
+            <option value="">-- Choisir --</option>
+            <option>Perte de liaison</option>
+            <option>Défaillance matérielle</option>
+            <option>Atterrissage d'urgence</option>
+            <option>Conflit trafic aérien</option>
+            <option>Violation espace aérien</option>
+            <option>Blessure / dommages tiers</option>
+            <option>Crash / crash-land</option>
+            <option>Incendie batterie</option>
+            <option>Perte de contrôle</option>
+            <option>Anomalie GPS / navigation</option>
+            <option>Conditions météo dégradées</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Phase de vol</label>
+          <select id="fPhase">
+            <option value="">--</option>
+            <option>Pré-vol</option><option>Décollage</option>
+            <option>En vol</option><option>Atterrissage</option><option>Post-vol</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgroup">
+          <label>Gravité *</label>
+          <select id="fGravite" required>
+            <option value="">--</option>
+            <option value="info">ℹ️ Information</option>
+            <option value="mineur">🟡 Mineur</option>
+            <option value="modere">🟠 Modéré</option>
+            <option value="grave">🔴 Grave</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>RPIC impliqué</label>
+          <input type="text" id="fRPIC" placeholder="Prénom Nom">
+        </div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Description de l'événement *</label><textarea id="fDesc" rows="4" placeholder="Décrivez les faits de manière factuelle et chronologique…" required></textarea></div>
+      </div>
+
+      <div class="fsec">🔍 Analyse</div>
+      <div class="frow full">
+        <div class="fgroup"><label>Facteurs contributifs</label><textarea id="fFacteurs" rows="2" placeholder="Conditions météo, fatigue, équipement défaillant…"></textarea></div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Actions correctives</label><textarea id="fActions" rows="2" placeholder="Mesures prises immédiatement et à long terme…"></textarea></div>
+      </div>
+
+      <div class="fsec">📋 Déclaration & Statut</div>
+      <div class="frow">
+        <div class="fgroup">
+          <label>Statut</label>
+          <select id="fStatut">
+            <option value="ouvert">🔓 Ouvert</option>
+            <option value="en_cours">🔄 En cours</option>
+            <option value="cloture">✅ Clôturé</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Déclaration DSAC</label>
+          <select id="fDsac">
+            <option value="non">Non requise</option>
+            <option value="a_faire">À faire</option>
+            <option value="faite">Faite</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label>Date déclaration DSAC</label><input type="date" id="fDsacDate"></div>
+        <div class="fgroup"><label>N° déclaration DSAC</label><input type="text" id="fDsacNum" placeholder="Référence DSAC"></div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Enseignements tirés (leçons apprises)</label><textarea id="fLecons" rows="2" placeholder="Que retenir de cet événement pour améliorer la sécurité ?"></textarea></div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Date de clôture</label><input type="date" id="fDateCloture"></div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-submit" onclick="saveRex()">💾 Enregistrer REX</button>
+        <button class="btn-cancel" onclick="closeModal()">✕ Annuler</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── TAB : SAISIE ── -->
-<div id="pane-saisie" style="display:none">
-  <div class="section">
-    <div class="section-title">Déclaration d'incident</div>
-    <div class="card">
-      <div class="form-row">
-        <label class="form-label">Date &amp; Heure de l'incident *</label>
-        <div class="form-grid">
-          <input type="date" class="form-input" id="incidentDate">
-          <input type="time" class="form-input" id="incidentTime">
-        </div>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Catégorie *</label>
-        <select class="form-select" id="incidentCategorie">
-          <option value="">— Sélectionner —</option>
-          <option value="Perte de contrôle">🔴 Perte de contrôle</option>
-          <option value="Défaillance technique">🔧 Défaillance technique</option>
-          <option value="Violation espace aérien">⛔ Violation espace aérien</option>
-          <option value="Collision / quasi-collision">💥 Collision / quasi-collision</option>
-          <option value="Perte de liaison RC">📡 Perte de liaison RC</option>
-          <option value="Défaillance batterie">🔋 Défaillance batterie</option>
-          <option value="Conditions météo">🌧 Conditions météo</option>
-          <option value="Incident tiers">👥 Incident tiers</option>
-          <option value="Autre">📌 Autre</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Gravité *</label>
-        <select class="form-select" id="incidentGravite">
-          <option value="">— Sélectionner —</option>
-          <option value="1">1 — Mineur (aucun dommage)</option>
-          <option value="2">2 — Significatif (dommages matériels)</option>
-          <option value="3">3 — Grave (blessures / dommages importants)</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Lieu de l'incident</label>
-        <input type="text" class="form-input" id="incidentLieu" placeholder="Commune, département…">
-      </div>
-      <div class="form-row">
-        <label class="form-label">N° de vol concerné</label>
-        <input type="text" class="form-input" id="incidentNumVol" placeholder="ex: VOL-2025-042">
-      </div>
-      <div class="form-row">
-        <label class="form-label">Description de l'incident *</label>
-        <textarea class="form-textarea" id="incidentDescription" placeholder="Décrivez les faits de manière factuelle et chronologique…"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Causes identifiées</label>
-        <textarea class="form-textarea" id="incidentCauses" placeholder="Causes techniques, humaines, environnementales…" style="min-height:60px;"></textarea>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Actions correctives</label>
-        <textarea class="form-textarea" id="incidentActions" placeholder="Mesures prises ou à prendre…" style="min-height:60px;"></textarea>
-      </div>
+<!-- Modal clôture rapide -->
+<div class="modal-overlay" id="clotureModal" onclick="closeCloture(event)">
+  <div class="modal-box" style="max-height:70vh;">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--green);">✅ Clôturer le REX</span>
+      <button class="btn-close" onclick="document.getElementById('clotureModal').classList.remove('open');document.body.style.overflow=''">Fermer</button>
     </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Déclaration DSAC (CRESUS)</div>
-    <div class="card">
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Déclaré sur CRESUS</div>
-          <div class="toggle-sub">Obligatoire pour incidents graves (72h)</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="declareDSAC" onchange="updateDSACFields()">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div id="dsacFields">
-        <div class="form-row">
-          <label class="form-label">Date de déclaration CRESUS</label>
-          <input type="date" class="form-input" id="dsacDate">
-        </div>
-        <div class="form-row">
-          <label class="form-label">N° de dossier CRESUS</label>
-          <input type="text" class="form-input" id="dsacNumero" placeholder="ex: CRESUS-2025-XXXXX">
-        </div>
-        <div class="form-row" style="padding-top:6px; gap:8px; display:flex; flex-direction:column;">
-          <button class="cresus-btn" onclick="openCresus()" style="width:100%;">
-            📄 Ouvrir le formulaire CRESUS (PDF)
-          </button>
-          <button class="cresus-btn" onclick="sendMailDSAC()" style="width:100%; background:var(--light-amber); color:var(--amber); border-color:var(--amber);">
-            📧 Envoyer par mail à la DSAC
-          </button>
-        </div>
-        <div style="padding:4px 16px 12px; font-size:11px; color:var(--text-muted); line-height:1.6;">
-          Destinataires pré-remplis :<br>
-          · dsac-autorisations-drones-bf@aviation-civile.gouv.fr<br>
-          · ag.dsac-ce@aviation-civile.gouv.fr
+    <div class="form-body">
+      <div class="fgroup"><label>Enseignements tirés *</label><textarea id="clotureLecons" rows="3" placeholder="Résumez les leçons apprises…" required></textarea></div>
+      <div class="fgroup"><label>Actions correctives finales</label><textarea id="clotureActions" rows="2" placeholder="Actions définitivement mises en place…"></textarea></div>
+      <div class="frow">
+        <div class="fgroup"><label>Date de clôture</label><input type="date" id="clotureDate"></div>
+        <div class="fgroup">
+          <label>Déclaration DSAC</label>
+          <select id="clotureDsac"><option value="non">Non requise</option><option value="faite">Faite</option></select>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="section" style="margin-bottom:16px;">
-    <div style="display:flex;gap:10px;">
-      <button class="btn btn-danger" style="flex:1;" onclick="saveIncident()">⚠️ Enregistrer l'incident</button>
-      <button onclick="resetIncidentForm()" class="btn" style="flex:0 0 auto;background:transparent;color:var(--text-muted,#5A6478);border:1.5px solid #ccc;">✕ Annuler</button>
+      <div class="submit-row">
+        <button class="btn-submit" style="background:var(--green);" onclick="confirmCloture()">✅ Clôturer</button>
+        <button class="btn-cancel" onclick="document.getElementById('clotureModal').classList.remove('open');document.body.style.overflow=''">Annuler</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── TAB : STATS ── -->
-<div id="pane-stats" style="display:none">
-  <div class="section">
-    <div class="section-title">Vue d'ensemble</div>
-    <div class="card">
-      <div class="card-row">
-        <div class="row-label">Total incidents</div>
-        <div class="row-value" id="statTotal">0</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">Non déclarés DSAC</div>
-        <div class="row-value" id="statNonDeclare">0</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">Gravité 3 (graves)</div>
-        <div class="row-value" id="statGraves">0</div>
-      </div>
-      <div class="card-row">
-        <div class="row-label">Dernier incident</div>
-        <div class="row-value" id="statDernier">—</div>
-      </div>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Supprimer ce REX ?</h3>
+    <p>Cette action est irréversible.</p>
+    <div class="confirm-btns">
+      <button class="btn-cc" onclick="cancelDel()">Annuler</button>
+      <button class="btn-cd" onclick="confirmDel()">Supprimer</button>
     </div>
   </div>
-
-  <div class="section">
-    <div class="section-title">Par catégorie</div>
-    <div class="card" id="statCategories">
-      <div class="empty"><span class="empty-icon">📊</span>Aucun incident</div>
-    </div>
-  </div>
-
-  <div class="section" style="margin-bottom:16px;">
-    <button class="btn btn-ghost" onclick="exportCSV()">⬇️ Exporter CSV</button>
-  </div>
 </div>
-
-<!-- Bottom Nav -->
-
-
-<!-- Toast -->
-<div class="toast" id="toast">
-  <span id="toastIcon">✅</span>
-  <span id="toastMsg"></span>
-</div>
+<div id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'uas_rex';
-const CRESUS_URL  = 'https://www.ecologie.gouv.fr/sites/default/files/documents/CRESUS_2022.pdf';
-const H72         = 72 * 3600 * 1000;
+'use strict';
+const KEY='uas_rex';
+let items=[],editId=null,deleteId=null,clotureId=null,activeFilter='all';
+function load(){try{items=JSON.parse(localStorage.getItem(KEY))||[];}catch{items=[];}}
+function save(){localStorage.setItem(KEY,JSON.stringify(items));}
+let toastTimer;
+function toast(msg,color='var(--navy)'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
 
-/* ── Helpers ── */
-function today() { return new Date().toISOString().split('T')[0]; }
-function nowTime() { return new Date().toTimeString().slice(0,5); }
-function fmt(d) { if (!d) return '—'; const [y,m,j]=d.split('-'); return `${j}/${m}/${y}`; }
-function load() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { incidents: [] }; }
-  catch { return { incidents: [] }; }
-}
-function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-function showToast(msg, icon='✅') {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  document.getElementById('toastIcon').textContent = icon;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+function updateKPIs(){
+  const total=items.length;
+  const ouverts=items.filter(i=>i.statut!=='cloture').length;
+  const clotures=items.filter(i=>i.statut==='cloture').length;
+  const dsac=items.filter(i=>i.dsac==='faite').length;
+  document.getElementById('kpiTotal').textContent=total;
+  document.getElementById('kpiOuverts').textContent=ouverts;
+  document.getElementById('kpiClotures').textContent=clotures;
+  document.getElementById('kpiDsac').textContent=dsac;
 }
 
-/* ── CRESUS ── */
-function openCresus() { window.open(CRESUS_URL, '_blank'); }
+function setFilter(el,f){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeFilter=f;renderList();}
 
-function sendMailDSAC() {
-  const to = 'dsac-autorisations-drones-bf@aviation-civile.gouv.fr;ag.dsac-ce@aviation-civile.gouv.fr';
-  const subject = encodeURIComponent('Déclaration incident UAS — CONTE Philippe — FRAjqq48j12nfy4c');
-  const date    = document.getElementById('incidentDate').value;
-  const cat     = document.getElementById('incidentCategorie').value;
-  const grav    = document.getElementById('incidentGravite').value;
-  const lieu    = document.getElementById('incidentLieu').value;
-  const numVol  = document.getElementById('incidentNumVol').value;
-  const desc    = document.getElementById('incidentDescription').value;
-  const causes  = document.getElementById('incidentCauses').value;
-  const actions = document.getElementById('incidentActions').value;
-
-  const body = encodeURIComponent(
-`Madame, Monsieur,
-
-Je vous adresse ci-joint le formulaire CRESUS complété relatif à l'incident suivant :
-
-EXPLOITANT
-──────────────────────────────
-Nom          : CONTE Philippe
-N° AlphaTango: FRAjqq48j12nfy4c
-Aéronef      : DJI Mavic 4 Pro — UAS-FR-517804
-CATS         : NLD-RP-q99cvjjh51fz
-Assurance    : COVERDRONE CDA22411846EUR
-Adresse      : 288, rue de la Concorde — 74300 THYEZ
-Tél.         : +33 6 20 42 55 11
-Email        : contephil74@gmail.com
-
-INCIDENT
-──────────────────────────────
-Date         : ${date || '—'}
-Catégorie    : ${cat || '—'}
-Gravité      : ${grav ? `Niveau ${grav}` : '—'}
-Lieu         : ${lieu || '—'}
-N° vol       : ${numVol || '—'}
-
-Description  :
-${desc || '—'}
-
-Causes identifiées :
-${causes || '—'}
-
-Actions correctives :
-${actions || '—'}
-
-──────────────────────────────
-Veuillez trouver en pièce jointe le formulaire CRESUS dûment complété.
-(Formulaire disponible : https://www.ecologie.gouv.fr/sites/default/files/documents/CRESUS_2022.pdf)
-
-Cordialement,
-CONTE Philippe`
-  );
-
-  window.location.href = \`mailto:\${to}?subject=\${subject}&body=\${body}\`;
-}
-
-/* ── Tab navigation ── */
-function showTab(name) {
-  ['liste','saisie','stats'].forEach(t => {
-    document.getElementById('pane-'+t).style.display = t===name ? '' : 'none';
-    document.getElementById('tab-'+t).classList.toggle('active', t===name);
-  });
-  if (name==='liste')  renderListe();
-  if (name==='stats')  renderStats();
-}
-
-/* ── Compute elapsed (ms) since incident ── */
-function elapsedMs(incident) {
-  const dt = new Date(`${incident.date}T${incident.heure||'00:00'}`);
-  return Date.now() - dt.getTime();
-}
-
-/* ── Check 72h banners ── */
-function checkBanners() {
-  const data = load();
-  const banner = document.getElementById('dsacBanner');
-  const alertB = document.getElementById('alertBanner');
-
-  // Incidents non déclarés
-  const nonDeclares = data.incidents.filter(i => !i.declareDSAC);
-  if (!nonDeclares.length) {
-    banner.classList.remove('show');
-    alertB.className = 'alert-banner';
-    return;
-  }
-
-  // Trouver le plus ancien non déclaré
-  const worst = nonDeclares.reduce((a,b) =>
-    elapsedMs(a) > elapsedMs(b) ? a : b
-  );
-  const elapsed = elapsedMs(worst);
-  const remaining = H72 - elapsed;
-
-  if (elapsed > H72) {
-    // Délai dépassé
-    banner.classList.add('show');
-    alertB.className = 'alert-banner';
-    const heuresDepassees = Math.ceil((elapsed - H72) / 3600000);
-    document.getElementById('dsacBannerSub').textContent =
-      `Incident du ${fmt(worst.date)} — délai 72h dépassé de ${heuresDepassees}h · ${nonDeclares.length} incident(s) en attente`;
-  } else {
-    banner.classList.remove('show');
-    // Alerte amber si < 12h restantes
-    if (remaining < 12 * 3600000) {
-      alertB.className = 'alert-banner amber';
-      const hRest = Math.floor(remaining / 3600000);
-      const mRest = Math.floor((remaining % 3600000) / 60000);
-      document.getElementById('alertText').textContent =
-        `⏱ Délai DSAC : il vous reste ${hRest}h${mRest.toString().padStart(2,'0')} pour déclarer l'incident du ${fmt(worst.date)}`;
-    } else {
-      alertB.className = 'alert-banner';
-    }
-  }
-}
-
-/* ── DSAC fields toggle ── */
-function updateDSACFields() {
-  const checked = document.getElementById('declareDSAC').checked;
-  document.getElementById('dsacFields').style.opacity = checked ? '1' : '0.5';
-  if (checked && !document.getElementById('dsacDate').value) {
-    document.getElementById('dsacDate').value = today();
-  }
-}
-
-/* ── Save Incident ── */
-function resetIncidentForm() {
-  document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(el => {
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else el.value = '';
-  });
-  // Scroll to top of form
-  const tab = document.querySelector('[data-tab="saisie"], #tab-saisie');
-  if (tab) tab.scrollTop = 0;
-}
-function saveIncident() {
-  const date = document.getElementById('incidentDate').value;
-  const cat  = document.getElementById('incidentCategorie').value;
-  const desc = document.getElementById('incidentDescription').value.trim();
-  const grav = document.getElementById('incidentGravite').value;
-
-  if (!date || !cat || !desc || !grav) {
-    showToast('Date, catégorie, gravité et description requis', '⚠️'); return;
-  }
-
-  const data = load();
-  const incident = {
-    id: Date.now(),
-    date, heure: document.getElementById('incidentTime').value,
-    categorie: cat,
-    gravite: grav,
-    lieu: document.getElementById('incidentLieu').value,
-    numVol: document.getElementById('incidentNumVol').value,
-    description: desc,
-    causes: document.getElementById('incidentCauses').value,
-    actions: document.getElementById('incidentActions').value,
-    declareDSAC: document.getElementById('declareDSAC').checked,
-    dsacDate: document.getElementById('dsacDate').value,
-    dsacNumero: document.getElementById('dsacNumero').value,
-    createdAt: new Date().toISOString(),
-  };
-  data.incidents.push(incident);
-  save(data);
-
-  // Reset
-  ['incidentDate','incidentTime','incidentLieu','incidentNumVol',
-   'incidentDescription','incidentCauses','incidentActions','dsacDate','dsacNumero']
-  .forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('incidentCategorie').value = '';
-  document.getElementById('incidentGravite').value = '';
-  document.getElementById('declareDSAC').checked = false;
-
-  checkBanners();
-  showToast('Incident enregistré', '⚠️');
-  showTab('liste');
-}
-
-/* ── Render Liste ── */
-function renderListe() {
-  const data = load();
-  const list = document.getElementById('incidentsList');
-  if (!data.incidents.length) {
-    list.innerHTML = '<div class="empty"><span class="empty-icon">🛡️</span>Aucun incident enregistré — bonne nouvelle !</div>';
-    return;
-  }
-
-  const catIcon = {
-    'Perte de contrôle':'🔴','Défaillance technique':'🔧',
-    'Violation espace aérien':'⛔','Collision / quasi-collision':'💥',
-    'Perte de liaison RC':'📡','Défaillance batterie':'🔋',
-    'Conditions météo':'🌧','Incident tiers':'👥','Autre':'📌'
-  };
-  const sevClass = {'1':'sev-1','2':'sev-2','3':'sev-3'};
-  const sevLabel = {'1':'Mineur','2':'Significatif','3':'Grave'};
-
-  list.innerHTML = [...data.incidents].reverse().map(inc => {
-    const elapsed = elapsedMs(inc);
-    const over72 = !inc.declareDSAC && elapsed > H72;
-    const near72 = !inc.declareDSAC && elapsed > 60 * 3600000;
-
-    return `
-      <div class="history-item" id="inc-${inc.id}">
-        <div class="history-icon" style="background:var(--light-red);">${catIcon[inc.categorie]||'⚠️'}</div>
-        <div class="history-body">
-          <div class="history-title">${inc.categorie}</div>
-          <div class="history-meta">
-            ${fmt(inc.date)} ${inc.heure||''} · ${inc.lieu||'Lieu non précisé'}
-            ${inc.numVol ? `· ${inc.numVol}` : ''}
-          </div>
-          <div class="history-tags">
-            <span class="badge ${sevClass[inc.gravite]||'badge-gray'}">
-              G${inc.gravite} — ${sevLabel[inc.gravite]||'?'}
-            </span>
-            ${inc.declareDSAC
-              ? `<span class="badge badge-green">✅ Déclaré DSAC${inc.dsacNumero ? ` · ${inc.dsacNumero}` : ''}</span>`
-              : over72
-                ? `<span class="badge badge-red">🚨 Délai DSAC dépassé</span>`
-                : near72
-                  ? `<span class="badge badge-amber">⏱ Délai DSAC proche</span>`
-                  : `<span class="badge badge-gray">Non déclaré</span>`
-            }
-          </div>
-          ${inc.description ? `<div class="history-desc">${inc.description.slice(0,150)}${inc.description.length>150?'…':''}</div>` : ''}
-          ${!inc.declareDSAC ? `
-            <div style="margin-top:8px;">
-              <button class="cresus-btn" onclick="declareFromList(${inc.id})">
-                🔗 Formulaire CRESUS (PDF)
-              </button>
-            </div>
-          ` : ''}
+function renderList(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const c=document.getElementById('list-area');
+  let list=[...items];
+  if(activeFilter==='grave')list=list.filter(i=>i.gravite==='grave');
+  else if(activeFilter==='modere')list=list.filter(i=>i.gravite==='modere');
+  else if(activeFilter==='mineur')list=list.filter(i=>i.gravite==='mineur');
+  else if(activeFilter==='ouvert')list=list.filter(i=>i.statut!=='cloture');
+  else if(activeFilter==='cloture')list=list.filter(i=>i.statut==='cloture');
+  else if(activeFilter==='dsac')list=list.filter(i=>i.dsac==='a_faire'||i.dsac==='faite');
+  if(q)list=list.filter(i=>(i.desc||'').toLowerCase().includes(q)||(i.type||'').toLowerCase().includes(q)||(i.site||'').toLowerCase().includes(q));
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){c.innerHTML=`<div class="empty-state"><p style="font-size:48px;margin-bottom:12px;">⚠️</p><p>${q||activeFilter!=='all'?'Aucun résultat.':'Aucun événement REX enregistré.'}</p></div>`;return;}
+  const gravPill={grave:'var(--red)',modere:'var(--amber)',mineur:'#D4A017',info:'var(--teal)'};
+  const gravBadge={grave:'badge-grave',modere:'badge-modere',mineur:'badge-mineur',info:'badge-info'};
+  const gravTxt={grave:'🔴 Grave',modere:'🟠 Modéré',mineur:'🟡 Mineur',info:'ℹ️ Info'};
+  const statTxt={ouvert:'🔓 Ouvert',en_cours:'🔄 En cours',cloture:'✅ Clôturé'};
+  c.innerHTML=list.map((item,i)=>{
+    const isCloture=item.statut==='cloture';
+    return `<div class="rex-card ${item.gravite} ${isCloture?'cloture':''}" style="animation-delay:${i*.04}s">
+      <div class="rex-top">
+        <div class="rex-grav-pill" style="background:${gravPill[item.gravite]||'var(--border)'};"></div>
+        <div class="rex-main">
+          <div class="rex-titre">${item.type||'Événement REX'}</div>
+          <div class="rex-meta">${fmtDate(item.date)}${item.heure?' '+item.heure:''}${item.site?' · '+item.site:''}${item.uas?' · '+item.uas:''}</div>
+        </div>
+        <span class="badge ${gravBadge[item.gravite]||''}">${gravTxt[item.gravite]||item.gravite}</span>
+      </div>
+      <div class="rex-body">
+        ${item.desc?`<div><div class="rex-field-label">Description</div><div class="rex-field-val">${item.desc}</div></div>`:''}
+        ${item.facteurs?`<div><div class="rex-field-label">Facteurs contributifs</div><div class="rex-field-val">${item.facteurs}</div></div>`:''}
+        ${item.actions?`<div><div class="rex-field-label">Actions correctives</div><div class="rex-field-val" style="color:var(--green);">${item.actions}</div></div>`:''}
+        ${item.lecons?`<div><div class="rex-field-label">Enseignements</div><div class="rex-field-val" style="color:var(--blue);">${item.lecons}</div></div>`:''}
+      </div>
+      <div class="rex-foot">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="badge ${isCloture?'badge-cloture':''}" style="${!isCloture?'background:var(--light-amber);color:var(--amber)':''}">${statTxt[item.statut]||'—'}</span>
+          ${item.dsac==='a_faire'?'<span class="dsac-badge">⚠️ DSAC à déclarer</span>':''}
+          ${item.dsac==='faite'?'<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--light-green);color:var(--green)">📋 DSAC déclarée</span>':''}
+          ${item.rpic?`<span style="font-size:11px;color:var(--text-muted);">RPIC: ${item.rpic}</span>`:''}
+        </div>
+        <div class="rex-status-row">
+          ${!isCloture?`<button class="btn-sm btn-cloture" onclick="openCloture('${item.id}')">✅ Clôturer</button>`:''}
+          <button class="btn-sm btn-edit" onclick="openModal('${item.id}')">✏️</button>
+          <button class="btn-sm btn-del" onclick="askDel('${item.id}')">🗑</button>
         </div>
       </div>
-    `;
+    </div>`;
   }).join('');
 }
 
-/* ── Quick declare from list ── */
-function declareFromList(id) {
-  const data = load();
-  const inc = data.incidents.find(i => i.id === id);
-  if (!inc) return;
-  inc.declareDSAC = true;
-  inc.dsacDate = today();
-  save(data);
-  openCresus();
-  checkBanners();
-  renderListe();
-  showToast('Marqué comme déclaré — CRESUS ouvert');
+function openModal(id=null){
+  editId=id;document.getElementById('modalTitle').textContent=id?'Modifier REX':'Nouvel incident / REX';
+  if(id){const it=items.find(x=>x.id===id);if(it)fillForm(it);}else{clearForm();}
+  document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function clearForm(){
+  ['fDate','fHeure','fSite','fUAS','fType','fPhase','fGravite','fRPIC','fDesc','fFacteurs','fActions','fStatut','fDsac','fDsacDate','fDsacNum','fLecons','fDateCloture'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('fStatut').value='ouvert';
+  document.getElementById('fDsac').value='non';
+  try{const c=JSON.parse(localStorage.getItem('uas_config')||'{}');const d=(c.drones||[]).find(x=>x.primary)||{};if(d.nom)document.getElementById('fUAS').value=d.nom;const p=(c.pilots||[]).find(x=>x.primary)||{};if(p.nom)document.getElementById('fRPIC').value=p.nom;}catch{}
+}
+function fillForm(it){
+  const map={fDate:'date',fHeure:'heure',fSite:'site',fUAS:'uas',fType:'type',fPhase:'phase',fGravite:'gravite',fRPIC:'rpic',fDesc:'desc',fFacteurs:'facteurs',fActions:'actions',fStatut:'statut',fDsac:'dsac',fDsacDate:'dsacDate',fDsacNum:'dsacNum',fLecons:'lecons',fDateCloture:'dateCloture'};
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&it[key]!=null)el.value=it[key];});
+}
+function saveRex(){
+  const date=gv('fDate'),type=gv('fType'),gravite=gv('fGravite'),desc=gv('fDesc').trim();
+  if(!date||!type||!gravite||!desc){toast('⚠️ Date, type, gravité et description obligatoires','var(--amber)');return;}
+  const item={id:editId||crypto.randomUUID(),date,heure:gv('fHeure'),site:gv('fSite'),uas:gv('fUAS'),type,phase:gv('fPhase'),gravite,rpic:gv('fRPIC'),desc,facteurs:gv('fFacteurs'),actions:gv('fActions'),statut:gv('fStatut'),dsac:gv('fDsac'),dsacDate:gv('fDsacDate'),dsacNum:gv('fDsacNum'),lecons:gv('fLecons'),dateCloture:gv('fDateCloture'),createdAt:editId?(items.find(x=>x.id===editId)?.createdAt||new Date().toISOString()):new Date().toISOString()};
+  if(editId){const i=items.findIndex(x=>x.id===editId);if(i!==-1)items[i]=item;}else items.push(item);
+  save();closeModal();renderAll();toast(editId?'✅ REX mis à jour':'✅ REX enregistré','var(--green)');
 }
 
-/* ── Render Stats ── */
-function renderStats() {
-  const data = load();
-  const incs = data.incidents;
-  document.getElementById('statTotal').textContent = incs.length;
-  document.getElementById('statNonDeclare').innerHTML =
-    incs.filter(i=>!i.declareDSAC).length
-      ? `<span class="badge badge-amber">${incs.filter(i=>!i.declareDSAC).length}</span>`
-      : '0';
-  document.getElementById('statGraves').innerHTML =
-    incs.filter(i=>i.gravite==='3').length
-      ? `<span class="badge badge-red">${incs.filter(i=>i.gravite==='3').length}</span>`
-      : '0';
-
-  const sorted = [...incs].sort((a,b)=>b.date.localeCompare(a.date));
-  document.getElementById('statDernier').textContent =
-    sorted.length ? `${fmt(sorted[0].date)} — ${sorted[0].categorie}` : '—';
-
-  // Par catégorie
-  const bycat = {};
-  incs.forEach(i => { bycat[i.categorie] = (bycat[i.categorie]||0)+1; });
-  const catCard = document.getElementById('statCategories');
-  if (!Object.keys(bycat).length) {
-    catCard.innerHTML = '<div class="empty"><span class="empty-icon">📊</span>Aucun incident</div>';
-    return;
-  }
-  catCard.innerHTML = Object.entries(bycat)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([cat, n]) => `
-      <div class="card-row">
-        <div class="row-label" style="font-size:13px;">${cat}</div>
-        <div class="row-value" style="font-size:14px;">
-          <span class="badge badge-blue">${n}</span>
-        </div>
-      </div>
-    `).join('');
+function openCloture(id){
+  clotureId=id;
+  document.getElementById('clotureDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('clotureModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeCloture(e){if(e.target===document.getElementById('clotureModal')){document.getElementById('clotureModal').classList.remove('open');document.body.style.overflow='';}}
+function confirmCloture(){
+  const lecons=document.getElementById('clotureLecons').value.trim();
+  if(!lecons){toast('⚠️ Veuillez renseigner les enseignements','var(--amber)');return;}
+  const i=items.findIndex(x=>x.id===clotureId);
+  if(i!==-1){items[i].statut='cloture';items[i].lecons=lecons;items[i].actions=document.getElementById('clotureActions').value||items[i].actions;items[i].dateCloture=document.getElementById('clotureDate').value;items[i].dsac=document.getElementById('clotureDsac').value;}
+  save();document.getElementById('clotureModal').classList.remove('open');document.body.style.overflow='';renderAll();toast('✅ REX clôturé avec succès','var(--green)');
 }
 
-/* ── Export CSV ── */
-function exportCSV() {
-  const data = load();
-  if (!data.incidents.length) { showToast('Aucune donnée', '⚠️'); return; }
-  const hdr = 'Date;Heure;Catégorie;Gravité;Lieu;N° Vol;Description;Causes;Actions;Déclaré DSAC;Date DSAC;N° CRESUS';
-  const rows = data.incidents.map(i =>
-    [i.date,i.heure,i.categorie,i.gravite,i.lieu,i.numVol,
-     i.description,i.causes,i.actions,i.declareDSAC?'Oui':'Non',i.dsacDate,i.dsacNumero]
-    .map(v=>`"${(v||'').replace(/"/g,'""')}"`)
-    .join(';')
-  );
-  const csv = [hdr,...rows].join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `rex_incidents_${today()}.csv`;
-  a.click();
-}
-
-/* ── Init ── */
-document.getElementById('incidentDate').value = today();
-document.getElementById('incidentTime').value = nowTime();
-updateDSACFields();
-checkBanners();
-renderListe();
-
-// Rafraîchir les banners toutes les 60s
-setInterval(checkBanners, 60000);
+function askDel(id){deleteId=id;document.getElementById('confirmOverlay').classList.add('open');}
+function cancelDel(){deleteId=null;document.getElementById('confirmOverlay').classList.remove('open');}
+function confirmDel(){if(deleteId){items=items.filter(x=>x.id!==deleteId);save();renderAll();toast('🗑 REX supprimé');}cancelDel();}
+function gv(id){const el=document.getElementById(id);return el?el.value:'';}
+function fmtDate(d){if(!d)return'—';const[y,m,j]=d.split('-');return`${j}/${m}/${y}`;}
+function renderAll(){updateKPIs();renderList();}
+load();renderAll();
 </script>
-
-
-</body></html>
+</body>
+</html>

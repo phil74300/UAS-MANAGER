@@ -1,799 +1,390 @@
 <!DOCTYPE html>
-<!-- saved from url=(0056)file:///Users/contephilippe/Downloads/maintenance_8.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Maintenance &amp; REX — UAS Manager</title>
+<title>UAS Manager — Maintenance UAS</title>
 <style>
-:root {
-  --navy:#0C447C; --blue:#185FA5; --light-blue:#E6F1FB;
-  --green:#1D6B37; --light-green:#E8F5E9;
-  --amber:#BA7517; --light-amber:#FAEEDA;
-  --red:#8B2020; --light-red:#FDECEC;
-  --gray:#6B7280; --bg:#F5F7FA; --surface:#FFFFFF;
-  --border:#DDE3EC; --text:#1A202C; --muted:#6B7280;
-  --radius:12px; --shadow:0 2px 12px rgba(12,68,124,.10);
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,.10);
+  --radius:14px;--header-h:56px;
 }
 @media(prefers-color-scheme:dark){
-  :root{
-    --bg:#0E1620;--surface:#162030;--border:#243248;
-    --text:#E8EEF6;--muted:#8A9BB5;
-    --light-blue:#162A42;--light-green:#0F2A1A;
-    --light-amber:#2A1E08;--light-red:#2A0F0F;
-  }
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-teal:#003030;}
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{
-  font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;
-  background:var(--bg);color:var(--text);
-  min-height:100vh;
-  padding-bottom:calc(80px + env(safe-area-inset-bottom));
-}
-
-/* Header */
-.hdr{
-  background:var(--navy);color:#fff;
-  padding:calc(env(safe-area-inset-top)+12px) 16px 14px;
-  display:flex;align-items:center;gap:10px;
-  position:sticky;top:0;z-index:100;
-}
-.hdr-back{color:#fff;font-size:26px;font-weight:300;text-decoration:none;line-height:1;margin-right:2px;}
-.hdr-icon{font-size:22px;}
-.hdr-title{font-size:18px;font-weight:700;}
-.hdr-sub{font-size:11px;opacity:.7;margin-top:1px;}
-
-/* Alert banners */
-.banner{display:none;margin:10px 16px 0;border-radius:var(--radius);padding:10px 14px;font-size:13px;font-weight:600;align-items:center;gap:8px;}
-.banner.amber{display:flex;background:var(--light-amber);color:var(--amber);border:1.5px solid #E8A030;}
-.banner.red{display:flex;background:var(--red);color:#fff;border:none;flex-direction:column;gap:6px;animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 4px 16px rgba(139,32,32,.35);}50%{box-shadow:0 4px 28px rgba(139,32,32,.70);}}
-.banner-row{display:flex;align-items:center;gap:8px;}
-.dsac-btn{background:#fff;color:var(--red);border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;}
-
-/* Main tabs */
-.main-tabs{display:flex;background:var(--surface);border-radius:var(--radius);padding:4px;box-shadow:var(--shadow);gap:4px;margin:12px 16px 0;}
-.main-tab{flex:1;padding:9px 2px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);transition:background .2s,color .2s;}
-.main-tab.active{background:var(--navy);color:#fff;}
-
-/* Section */
-.sec{margin:14px 16px 0;}
-.sec-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
-
-/* Card */
-.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
-
-/* Card row */
-.crow{display:flex;align-items:center;padding:13px 16px;gap:10px;border-bottom:1px solid var(--border);}
-.crow:last-child{border-bottom:none;}
-.crow-label{font-size:13px;color:var(--muted);min-width:120px;flex-shrink:0;}
-.crow-value{font-size:14px;font-weight:600;flex:1;}
-
-/* Badge */
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;}
-.bg{background:var(--light-green);color:var(--green);}
-.ba{background:var(--light-amber);color:var(--amber);}
-.br{background:var(--light-red);color:var(--red);}
-.bx{background:var(--border);color:var(--gray);}
-.bb{background:var(--light-blue);color:var(--blue);}
-
-/* Form */
-.frow{display:flex;flex-direction:column;padding:12px 16px;gap:6px;border-bottom:1px solid var(--border);}
-.frow:last-child{border-bottom:none;}
-.flabel{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.finput,.fselect,.ftextarea{
-  width:100%;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:8px;font-size:15px;color:var(--text);font-family:inherit;
-  -webkit-appearance:none;appearance:none;transition:border-color .2s;
-}
-.finput:focus,.fselect:focus,.ftextarea:focus{outline:none;border-color:var(--blue);}
-.ftextarea{min-height:80px;resize:vertical;}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-/* Toggle */
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);}
-.toggle-row:last-child{border-bottom:none;}
-.toggle-info .tl{font-size:14px;font-weight:500;}
-.toggle-info .ts{font-size:12px;color:var(--muted);margin-top:1px;}
-.tgl{position:relative;width:51px;height:31px;flex-shrink:0;}
-.tgl input{opacity:0;width:0;height:0;}
-.tgl-sl{position:absolute;inset:0;background:var(--border);border-radius:31px;cursor:pointer;transition:.2s;}
-.tgl-sl::before{content:'';position:absolute;width:27px;height:27px;left:2px;bottom:2px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:.2s;}
-input:checked+.tgl-sl{background:var(--green);}
-input:checked+.tgl-sl::before{transform:translateX(20px);}
-
-/* Buttons */
-.btn{width:100%;padding:14px;border-radius:var(--radius);border:none;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .1s;}
-.btn:active{opacity:.8;transform:scale(.98);}
-.btn-blue{background:var(--blue);color:#fff;}
-.btn-green{background:var(--green);color:#fff;}
-.btn-red{background:var(--red);color:#fff;}
-.btn-ghost{background:transparent;color:var(--blue);border:1.5px solid var(--blue);}
-.btn-amber{background:var(--amber);color:#fff;}
-.cta-row{display:flex;flex-direction:column;gap:8px;padding:6px 16px 12px;}
-
-/* History item */
-.hitem{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;}
-.hitem:last-child{border-bottom:none;}
-.hico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.hbody{flex:1;}
-.htitle{font-size:14px;font-weight:600;}
-.hmeta{font-size:12px;color:var(--muted);margin-top:2px;}
-.hnote{font-size:13px;margin-top:4px;font-style:italic;}
-.htags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
-
-/* Sub-tabs (REX) */
-.sub-tabs{display:flex;background:var(--surface);border-radius:var(--radius);padding:4px;box-shadow:var(--shadow);gap:4px;margin:12px 16px 0;}
-.sub-tab{flex:1;padding:8px 2px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);transition:background .2s,color .2s;}
-.sub-tab.active{background:var(--red);color:#fff;}
-
-/* Empty */
-.empty{text-align:center;padding:32px 16px;color:var(--muted);}
-.empty-ico{font-size:40px;display:block;margin-bottom:8px;}
-
-/* Toast */
-.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:16px;right:16px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:var(--radius);font-size:14px;font-weight:600;display:none;align-items:center;gap:8px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.2);}
-.toast.show{display:flex;animation:sup .3s ease;}
-@keyframes sup{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
-/* Bottom nav */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:200;}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.bnav-item.active{color:var(--blue);}
-.bnav-ico{font-size:22px;line-height:1;}
-
-/* ══ UNIFIED BOTTOM NAV ══ */
-
-@media(prefers-color-scheme:dark){
-  
-}
-
-
-
-
-
-
-@media(prefers-color-scheme:dark){
-  
-}
-
-
-
-
-  /* ─── BOUTON RETOUR ACCUEIL ─── */
-  .back-btn {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.28); }
-
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+#header{position:sticky;top:0;z-index:200;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 16px 0;height:calc(var(--header-h) + env(safe-area-inset-top));box-shadow:0 2px 12px rgba(12,68,124,.3);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80%,rgba(24,95,165,.4),transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+.hdr-actions{display:flex;gap:8px;align-items:center;position:relative;z-index:1;}
+.btn-hdr{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+#tab-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;}
+.tab-btn{flex:1;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted);font-size:12px;font-weight:700;padding:10px 4px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+@media(prefers-color-scheme:dark){.tab-btn.active{color:#7EB8F7;border-bottom-color:#7EB8F7;}}
+.kpi-strip{display:flex;gap:10px;padding:12px 14px 4px;overflow-x:auto;scrollbar-width:none;}
+.kpi-strip::-webkit-scrollbar{display:none;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:10px 13px;min-width:100px;flex:1;}
+.kpi-card.green{border-top-color:var(--green);}
+.kpi-card.amber{border-top-color:var(--amber);}
+.kpi-card.red{border-top-color:var(--red);}
+.kpi-value{font-size:19px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.kpi-value{color:#7EB8F7;}}
+.kpi-label{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.2;}
+.list-toolbar{padding:10px 14px 6px;display:flex;gap:8px;align-items:center;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;outline:none;}
+.search-wrap input:focus{border-color:var(--blue);}
+.search-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+.btn-add{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+#list-area{padding:0 14px calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.maint-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s both;}
+.maint-card.urgent{border-color:var(--red);}
+.maint-card.attention{border-color:var(--amber);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.maint-card-top{display:flex;align-items:flex-start;gap:10px;padding:11px 12px 6px;}
+.maint-type-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.maint-info{flex:1;min-width:0;}
+.maint-title{font-size:14px;font-weight:800;}
+.maint-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;}
+.maint-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:0 12px 8px;}
+.mf .mfl{font-size:9px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px;}
+.mf .mfv{font-size:12px;font-weight:600;}
+.maint-foot{padding:7px 12px;background:rgba(0,0,0,.02);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);}
+.maint-tech{font-size:11px;color:var(--text-muted);}
+.maint-actions{display:flex;gap:6px;}
+.btn-sm{border:none;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-edit{background:var(--light-blue);color:var(--blue);}
+.btn-del{background:var(--light-red);color:var(--red);}
+.prochaine-badge{background:var(--light-amber);color:var(--amber);border-radius:8px;font-size:11px;font-weight:700;padding:3px 8px;}
+.prochaine-badge.overdue{background:var(--light-red);color:var(--red);}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--surface);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.23,1);padding-bottom:calc(28px + env(safe-area-inset-bottom));}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.modal-header{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:5;}
+.modal-title{font-size:17px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.modal-title{color:#7EB8F7;}}
+.btn-close{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);font-family:inherit;}
+.form-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.fsec{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:1px;padding:4px 0 3px;border-bottom:2px solid var(--light-blue);margin-top:2px;}
+@media(prefers-color-scheme:dark){.fsec{color:#7EB8F7;border-bottom-color:var(--border);}}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.frow.tri{grid-template-columns:1fr 1fr 1fr;}
+.frow.full{grid-template-columns:1fr;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+.fgroup label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.fgroup input,.fgroup select,.fgroup textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit;-webkit-appearance:none;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12);}
+.fgroup textarea{resize:vertical;min-height:60px;}
+.submit-row{display:flex;gap:10px;margin-top:6px;}
+.btn-submit{flex:1;padding:13px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cancel{padding:13px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.confirm-overlay.open{opacity:1;pointer-events:all;}
+.confirm-box{background:var(--surface);border-radius:18px;padding:24px;max-width:320px;width:90%;text-align:center;}
+.confirm-box h3{font-size:17px;font-weight:800;margin-bottom:8px;}
+.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:18px;}
+.confirm-btns{display:flex;gap:10px;}
+.confirm-btns button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-cc{background:var(--bg);color:var(--text);}
+.btn-cd{background:var(--red);color:#fff;}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(50px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#toast.show{transform:translateX(-50%) translateY(0);}
+.sec-inner{padding:14px;}
 </style>
 </head>
 <body>
-
-<!-- Header -->
-<div class="hdr">
-  <div class="hdr-icon">🔧</div>
-  <div>
-    <div class="hdr-title">Maintenance &amp; REX</div>
-    <div class="hdr-sub">DJI Mavic 4 Pro · UAS-FR-517804</div>
+<header id="header">
+  <h1>🔧 Maintenance UAS</h1>
+  <div class="hdr-actions">
+    <button class="btn-hdr" onclick="openModal()" title="Nouvelle intervention">＋</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
   </div>
+</header>
+
+<div id="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('interventions',this)">🔧 Interventions</button>
+  <button class="tab-btn" onclick="switchTab('rex',this)">📓 REX interne</button>
+  <button class="tab-btn" onclick="switchTab('planning',this)">📅 Planning</button>
 </div>
 
-<div style="background:var(--navy,#0C447C);display:flex;align-items:center;padding:env(safe-area-inset-top) 14px 10px;gap:10px;position:sticky;top:0;z-index:200;">
-  <span style="font-size:16px;font-weight:800;color:#fff;flex:1;">🔧 Maintenance</span>
-  <a class="back-btn" href="index.html">← Accueil</a>
-</div>
-<!-- DSAC Banner -->
-<div class="banner red" id="dsacBanner" style="display: none;">
-  <div class="banner-row"><span style="font-size:18px">🚨</span><span id="dsacBannerText">DÉCLARATION DSAC REQUISE — délai dépassé</span></div>
-  <div class="banner-row" style="font-size:12px;opacity:.9" id="dsacBannerSub"></div>
-  <button class="dsac-btn" onclick="openCresus()">🔗 Ouvrir formulaire CRESUS (PDF)</button>
-</div>
-
-<!-- Maintenance alert -->
-<div class="banner" id="maintBanner">
-  <span style="font-size:16px">⚠️</span>
-  <span id="maintBannerText"></span>
+<div id="section-interventions">
+  <div class="kpi-strip">
+    <div class="kpi-card"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">Interventions</div></div>
+    <div class="kpi-card green"><div class="kpi-value" id="kpiHeures">0h</div><div class="kpi-label">Heures totales</div></div>
+    <div class="kpi-card amber"><div class="kpi-value" id="kpiCout">0 €</div><div class="kpi-label">Coût total</div></div>
+    <div class="kpi-card red"><div class="kpi-value" id="kpiUrgent">0</div><div class="kpi-label">À traiter</div></div>
+  </div>
+  <div class="list-toolbar">
+    <div class="search-wrap"><input type="text" id="searchInput" placeholder="Rechercher…" oninput="renderList()"></div>
+    <button class="btn-add" onclick="openModal()">＋ Intervention</button>
+  </div>
+  <div id="list-area"></div>
 </div>
 
-<!-- Main tabs -->
-<div class="main-tabs">
-  <button class="main-tab active" id="mtab-statut" onclick="mainTab(&#39;statut&#39;)">📊 Statut</button>
-  <button class="main-tab" id="mtab-saisir" onclick="mainTab(&#39;saisir&#39;)">➕ Saisir</button>
-  <button class="main-tab" id="mtab-historique" onclick="mainTab(&#39;historique&#39;)">📋 Historique</button>
-  <button class="main-tab" id="mtab-rex" onclick="mainTab(&#39;rex&#39;)">⚠️ REX</button>
-</div>
-
-<!-- ═══ PANE STATUT ═══ -->
-<div id="pane-statut">
-  <div class="sec">
-    <div class="sec-title">État de l'appareil</div>
-    <div class="card">
-      <div class="crow"><div class="crow-label">Dernier entretien</div><div class="crow-value" id="s-dernier">—</div></div>
-      <div class="crow"><div class="crow-label">Prochain entretien</div><div class="crow-value" id="s-prochain">—</div></div>
-      <div class="crow"><div class="crow-label">Heures de vol</div><div class="crow-value" id="s-heures">—</div></div>
-      <div class="crow"><div class="crow-label">Statut général</div><div class="crow-value" id="s-statut"><span class="badge bx">Non défini</span></div></div>
+<div id="section-rex" style="display:none">
+  <div class="sec-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:14px;font-weight:800;color:var(--navy);">REX Interne — Historique</div>
+      <button class="btn-add" style="font-size:12px;padding:7px 12px;" onclick="openRexModal()">＋ REX</button>
     </div>
-  </div>
-  <div class="sec">
-    <div class="sec-title">Interventions par type</div>
-    <div class="card" id="s-composants"><div class="empty"><span class="empty-ico">🔩</span>Aucune intervention</div></div>
-  </div>
-  <div class="sec" style="margin-bottom:16px;">
-    <button class="btn btn-blue" onclick="mainTab(&#39;saisir&#39;)">＋ Nouvelle intervention</button>
+    <div id="rex-list"></div>
   </div>
 </div>
 
-<!-- ═══ PANE SAISIR ═══ -->
-<div id="pane-saisir" style="display:none">
-  <div class="sec">
-    <div class="sec-title">Intervention</div>
-    <div class="card">
-      <div class="frow"><label class="flabel">Date *</label><input type="date" class="finput" id="m-date"></div>
+<div id="section-planning" style="display:none">
+  <div class="sec-inner">
+    <div style="font-size:14px;font-weight:800;color:var(--navy);margin-bottom:12px;">Planning des révisions</div>
+    <div id="planning-list"></div>
+  </div>
+</div>
+
+<!-- Modal intervention -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Nouvelle intervention</span>
+      <button class="btn-close" onclick="closeModal()">Fermer</button>
+    </div>
+    <div class="form-body">
+      <div class="fsec">📋 Identification</div>
       <div class="frow">
-        <label class="flabel">Type *</label>
-        <select class="fselect" id="m-type">
-          <option value="">— Sélectionner —</option>
-          <option>Entretien périodique</option><option>Remplacement hélices</option>
-          <option>Remplacement batterie</option><option>Mise à jour firmware</option>
-          <option>Contrôle visuel</option><option>Réparation</option>
-          <option>Étalonnage IMU/compass</option><option>Autre</option>
-        </select>
-      </div>
-      <div class="frow"><label class="flabel">Technicien</label><input type="text" class="finput" id="m-tech" placeholder="CONTE Philippe"></div>
-      <div class="frow"><label class="flabel">Heures de vol</label><input type="number" class="finput" id="m-heures" placeholder="ex: 42.5" step="0.1"></div>
-      <div class="frow"><label class="flabel">Observations</label><textarea class="ftextarea" id="m-obs" placeholder="Détails, références pièces…"></textarea></div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-title">Prochain entretien</div>
-    <div class="card">
-      <div class="frow"><label class="flabel">Date prévue *</label><input type="date" class="finput" id="m-prochain"></div>
-      <div class="frow"><label class="flabel">Motif</label><input type="text" class="finput" id="m-motif" placeholder="ex: 50h de vol, 6 mois…"></div>
-    </div>
-  </div>
-  <div class="sec">
-    <div class="sec-title">✅ Essai post-intervention</div>
-    <div class="card">
-      <div class="frow"><label class="flabel">Date essai</label><input type="date" class="finput" id="m-essai-date"></div>
-      <div class="frow"><label class="flabel">N° vol d'essai</label><input type="text" class="finput" id="m-essai-vol" placeholder="ex: VOL-2025-042"></div>
-      <div class="frow">
-        <label class="flabel">Résultat</label>
-        <select class="fselect" id="m-essai-res">
-          <option value="">— Sélectionner —</option>
-          <option value="Conforme">✅ Conforme — opérationnel</option>
-          <option value="Anomalie mineure">⚠️ Anomalie mineure</option>
-          <option value="Non conforme">❌ Non conforme — hors service</option>
-          <option value="Essai non réalisé">⛔ Essai non réalisé</option>
-        </select>
-      </div>
-      <div class="frow"><label class="flabel">Notes</label><textarea class="ftextarea" id="m-essai-notes" placeholder="Comportement observé…" style="min-height:60px;"></textarea></div>
-    </div>
-  </div>
-  <div class="sec" style="margin-bottom:16px;">
-    <div style="display:flex;gap:10px;">
-      <button class="btn btn-green" style="flex:1;" onclick="saveMaint()">💾 Enregistrer</button>
-      <button onclick="resetMaintForm()" style="flex:0 0 auto;padding:14px 18px;border-radius:var(--radius);border:1.5px solid var(--border,#D0DCF0);background:transparent;color:var(--muted,#5A6478);font-size:15px;font-weight:700;cursor:pointer;">✕ Annuler</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ PANE HISTORIQUE ═══ -->
-<div id="pane-historique" style="display:none">
-  <div class="sec">
-    <div class="sec-title">Historique</div>
-    <div class="card" id="h-list"><div class="empty"><span class="empty-ico">📋</span>Aucune intervention</div></div>
-  </div>
-  <div class="sec" style="margin-bottom:16px;">
-    <button class="btn btn-ghost" onclick="exportMaintCSV()">⬇️ Exporter CSV</button>
-  </div>
-</div>
-
-<!-- ═══ PANE REX ═══ -->
-<div id="pane-rex" style="display:none">
-
-  <!-- Sous-onglets REX -->
-  <div class="sub-tabs">
-    <button class="sub-tab active" id="rtab-liste" onclick="rexTab(&#39;liste&#39;)">📋 Incidents</button>
-    <button class="sub-tab" id="rtab-declarer" onclick="rexTab(&#39;declarer&#39;)">➕ Déclarer</button>
-    <button class="sub-tab" id="rtab-stats" onclick="rexTab(&#39;stats&#39;)">📊 Stats</button>
-  </div>
-
-  <!-- REX : Liste -->
-  <div id="rpane-liste">
-    <div class="sec" style="margin-bottom:16px;">
-      <div class="card" id="r-list"><div class="empty"><span class="empty-ico">🛡️</span>Aucun incident — bonne nouvelle !</div></div>
-    </div>
-  </div>
-
-  <!-- REX : Déclarer -->
-  <div id="rpane-declarer" style="display:none">
-    <div class="sec">
-      <div class="sec-title">Déclaration d'incident</div>
-      <div class="card">
-        <div class="frow">
-          <label class="flabel">Date &amp; Heure *</label>
-          <div class="fgrid">
-            <input type="date" class="finput" id="r-date">
-            <input type="time" class="finput" id="r-time">
-          </div>
-        </div>
-        <div class="frow">
-          <label class="flabel">Catégorie *</label>
-          <select class="fselect" id="r-cat">
-            <option value="">— Sélectionner —</option>
-            <option>Perte de contrôle</option><option>Défaillance technique</option>
-            <option>Violation espace aérien</option><option>Collision / quasi-collision</option>
-            <option>Perte de liaison RC</option><option>Défaillance batterie</option>
-            <option>Conditions météo</option><option>Incident tiers</option><option>Autre</option>
+        <div class="fgroup"><label>Date *</label><input type="date" id="fDate" required></div>
+        <div class="fgroup">
+          <label>Type *</label>
+          <select id="fType" required>
+            <option value="">-- Choisir --</option>
+            <option value="revision">🔄 Révision périodique</option>
+            <option value="remplacement">🔩 Remplacement pièce</option>
+            <option value="calibration">🎯 Calibration</option>
+            <option value="reparation">🔨 Réparation</option>
+            <option value="nettoyage">🧹 Nettoyage</option>
+            <option value="firmware">💾 Firmware</option>
+            <option value="urgence">🚨 Urgente</option>
           </select>
         </div>
-        <div class="frow">
-          <label class="flabel">Gravité *</label>
-          <select class="fselect" id="r-grav">
-            <option value="">— Sélectionner —</option>
-            <option value="1">1 — Mineur</option>
-            <option value="2">2 — Significatif</option>
-            <option value="3">3 — Grave</option>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Description *</label><textarea id="fDesc" rows="3" placeholder="Décrivez l'intervention…" required></textarea></div>
+      </div>
+      <div class="fsec">🚁 UAS & Technicien</div>
+      <div class="frow">
+        <div class="fgroup"><label>UAS</label><input type="text" id="fUAS" placeholder="DJI Mavic 4 Pro"></div>
+        <div class="fgroup"><label>Technicien</label><input type="text" id="fTech" placeholder="Prénom Nom"></div>
+      </div>
+      <div class="fsec">⏱️ Heures de vol</div>
+      <div class="frow tri">
+        <div class="fgroup"><label>Heures avant</label><input type="number" id="fHAvant" min="0" step="0.1" placeholder="0.0"></div>
+        <div class="fgroup"><label>Heures après</label><input type="number" id="fHApres" min="0" step="0.1" placeholder="0.0"></div>
+        <div class="fgroup"><label>Prochaine (h)</label><input type="number" id="fProchaine" min="0" placeholder="ex: 50"></div>
+      </div>
+      <div class="fsec">🔩 Pièces & Coût</div>
+      <div class="frow full">
+        <div class="fgroup"><label>Pièces remplacées</label><input type="text" id="fPieces" placeholder="ex: Hélices × 4, Batterie…"></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label>Coût (€ TTC)</label><input type="number" id="fCout" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="fgroup"><label>Prochaine révision (date)</label><input type="date" id="fNextDate"></div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Notes</label><textarea id="fNotes" rows="2" placeholder="Observations…"></textarea></div>
+      </div>
+      <div class="submit-row">
+        <button class="btn-submit" onclick="saveIntervention()">💾 Enregistrer</button>
+        <button class="btn-cancel" onclick="closeModal()">✕ Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal REX -->
+<div class="modal-overlay" id="rexModalOverlay" onclick="closeRexOut(event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Nouvelle entrée REX</span>
+      <button class="btn-close" onclick="closeRexModal()">Fermer</button>
+    </div>
+    <div class="form-body">
+      <div class="frow">
+        <div class="fgroup"><label>Date *</label><input type="date" id="rDate" required></div>
+        <div class="fgroup"><label>UAS</label><input type="text" id="rUAS" placeholder="DJI Mavic 4 Pro"></div>
+      </div>
+      <div class="fgroup"><label>Titre / événement *</label><input type="text" id="rTitre" placeholder="Résumé de l'événement" required></div>
+      <div class="fgroup"><label>Description détaillée</label><textarea id="rDesc" rows="4" placeholder="Contexte, causes, conséquences…"></textarea></div>
+      <div class="frow">
+        <div class="fgroup">
+          <label>Gravité</label>
+          <select id="rGravite">
+            <option value="info">ℹ️ Information</option>
+            <option value="mineur">🟡 Mineur</option>
+            <option value="modere">🟠 Modéré</option>
+            <option value="grave">🔴 Grave</option>
           </select>
         </div>
-        <div class="frow"><label class="flabel">Lieu</label><input type="text" class="finput" id="r-lieu" placeholder="Commune, département…"></div>
-        <div class="frow"><label class="flabel">N° vol</label><input type="text" class="finput" id="r-vol" placeholder="ex: VOL-2025-042"></div>
-        <div class="frow"><label class="flabel">Description *</label><textarea class="ftextarea" id="r-desc" placeholder="Faits chronologiques…"></textarea></div>
-        <div class="frow"><label class="flabel">Causes</label><textarea class="ftextarea" id="r-causes" placeholder="Causes identifiées…" style="min-height:60px;"></textarea></div>
-        <div class="frow"><label class="flabel">Actions correctives</label><textarea class="ftextarea" id="r-actions" placeholder="Mesures prises…" style="min-height:60px;"></textarea></div>
-      </div>
-    </div>
-    <div class="sec">
-      <div class="sec-title">Déclaration DSAC</div>
-      <div class="card">
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <div class="tl">Déclaré sur CRESUS</div>
-            <div class="ts">Obligatoire si incident grave (72h)</div>
-          </div>
-          <label class="tgl"><input type="checkbox" id="r-dsac" onchange="updateDSACToggle()"><span class="tgl-sl"></span></label>
-        </div>
-        <div id="r-dsac-fields" style="opacity: 0.5;">
-          <div class="frow"><label class="flabel">Date déclaration</label><input type="date" class="finput" id="r-dsac-date"></div>
-          <div class="frow"><label class="flabel">N° dossier CRESUS</label><input type="text" class="finput" id="r-dsac-num" placeholder="ex: CRESUS-2025-XXXXX"></div>
+        <div class="fgroup">
+          <label>Phase de vol</label>
+          <select id="rPhase">
+            <option value="">--</option>
+            <option>Pré-vol</option><option>Décollage</option><option>En vol</option><option>Atterrissage</option><option>Post-vol</option>
+          </select>
         </div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="cta-row">
-        <button class="btn btn-ghost" onclick="openCresus()">📄 Formulaire CRESUS (PDF)</button>
-        <button class="btn btn-amber" onclick="sendMailDSAC()">📧 Envoyer par mail à la DSAC</button>
-        <button class="btn btn-red" onclick="saveRex()">⚠️ Enregistrer l'incident</button>
-        <button onclick="resetRexForm()" class="btn" style="background:transparent;color:var(--muted,#5A6478);border:1.5px solid var(--border,#D0DCF0);">✕ Annuler</button>
+      <div class="fgroup"><label>Actions correctives</label><textarea id="rActions" rows="2" placeholder="Mesures prises ou à prendre…"></textarea></div>
+      <div class="submit-row">
+        <button class="btn-submit" onclick="saveRex()">💾 Enregistrer REX</button>
+        <button class="btn-cancel" onclick="closeRexModal()">✕ Annuler</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- REX : Stats -->
-  <div id="rpane-stats" style="display:none">
-    <div class="sec">
-      <div class="sec-title">Vue d'ensemble</div>
-      <div class="card">
-        <div class="crow"><div class="crow-label">Total incidents</div><div class="crow-value" id="r-stat-total">0</div></div>
-        <div class="crow"><div class="crow-label">Non déclarés DSAC</div><div class="crow-value" id="r-stat-nd">0</div></div>
-        <div class="crow"><div class="crow-label">Gravité 3 (graves)</div><div class="crow-value" id="r-stat-g3">0</div></div>
-        <div class="crow"><div class="crow-label">Dernier incident</div><div class="crow-value" id="r-stat-last">—</div></div>
-      </div>
-    </div>
-    <div class="sec">
-      <div class="sec-title">Par catégorie</div>
-      <div class="card" id="r-stat-cat"><div class="empty"><span class="empty-ico">📊</span>Aucun incident</div></div>
-    </div>
-    <div class="sec" style="margin-bottom:16px;">
-      <button class="btn btn-ghost" onclick="exportRexCSV()">⬇️ Exporter CSV</button>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Supprimer ?</h3>
+    <p>Cette action est irréversible.</p>
+    <div class="confirm-btns">
+      <button class="btn-cc" onclick="cancelDel()">Annuler</button>
+      <button class="btn-cd" onclick="confirmDel()">Supprimer</button>
     </div>
   </div>
-
-</div><!-- /pane-rex -->
-
-<!-- Toast -->
-<div class="toast" id="toast"><span id="toast-ico">✅</span><span id="toast-msg"></span></div>
+</div>
+<div id="toast"></div>
 
 <script>
 'use strict';
-
-/* ══ CONSTANTES ══ */
-const MAINT_KEY  = 'uas_maintenance';
-const REX_KEY    = 'uas_rex';
-const CRESUS_URL = 'https://www.ecologie.gouv.fr/sites/default/files/documents/CRESUS_2022.pdf';
-const H72        = 72 * 3600 * 1000;
-
-/* ══ HELPERS ══ */
-function today() { return new Date().toISOString().split('T')[0]; }
-function nowTime() { return new Date().toTimeString().slice(0,5); }
-function fmt(d) { if(!d) return '—'; const[y,m,j]=d.split('-'); return `${j}/${m}/${y}`; }
-function loadMaint() { try{return JSON.parse(localStorage.getItem(MAINT_KEY))||{interventions:[],config:{}};}catch{return{interventions:[],config:{}};}  }
-function saveMaintData(d) { localStorage.setItem(MAINT_KEY, JSON.stringify(d)); }
-function loadRex() { try{return JSON.parse(localStorage.getItem(REX_KEY))||{incidents:[]};}catch{return{incidents:[]};} }
-function saveRexData(d) { localStorage.setItem(REX_KEY, JSON.stringify(d)); }
-function daysUntil(ds) { if(!ds) return null; return Math.ceil((new Date(ds)-new Date(today()))/86400000); }
-function elapsedMs(inc) { return Date.now()-new Date(`${inc.date}T${inc.heure||'00:00'}`).getTime(); }
-
-function showToast(msg, ico='✅') {
-  document.getElementById('toast-msg').textContent = msg;
-  document.getElementById('toast-ico').textContent = ico;
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
-}
-
-/* ══ NAVIGATION PRINCIPALE ══ */
-function mainTab(name) {
-  ['statut','saisir','historique','rex'].forEach(n => {
-    document.getElementById('pane-'+n).style.display = n===name ? '' : 'none';
-    document.getElementById('mtab-'+n).classList.toggle('active', n===name);
-  });
-  if (name==='statut')    renderStatut();
-  if (name==='historique') renderHistorique();
-  if (name==='rex')       { renderRexListe(); checkDSACBanner(); }
-}
-
-/* ══ NAVIGATION REX ══ */
-function rexTab(name) {
-  ['liste','declarer','stats'].forEach(n => {
-    document.getElementById('rpane-'+n).style.display = n===name ? '' : 'none';
-    document.getElementById('rtab-'+n).classList.toggle('active', n===name);
-  });
-  if (name==='liste') renderRexListe();
-  if (name==='stats') renderRexStats();
-}
-
-/* ══ BANNERS ══ */
-function checkDSACBanner() {
-  const data = loadRex();
-  const nonDeclares = data.incidents.filter(i=>!i.declareDSAC);
-  const dsacBanner = document.getElementById('dsacBanner');
-  if (!nonDeclares.length) { dsacBanner.style.display='none'; return; }
-  const worst = nonDeclares.reduce((a,b)=>elapsedMs(a)>elapsedMs(b)?a:b);
-  const elapsed = elapsedMs(worst);
-  if (elapsed > H72) {
-    dsacBanner.style.display='flex';
-    document.getElementById('dsacBannerSub').textContent =
-      `Incident du ${fmt(worst.date)} — délai dépassé de ${Math.ceil((elapsed-H72)/3600000)}h · ${nonDeclares.length} en attente`;
-  } else {
-    dsacBanner.style.display='none';
-  }
-}
-
-function checkMaintBanner() {
-  const data = loadMaint();
-  const prochain = data.config.prochainEntretienPrevu;
-  const banner = document.getElementById('maintBanner');
-  if (!prochain) { banner.className='banner'; return; }
-  const j = daysUntil(prochain);
-  if (j !== null && j < 1) {
-    banner.className='banner red';
-    document.getElementById('maintBannerText').textContent=`🚨 Entretien critique — prévu le ${fmt(prochain)}`;
-  } else if (j !== null && j <= 7) {
-    banner.className='banner amber';
-    document.getElementById('maintBannerText').textContent=`Entretien dans ${j} jour${j>1?'s':''} (${fmt(prochain)})`;
-  } else {
-    banner.className='banner';
-  }
-}
-
-/* ══ MAINTENANCE — STATUT ══ */
-function renderStatut() {
-  const data = loadMaint();
-  const ivs = data.interventions;
-  const last = ivs.length ? ivs[ivs.length-1] : null;
-
-  document.getElementById('s-dernier').textContent = last ? `${fmt(last.date)} — ${last.type}` : '—';
-
-  const prochain = data.config.prochainEntretienPrevu;
-  const j = daysUntil(prochain);
-  let badge = '';
-  if (prochain && j!==null) {
-    if (j<1) badge=`<span class="badge br">🚨 Critique</span>`;
-    else if (j<=7) badge=`<span class="badge ba">⚠️ J-${j}</span>`;
-    else badge=`<span class="badge bg">✅ J-${j}</span>`;
-  }
-  document.getElementById('s-prochain').innerHTML = prochain ? `${fmt(prochain)} ${badge}` : '—';
-  document.getElementById('s-heures').textContent = data.config.dernieresHeures ? `${data.config.dernieresHeures} h` : '—';
-
-  const statEl = document.getElementById('s-statut');
-  if (!last) { statEl.innerHTML='<span class="badge bx">Non défini</span>'; }
-  else if (last.essaiResultat==='Conforme') { statEl.innerHTML='<span class="badge bg">✅ Opérationnel</span>'; }
-  else if (last.essaiResultat==='Non conforme') { statEl.innerHTML='<span class="badge br">❌ Hors service</span>'; }
-  else if (last.essaiResultat==='Anomalie mineure') { statEl.innerHTML='<span class="badge ba">⚠️ Surveillance</span>'; }
-  else { statEl.innerHTML='<span class="badge bx">Inconnu</span>'; }
-
-  const card = document.getElementById('s-composants');
-  if (!ivs.length) { card.innerHTML='<div class="empty"><span class="empty-ico">🔩</span>Aucune intervention</div>'; return; }
-  const types = {};
-  ivs.forEach(iv=>{ if(!types[iv.type]||iv.date>types[iv.type].date) types[iv.type]=iv; });
-  card.innerHTML = Object.entries(types).map(([t,iv])=>`
-    <div class="crow"><div class="crow-label" style="font-size:13px;">${t}</div><div class="crow-value" style="font-size:13px;">${fmt(iv.date)}</div></div>
-  `).join('');
-}
-
-/* ══ MAINTENANCE — SAVE ══ */
-function resetMaintForm() {
-  ['m-date','m-type','m-duree','m-tech','m-cout','m-pieces','m-notes',
-   'm-essai-date','m-essai-notes'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const sel = document.getElementById('m-essai-res');
-  if (sel) sel.selectedIndex = 0;
-  showToast && showToast('Formulaire réinitialisé');
-}
-function resetRexForm() {
-  ['rex-date','rex-type','rex-desc','rex-action','rex-gravite'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-}
-function saveMaint() {
-  const date = document.getElementById('m-date').value;
-  const type = document.getElementById('m-type').value;
-  if (!date||!type) { showToast('Date et type requis','⚠️'); return; }
-
-  const data = loadMaint();
-  const iv = {
-    id:Date.now(), date, type,
-    technicien: document.getElementById('m-tech').value||'CONTE Philippe',
-    heures: document.getElementById('m-heures').value,
-    observations: document.getElementById('m-obs').value,
-    essaiDate: document.getElementById('m-essai-date').value,
-    essaiNumVol: document.getElementById('m-essai-vol').value,
-    essaiResultat: document.getElementById('m-essai-res').value,
-    essaiNotes: document.getElementById('m-essai-notes').value,
-  };
-  data.interventions.push(iv);
-  const prochain = document.getElementById('m-prochain').value;
-  if (prochain) data.config.prochainEntretienPrevu = prochain;
-  if (document.getElementById('m-motif').value) data.config.prochainMotif = document.getElementById('m-motif').value;
-  if (iv.heures) data.config.dernieresHeures = iv.heures;
-  saveMaintData(data);
-  checkMaintBanner();
-
-  ['m-date','m-heures','m-obs','m-essai-date','m-essai-vol','m-essai-notes','m-prochain','m-motif'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('m-type').value='';
-  document.getElementById('m-essai-res').value='';
-  document.getElementById('m-tech').value='';
-
-  showToast('Intervention enregistrée');
-  mainTab('statut');
-}
-
-/* ══ MAINTENANCE — HISTORIQUE ══ */
-function renderHistorique() {
-  const data = loadMaint();
-  const list = document.getElementById('h-list');
-  if (!data.interventions.length) {
-    list.innerHTML='<div class="empty"><span class="empty-ico">📋</span>Aucune intervention</div>'; return;
-  }
-  const icons = {'Entretien périodique':'🔧','Remplacement hélices':'🌀','Remplacement batterie':'🔋','Mise à jour firmware':'📱','Contrôle visuel':'👁','Réparation':'🛠','Étalonnage IMU/compass':'🧭','Autre':'📌'};
-  const res = {'Conforme':'bg','Anomalie mineure':'ba','Non conforme':'br','Essai non réalisé':'bx','':"bx"};
-  list.innerHTML = [...data.interventions].reverse().map(iv=>`
-    <div class="hitem">
-      <div class="hico" style="background:var(--light-blue)">${icons[iv.type]||'🔧'}</div>
-      <div class="hbody">
-        <div class="htitle">${iv.type}</div>
-        <div class="hmeta">${fmt(iv.date)} · ${iv.technicien||'—'}${iv.heures?' · '+iv.heures+'h':''}</div>
-        ${iv.observations?`<div class="hnote">${iv.observations}</div>`:''}
-        ${iv.essaiDate?`<div style="margin-top:6px;padding:6px 10px;background:var(--light-green);border-radius:8px;font-size:12px;">
-          <strong>Essai :</strong> ${fmt(iv.essaiDate)}${iv.essaiNumVol?' · N° '+iv.essaiNumVol:''}
-          ${iv.essaiResultat?`<span class="badge ${res[iv.essaiResultat]||'bx'}" style="margin-left:6px;">${iv.essaiResultat}</span>`:''}
-          ${iv.essaiNotes?`<br><em>${iv.essaiNotes}</em>`:''}
-        </div>`:''}
+const KEY_M='uas_maintenance',KEY_R='uas_rex_interne';
+let items=[],rexItems=[],editId=null,deleteId=null,deleteType=null,currentTab='interventions';
+function load(){try{items=JSON.parse(localStorage.getItem(KEY_M))||[];}catch{items=[];}try{rexItems=JSON.parse(localStorage.getItem(KEY_R))||[];}catch{rexItems=[];}}
+function save(){localStorage.setItem(KEY_M,JSON.stringify(items));}
+function saveRex2(){localStorage.setItem(KEY_R,JSON.stringify(rexItems));}
+let toastTimer;
+function toast(msg,color='var(--navy)'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
+function switchTab(tab,el){currentTab=tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');['interventions','rex','planning'].forEach(t=>{document.getElementById('section-'+t).style.display=t===tab?'':'none';});if(tab==='rex')renderRex();if(tab==='planning')renderPlanning();}
+function updateKPIs(){const total=items.length;const h=items.reduce((s,i)=>s+(parseFloat(i.hApres)||0),0);const cout=items.reduce((s,i)=>s+(parseFloat(i.cout)||0),0);const urgent=items.filter(i=>i.type==='urgence'||isOverdue(i.nextDate)).length;document.getElementById('kpiTotal').textContent=total;document.getElementById('kpiHeures').textContent=h.toFixed(1)+'h';document.getElementById('kpiCout').textContent=cout.toFixed(0)+' €';document.getElementById('kpiUrgent').textContent=urgent;}
+function isOverdue(d){if(!d)return false;return new Date(d)<new Date();}
+function daysUntil(d){if(!d)return null;return Math.floor((new Date(d)-new Date())/86400000);}
+function renderList(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const c=document.getElementById('list-area');
+  let list=[...items];
+  if(q)list=list.filter(i=>(i.desc||'').toLowerCase().includes(q)||(i.type||'').includes(q)||(i.tech||'').toLowerCase().includes(q));
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">🔧</div><p>${q?'Aucun résultat.':'Aucune intervention enregistrée.'}</p></div>`;return;}
+  const typeIcon={revision:'🔄',remplacement:'🔩',calibration:'🎯',reparation:'🔨',nettoyage:'🧹',firmware:'💾',urgence:'🚨'};
+  const typeLabel={revision:'Révision',remplacement:'Remplacement',calibration:'Calibration',reparation:'Réparation',nettoyage:'Nettoyage',firmware:'Firmware',urgence:'Urgente'};
+  c.innerHTML=list.map((item,i)=>{
+    const overdue=isOverdue(item.nextDate);const du=daysUntil(item.nextDate);
+    const cardCls=item.type==='urgence'?'urgent':overdue?'attention':'';
+    return `<div class="maint-card ${cardCls}" style="animation-delay:${i*.04}s">
+      <div class="maint-card-top">
+        <div class="maint-type-icon">${typeIcon[item.type]||'🔧'}</div>
+        <div class="maint-info"><div class="maint-title">${item.desc?.slice(0,60)||'—'}</div><div class="maint-sub">${fmtDate(item.date)}${item.uas?' · '+item.uas:''}</div></div>
+        <span class="badge" style="background:var(--light-blue);color:var(--blue)">${typeLabel[item.type]||item.type}</span>
       </div>
-    </div>
-  `).join('');
-}
-
-function exportMaintCSV() {
-  const data = loadMaint();
-  if (!data.interventions.length) { showToast('Aucune donnée','⚠️'); return; }
-  const hdr='Date;Type;Technicien;Heures;Observations;Essai Date;Essai Vol;Essai Résultat;Essai Notes';
-  const rows=data.interventions.map(iv=>[iv.date,iv.type,iv.technicien,iv.heures,iv.observations,iv.essaiDate,iv.essaiNumVol,iv.essaiResultat,iv.essaiNotes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(';'));
-  const blob=new Blob(['\uFEFF'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`maintenance_${today()}.csv`; a.click();
-}
-
-/* ══ REX — LISTE ══ */
-function renderRexListe() {
-  const data = loadRex();
-  const list = document.getElementById('r-list');
-  if (!data.incidents.length) {
-    list.innerHTML='<div class="empty"><span class="empty-ico">🛡️</span>Aucun incident — bonne nouvelle !</div>'; return;
-  }
-  const catIco={'Perte de contrôle':'🔴','Défaillance technique':'🔧','Violation espace aérien':'⛔','Collision / quasi-collision':'💥','Perte de liaison RC':'📡','Défaillance batterie':'🔋','Conditions météo':'🌧','Incident tiers':'👥','Autre':'📌'};
-  const sevCls={'1':'ba','2':'ba','3':'br'};
-  const sevLbl={'1':'Mineur','2':'Significatif','3':'Grave'};
-  list.innerHTML=[...data.incidents].reverse().map(inc=>{
-    const elapsed=elapsedMs(inc);
-    const over72=!inc.declareDSAC&&elapsed>H72;
-    return `<div class="hitem">
-      <div class="hico" style="background:var(--light-red)">${catIco[inc.categorie]||'⚠️'}</div>
-      <div class="hbody">
-        <div class="htitle">${inc.categorie}</div>
-        <div class="hmeta">${fmt(inc.date)} ${inc.heure||''} · ${inc.lieu||'Lieu non précisé'}${inc.numVol?' · '+inc.numVol:''}</div>
-        <div class="htags">
-          <span class="badge ${sevCls[inc.gravite]||'bx'}">G${inc.gravite} — ${sevLbl[inc.gravite]||'?'}</span>
-          ${inc.declareDSAC
-            ?`<span class="badge bg">✅ Déclaré${inc.dsacNumero?' · '+inc.dsacNumero:''}</span>`
-            :over72
-              ?`<span class="badge br">🚨 Délai DSAC dépassé</span>`
-              :`<span class="badge bx">Non déclaré</span>`}
+      <div class="maint-grid">
+        ${item.hAvant?`<div class="mf"><span class="mfl">Heures avant</span><span class="mfv">${item.hAvant}h</span></div>`:''}
+        ${item.hApres?`<div class="mf"><span class="mfl">Heures après</span><span class="mfv">${item.hApres}h</span></div>`:''}
+        ${item.prochaine?`<div class="mf"><span class="mfl">Prochain (h)</span><span class="mfv" style="color:var(--amber)">${item.prochaine}h</span></div>`:''}
+        ${item.pieces?`<div class="mf" style="grid-column:1/-1"><span class="mfl">Pièces</span><span class="mfv">${item.pieces}</span></div>`:''}
+        ${item.cout?`<div class="mf"><span class="mfl">Coût</span><span class="mfv" style="color:var(--green)">${parseFloat(item.cout).toFixed(2)} €</span></div>`:''}
+      </div>
+      <div class="maint-foot">
+        <span class="maint-tech">👤 ${item.tech||'—'}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${item.nextDate?`<span class="prochaine-badge${overdue?' overdue':''}">${overdue?'⚠️ En retard':du===0?'Aujourd\'hui':du>0?'J-'+du:'—'}</span>`:''}
+          <div class="maint-actions">
+            <button class="btn-sm btn-edit" onclick="openModal('${item.id}')">✏️</button>
+            <button class="btn-sm btn-del" onclick="askDel('${item.id}','maint')">🗑</button>
+          </div>
         </div>
-        ${inc.description?`<div class="hnote">${inc.description.slice(0,120)}${inc.description.length>120?'…':''}</div>`:''}
-        ${!inc.declareDSAC?`<div style="margin-top:8px;"><button onclick="quickDeclare(${inc.id})" style="background:var(--light-blue);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;">🔗 Déclarer CRESUS</button></div>`:''}
+      </div>
+      ${item.notes?`<div style="padding:6px 12px 8px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);">📝 ${item.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function renderRex(){
+  const c=document.getElementById('rex-list');
+  if(!rexItems.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">📓</div><p>Aucun REX enregistré.</p></div>`;return;}
+  const gravCol={info:'var(--blue)',mineur:'var(--amber)',modere:'var(--amber)',grave:'var(--red)'};
+  const gravTxt={info:'ℹ️ Info',mineur:'🟡 Mineur',modere:'🟠 Modéré',grave:'🔴 Grave'};
+  c.innerHTML=[...rexItems].sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`
+    <div style="background:var(--surface);border:1.5px solid var(--border);border-left:4px solid ${gravCol[r.gravite]||'var(--border)'};border-radius:var(--radius);padding:12px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div style="font-size:13px;font-weight:800;">${r.titre}</div>
+        <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--bg);color:${gravCol[r.gravite]||'var(--text-muted)'};">${gravTxt[r.gravite]||r.gravite}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${fmtDate(r.date)}${r.uas?' · '+r.uas:''}${r.phase?' · '+r.phase:''}</div>
+      ${r.desc?`<div style="font-size:12px;color:var(--text);margin-top:7px;line-height:1.4;">${r.desc}</div>`:''}
+      ${r.actions?`<div style="font-size:12px;color:var(--green);margin-top:5px;">→ ${r.actions}</div>`:''}
+      <div style="margin-top:8px;text-align:right;"><button class="btn-sm btn-del" onclick="askDel('${r.id}','rex')">🗑</button></div>
+    </div>`).join('');
+}
+function renderPlanning(){
+  const c=document.getElementById('planning-list');
+  const upcoming=items.filter(i=>i.nextDate).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));
+  if(!upcoming.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><p>Aucune révision planifiée.</p></div>`;return;}
+  c.innerHTML=upcoming.map(item=>{
+    const du=daysUntil(item.nextDate);const overdue=du!==null&&du<0;
+    const color=overdue?'var(--red)':du<=14?'var(--amber)':'var(--green)';
+    return `<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
+      <div style="width:52px;height:52px;border-radius:10px;background:${color}18;border:2px solid ${color};display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="font-size:16px;font-weight:900;color:${color};line-height:1;">${overdue?'!':du===0?'0':du}</div>
+        <div style="font-size:8px;color:${color};font-weight:700;">${overdue?'RETARD':du===0?'AUJ':'JOURS'}</div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;">${item.desc?.slice(0,50)||'Révision'}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Prévue le ${fmtDate(item.nextDate)}${item.uas?' · '+item.uas:''}</div>
+        ${item.prochaine?`<div style="font-size:11px;color:var(--amber);margin-top:1px;">⏱ Prochaine à ${item.prochaine}h</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
-
-function quickDeclare(id) {
-  const data = loadRex();
-  const inc = data.incidents.find(i=>i.id===id);
-  if (!inc) return;
-  inc.declareDSAC=true; inc.dsacDate=today();
-  saveRexData(data);
-  openCresus(); checkDSACBanner(); renderRexListe();
-  showToast('Marqué déclaré — CRESUS ouvert');
+function openModal(id=null){
+  editId=id;document.getElementById('modalTitle').textContent=id?'Modifier intervention':'Nouvelle intervention';
+  if(id){const it=items.find(x=>x.id===id);if(it)fillForm(it);}else{clearForm();}
+  document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';
 }
-
-/* ══ REX — SAVE ══ */
-function saveRex() {
-  const date=document.getElementById('r-date').value;
-  const cat=document.getElementById('r-cat').value;
-  const desc=document.getElementById('r-desc').value.trim();
-  const grav=document.getElementById('r-grav').value;
-  if (!date||!cat||!desc||!grav) { showToast('Champs obligatoires manquants','⚠️'); return; }
-
-  const data = loadRex();
-  data.incidents.push({
-    id:Date.now(), date,
-    heure:document.getElementById('r-time').value,
-    categorie:cat, gravite:grav,
-    lieu:document.getElementById('r-lieu').value,
-    numVol:document.getElementById('r-vol').value,
-    description:desc,
-    causes:document.getElementById('r-causes').value,
-    actions:document.getElementById('r-actions').value,
-    declareDSAC:document.getElementById('r-dsac').checked,
-    dsacDate:document.getElementById('r-dsac-date').value,
-    dsacNumero:document.getElementById('r-dsac-num').value,
-  });
-  saveRexData(data);
-  checkDSACBanner();
-
-  ['r-date','r-time','r-lieu','r-vol','r-desc','r-causes','r-actions','r-dsac-date','r-dsac-num'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('r-cat').value='';
-  document.getElementById('r-grav').value='';
-  document.getElementById('r-dsac').checked=false;
-
-  showToast('Incident enregistré','⚠️');
-  rexTab('liste');
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+function clearForm(){['fDate','fType','fDesc','fUAS','fTech','fHAvant','fHApres','fProchaine','fPieces','fCout','fNextDate','fNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('fDate').value=new Date().toISOString().slice(0,10);try{const c=JSON.parse(localStorage.getItem('uas_config')||'{}');const d=(c.drones||[]).find(x=>x.primary)||{};if(d.nom)document.getElementById('fUAS').value=d.nom;}catch{}}
+function fillForm(it){const map={fDate:'date',fType:'type',fDesc:'desc',fUAS:'uas',fTech:'tech',fHAvant:'hAvant',fHApres:'hApres',fProchaine:'prochaine',fPieces:'pieces',fCout:'cout',fNextDate:'nextDate',fNotes:'notes'};Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&it[key]!=null)el.value=it[key];});}
+function saveIntervention(){
+  const date=gv('fDate'),type=gv('fType'),desc=gv('fDesc').trim();
+  if(!date||!type||!desc){toast('⚠️ Date, type et description obligatoires','var(--amber)');return;}
+  const item={id:editId||crypto.randomUUID(),date,type,desc,uas:gv('fUAS'),tech:gv('fTech'),hAvant:gv('fHAvant'),hApres:gv('fHApres'),prochaine:gv('fProchaine'),pieces:gv('fPieces'),cout:gv('fCout'),nextDate:gv('fNextDate'),notes:gv('fNotes'),createdAt:editId?(items.find(x=>x.id===editId)?.createdAt||new Date().toISOString()):new Date().toISOString()};
+  if(editId){const i=items.findIndex(x=>x.id===editId);if(i!==-1)items[i]=item;}else items.push(item);
+  save();closeModal();renderAll();toast(editId?'✅ Mise à jour':'✅ Intervention enregistrée','var(--green)');
 }
-
-/* ══ REX — STATS ══ */
-function renderRexStats() {
-  const data = loadRex();
-  const incs = data.incidents;
-  document.getElementById('r-stat-total').textContent=incs.length;
-  const nd=incs.filter(i=>!i.declareDSAC).length;
-  document.getElementById('r-stat-nd').innerHTML=nd?`<span class="badge ba">${nd}</span>`:'0';
-  const g3=incs.filter(i=>i.gravite==='3').length;
-  document.getElementById('r-stat-g3').innerHTML=g3?`<span class="badge br">${g3}</span>`:'0';
-  const sorted=[...incs].sort((a,b)=>b.date.localeCompare(a.date));
-  document.getElementById('r-stat-last').textContent=sorted.length?`${fmt(sorted[0].date)} — ${sorted[0].categorie}`:'—';
-
-  const bycat={};
-  incs.forEach(i=>{bycat[i.categorie]=(bycat[i.categorie]||0)+1;});
-  const card=document.getElementById('r-stat-cat');
-  if (!Object.keys(bycat).length) { card.innerHTML='<div class="empty"><span class="empty-ico">📊</span>Aucun incident</div>'; return; }
-  card.innerHTML=Object.entries(bycat).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`
-    <div class="crow"><div class="crow-label" style="font-size:13px;">${c}</div><div class="crow-value"><span class="badge bb">${n}</span></div></div>
-  `).join('');
-}
-
-function exportRexCSV() {
-  const data=loadRex();
-  if (!data.incidents.length) { showToast('Aucune donnée','⚠️'); return; }
-  const hdr='Date;Heure;Catégorie;Gravité;Lieu;N° Vol;Description;Causes;Actions;Déclaré DSAC;Date DSAC;N° CRESUS';
-  const rows=data.incidents.map(i=>[i.date,i.heure,i.categorie,i.gravite,i.lieu,i.numVol,i.description,i.causes,i.actions,i.declareDSAC?'Oui':'Non',i.dsacDate,i.dsacNumero].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(';'));
-  const blob=new Blob(['\uFEFF'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rex_${today()}.csv`; a.click();
-}
-
-/* ══ CRESUS / MAIL ══ */
-function openCresus() { window.open(CRESUS_URL,'_blank'); }
-
-function sendMailDSAC() {
-  const to='dsac-autorisations-drones-bf@aviation-civile.gouv.fr;ag.dsac-ce@aviation-civile.gouv.fr';
-  const subj=encodeURIComponent('Déclaration incident UAS — CONTE Philippe — FRAjqq48j12nfy4c');
-  const date=document.getElementById('r-date').value;
-  const cat=document.getElementById('r-cat').value;
-  const grav=document.getElementById('r-grav').value;
-  const lieu=document.getElementById('r-lieu').value;
-  const vol=document.getElementById('r-vol').value;
-  const desc=document.getElementById('r-desc').value;
-  const causes=document.getElementById('r-causes').value;
-  const actions=document.getElementById('r-actions').value;
-  const body=encodeURIComponent(`Madame, Monsieur,
-
-Je vous adresse ci-joint le formulaire CRESUS relatif à l'incident suivant :
-
-EXPLOITANT
-──────────────────────────────
-Nom           : CONTE Philippe
-N° AlphaTango : FRAjqq48j12nfy4c
-Aéronef       : DJI Mavic 4 Pro — UAS-FR-517804
-CATS          : NLD-RP-q99cvjjh51fz
-Assurance     : COVERDRONE CDA22411846EUR
-Adresse       : 288, rue de la Concorde — 74300 THYEZ
-Tél.          : +33 6 20 42 55 11
-Email         : contephil74@gmail.com
-
-INCIDENT
-──────────────────────────────
-Date          : ${date||'—'}
-Catégorie     : ${cat||'—'}
-Gravité       : ${grav?'Niveau '+grav:'—'}
-Lieu          : ${lieu||'—'}
-N° vol        : ${vol||'—'}
-
-Description   :
-${desc||'—'}
-
-Causes identifiées :
-${causes||'—'}
-
-Actions correctives :
-${actions||'—'}
-
-──────────────────────────────
-Formulaire CRESUS : ${CRESUS_URL}
-
-Cordialement,
-CONTE Philippe`);
-  window.location.href=`mailto:${to}?subject=${subj}&body=${body}`;
-}
-
-function updateDSACToggle() {
-  const checked=document.getElementById('r-dsac').checked;
-  document.getElementById('r-dsac-fields').style.opacity=checked?'1':'0.5';
-  if (checked&&!document.getElementById('r-dsac-date').value) document.getElementById('r-dsac-date').value=today();
-}
-
-/* ══ INIT ══ */
-document.getElementById('m-date').value=today();
-document.getElementById('m-essai-date').value=today();
-document.getElementById('m-tech').value='CONTE Philippe';
-document.getElementById('r-date').value=today();
-document.getElementById('r-time').value=nowTime();
-updateDSACToggle();
-checkMaintBanner();
-checkDSACBanner();
-renderStatut();
-setInterval(checkDSACBanner, 60000);
+function openRexModal(){document.getElementById('rDate').value=new Date().toISOString().slice(0,10);try{const c=JSON.parse(localStorage.getItem('uas_config')||'{}');const d=(c.drones||[]).find(x=>x.primary)||{};if(d.nom)document.getElementById('rUAS').value=d.nom;}catch{}document.getElementById('rexModalOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeRexModal(){document.getElementById('rexModalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeRexOut(e){if(e.target===document.getElementById('rexModalOverlay'))closeRexModal();}
+function saveRex(){const titre=gv('rTitre').trim();if(!titre){toast('⚠️ Titre obligatoire','var(--amber)');return;}rexItems.push({id:crypto.randomUUID(),date:gv('rDate'),uas:gv('rUAS'),titre,desc:gv('rDesc'),gravite:gv('rGravite'),phase:gv('rPhase'),actions:gv('rActions'),createdAt:new Date().toISOString()});saveRex2();closeRexModal();renderRex();toast('✅ REX enregistré','var(--green)');}
+function askDel(id,type){deleteId=id;deleteType=type;document.getElementById('confirmOverlay').classList.add('open');}
+function cancelDel(){deleteId=null;deleteType=null;document.getElementById('confirmOverlay').classList.remove('open');}
+function confirmDel(){if(deleteType==='maint'){items=items.filter(x=>x.id!==deleteId);save();renderAll();}else if(deleteType==='rex'){rexItems=rexItems.filter(x=>x.id!==deleteId);saveRex2();renderRex();}cancelDel();toast('🗑 Supprimé');}
+function gv(id){const el=document.getElementById(id);return el?el.value:'';}
+function fmtDate(d){if(!d)return'—';const[y,m,j]=d.split('-');return`${j}/${m}/${y}`;}
+function renderAll(){updateKPIs();renderList();}
+load();renderAll();
 </script>
-
-
-
-
-
-</body></html>
+</body>
+</html>
