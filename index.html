@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="UAS Manager">
+<link rel="manifest" href="manifest.json">
 <title>UAS Manager — Accueil</title>
 <style>
   :root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--light-red:#FDECEC;--teal:#006064;--bg:#F0F4FA;--surface:#FFFFFF;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
@@ -384,6 +385,11 @@ window.addEventListener('storage',e=>{
   if(e.key==='uas_config'||e.key==='uas_config_updated') loadConfig();
   if(e.key==='uas_avatar') loadAvatar();
 });
+
+// Service Worker (PWA offline — inactif dans Capacitor natif)
+if('serviceWorker' in navigator && !window.Capacitor) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>

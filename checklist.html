@@ -2,457 +2,571 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check-list Vol UAS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Check-listes</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
-.hdr { background: #0C447C; padding: 14px 16px; }
-.hdr h1 { color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 3px; }
-.hdr p { color: #aac8e8; font-size: 11px; margin-bottom: 10px; }
-.mrow { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; }
-.mrow label { color: #fff; font-size: 12px; white-space: nowrap; }
-.mrow input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 13px; font-family: inherit; }
-.mrow input::placeholder { color: rgba(255,255,255,0.4); }
-.mrow button { background: rgba(255,255,255,0.2); border: none; border-radius: 6px; color: #fff; font-size: 12px; padding: 5px 8px; cursor: pointer; font-family: inherit; }
-.segbar { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d8e4f0; }
-.seg { display: flex; background: #f0f4f8; border-radius: 10px; padding: 3px; gap: 3px; }
-.seg button { flex: 1; padding: 9px 4px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; font-family: inherit; cursor: pointer; background: transparent; color: #6b7280; }
-.seg button.on { background: #0C447C; color: #fff; }
-.progbar { background: #fff; padding: 10px 16px 12px; border-bottom: 1px solid #d8e4f0; }
-.progtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.progtop span { font-size: 12px; color: #6b7280; }
-.progtop strong { font-size: 20px; color: #0C447C; }
-.progtrack { background: #d8e4f0; border-radius: 4px; height: 7px; overflow: hidden; }
-.progfill { height: 7px; background: #1D6B37; border-radius: 4px; width: 0%; }
-.progstats { font-size: 11px; color: #6b7280; margin-top: 5px; }
-.actbar { background: #fff; padding: 8px 16px; border-bottom: 1px solid #d8e4f0; display: flex; gap: 6px; }
-.actbar button { flex: 1; padding: 9px 4px; border: 1px solid #d8e4f0; border-radius: 8px; font-size: 11px; font-weight: bold; font-family: inherit; cursor: pointer; background: #fff; color: #1a1a2e; }
-.btn-ok { background: #E8F5E9 !important; border-color: #1D6B37 !important; color: #1D6B37 !important; }
-.btn-ko { background: #FDECEC !important; border-color: #8B2020 !important; color: #8B2020 !important; }
-.btn-am { background: #FAEEDA !important; border-color: #BA7517 !important; color: #BA7517 !important; }
-.banner { border-radius: 10px; margin: 10px 16px 0; padding: 12px; display: none; }
-.banner.go { background: #E8F5E9; border: 1px solid #1D6B37; }
-.banner.nogo { background: #FDECEC; border: 1px solid #8B2020; }
-.btitle { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
-.banner.go .btitle { color: #1D6B37; }
-.banner.nogo .btitle { color: #8B2020; }
-.bdesc { font-size: 12px; color: #6b7280; }
-.btn-ov { display: none; margin-top: 10px; width: 100%; background: #8B2020; color: #fff; border: none; border-radius: 8px; padding: 9px; font-size: 12px; font-weight: bold; font-family: inherit; cursor: pointer; }
-.seclbl { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; padding: 12px 16px 4px; background: #f0f4f8; }
-.item { background: #fff; border-left: 3px solid transparent; margin-bottom: 1px; padding: 11px 14px 11px 44px; position: relative; cursor: pointer; }
-.item.crit { border-left-color: #BA7517; }
-.item.done { background: #E8F5E9; border-left-color: #1D6B37; }
-.chk { position: absolute; left: 12px; top: 12px; width: 22px; height: 22px; border: 2px solid #d8e4f0; border-radius: 6px; background: #f0f4f8; text-align: center; line-height: 18px; font-size: 13px; color: transparent; }
-.item.done .chk { background: #1D6B37; border-color: #1D6B37; color: #fff; }
-.itxt { font-size: 13px; font-weight: bold; line-height: 1.3; }
-.item.done .itxt { color: #1D6B37; text-decoration: line-through; }
-.isub { font-size: 11px; color: #6b7280; margin-top: 2px; }
-.tagc { display: inline-block; background: #FAEEDA; border: 1px solid #BA7517; color: #BA7517; font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 4px; margin-top: 3px; }
-.item.done .tagc { background: #E8F5E9; border-color: #1D6B37; color: #1D6B37; }
-.tagt { font-size: 11px; color: #6b7280; margin-left: 5px; }
-.spacer { height: 90px; }
-.savebar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d8e4f0; padding: 10px 16px 24px; display: flex; gap: 8px; }
-.savebar .btn-hist { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 12px 14px; font-size: 14px; font-weight: bold; cursor: pointer; font-family: inherit; color: #1a1a2e; }
-.savebar .btn-save { flex: 1; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
-.ovlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; }
-.ovlay.show { display: block; }
-.mdl { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 18px 18px 0 0; padding: 20px 20px 40px; max-height: 85vh; overflow-y: auto; }
-.mdl-hdl { width: 36px; height: 4px; background: #d8e4f0; border-radius: 2px; margin: 0 auto 14px; }
-.mdl-t { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
-.mdl-t.red { color: #8B2020; }
-.mdl-t.blue { color: #0C447C; }
-.mdl-b { font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 16px; }
-.mbtn { display: block; width: 100%; padding: 13px; border-radius: 10px; border: none; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; margin-bottom: 10px; text-align: center; }
-.mbtn.red { background: #8B2020; color: #fff; }
-.mbtn.grey { background: #f0f4f8; color: #1a1a2e; border: 1px solid #d8e4f0; }
-#toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: bold; z-index: 300; white-space: nowrap; display: none; pointer-events: none; }
-#errmsg { background: #FDECEC; border: 2px solid #8B2020; border-radius: 10px; margin: 12px 16px; padding: 12px; font-size: 12px; color: #8B2020; display: none; word-break: break-all; white-space: pre-wrap; }
-
-/* ══ UNIFIED BOTTOM NAV ══ */
-
-@media(prefers-color-scheme:dark){
-  
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,.10);
+  --radius:14px;--header-h:56px;
 }
-
-
-
-
-
-
 @media(prefers-color-scheme:dark){
-  
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;}
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
 
+/* ─── HEADER ─── */
+#header{position:sticky;top:0;z-index:200;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 16px 0;height:calc(var(--header-h) + env(safe-area-inset-top));box-shadow:0 2px 12px rgba(12,68,124,.3);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80%,rgba(24,95,165,.4),transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
+.back-btn:active{background:rgba(255,255,255,.28);}
 
+/* ─── MISSION BAR ─── */
+#mission-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top));z-index:100;}
+.mission-row{display:flex;gap:8px;align-items:center;}
+.mission-row input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:7px 10px;font-family:inherit;}
+.mission-row input:focus{outline:none;border-color:var(--blue);}
+.btn-sm-action{background:var(--light-blue);color:var(--navy);border:none;border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+@media(prefers-color-scheme:dark){.btn-sm-action{background:var(--border);color:#7EB8F7;}}
 
+/* ─── TABS ─── */
+#tab-nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top) + 50px);z-index:99;}
+.tab-btn{flex:1;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--text-muted);font-size:12px;font-weight:700;padding:10px 4px;cursor:pointer;font-family:inherit;transition:all .15s;letter-spacing:-.2px;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+@media(prefers-color-scheme:dark){.tab-btn.active{color:#7EB8F7;border-bottom-color:#7EB8F7;}}
 
-  /* ─── BOUTON RETOUR ACCUEIL ─── */
-  .back-btn {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.28); }
+/* ─── PROGRESS ─── */
+.progress-bar-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.progress-pct{font-size:22px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.progress-pct{color:#7EB8F7;}}
+.progress-label{font-size:12px;color:var(--text-muted);}
+.progress-track{background:var(--border);border-radius:4px;height:7px;overflow:hidden;}
+.progress-fill{height:7px;border-radius:4px;background:var(--green);transition:width .4s ease;}
+.progress-stats{font-size:11px;color:var(--text-muted);margin-top:5px;}
 
+/* ─── ACTION BAR ─── */
+.action-bar{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface);}
+.action-btn{flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--surface);color:var(--text);transition:all .15s;}
+.action-btn.go{background:var(--light-green);border-color:var(--green);color:var(--green);}
+.action-btn.nogo{background:var(--light-red);border-color:var(--red);color:var(--red);}
+.action-btn.amber{background:var(--light-amber);border-color:var(--amber);color:var(--amber);}
+
+/* ─── VERDICT ─── */
+.verdict{display:none;margin:10px 14px 0;border-radius:12px;padding:12px 14px;}
+.verdict.go{display:block;background:var(--light-green);border:1.5px solid var(--green);}
+.verdict.nogo{display:block;background:var(--light-red);border:1.5px solid var(--red);}
+.verdict-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.verdict.go .verdict-title{color:var(--green);}
+.verdict.nogo .verdict-title{color:var(--red);}
+.verdict-sub{font-size:12px;color:var(--text-muted);}
+
+/* ─── CHECKLIST ─── */
+.section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:14px 14px 4px;background:var(--bg);}
+.cl-item{background:var(--surface);border-left:3px solid transparent;margin-bottom:1px;padding:11px 14px 11px 50px;position:relative;cursor:pointer;transition:background .15s;}
+.cl-item.critical{border-left-color:var(--amber);}
+.cl-item.nogo-item{border-left-color:var(--red);}
+.cl-item.checked{background:var(--light-green);border-left-color:var(--green);}
+.cl-item.checked-ko{background:var(--light-red);border-left-color:var(--red);}
+.cl-checkbox{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:2px solid var(--border);border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all .2s;}
+.cl-item.checked .cl-checkbox{background:var(--green);border-color:var(--green);color:#fff;}
+.cl-item.checked-ko .cl-checkbox{background:var(--red);border-color:var(--red);color:#fff;}
+.cl-text{font-size:13px;font-weight:600;line-height:1.3;}
+.cl-item.checked .cl-text{color:var(--green);text-decoration:line-through;}
+.cl-item.checked-ko .cl-text{color:var(--red);}
+.cl-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.cl-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;}
+.badge-critical{background:var(--light-amber);color:var(--amber);}
+.badge-nogo{background:var(--light-red);color:var(--red);}
+
+/* ─── STATUS BAR ITEM ─── */
+.cl-status-row{display:flex;gap:6px;position:absolute;right:10px;top:50%;transform:translateY(-50%);}
+.cl-status-btn{width:26px;height:26px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.sts-ok{background:var(--light-green);color:var(--green);}
+.sts-ko{background:var(--light-red);color:var(--red);}
+
+/* ─── SAVE MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--surface);width:100%;max-width:560px;margin:0 auto;border-radius:22px 22px 0 0;padding:20px 16px calc(28px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.23,1);}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.modal-title{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:14px;}
+@media(prefers-color-scheme:dark){.modal-title{color:#7EB8F7;}}
+.fgroup{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.fgroup label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.fgroup input,.fgroup select,.fgroup textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;font-family:inherit;width:100%;}
+.fgroup input:focus,.fgroup select:focus{outline:none;border-color:var(--blue);}
+.save-row{display:flex;gap:10px;margin-top:4px;}
+.btn-save{flex:1;padding:13px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cancel-modal{padding:13px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(50px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+.content-area{padding-bottom:calc(80px + env(safe-area-inset-bottom));}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
 
-<div id="errmsg"></div>
-
-<div class="hdr">
-  <h1>Check-list de vol</h1>
-  <p>CONTE Philippe - FRAjqq48j12nfy4c - DJI Mavic 4 Pro</p>
-  <div class="mrow">
-    <label>Mission :</label>
-    <input id="missionId" placeholder="Ex: M2025-001" maxlength="30">
-    <button onclick="showHist()">Missions</button>
-  </div>
+<header id="header">
+  <h1>☑️ Check-listes</h1>
   <a class="back-btn" href="index.html">← Accueil</a>
-</div>
+</header>
 
-<div class="segbar">
-  <div class="seg">
-    <button id="btnPre" class="on" onclick="sw('pre')">Pre-vol (<span id="cntPre">0/0</span>)</button>
-    <button id="btnPost" onclick="sw('post')">Post-vol (<span id="cntPost">0/0</span>)</button>
+<!-- Mission bar -->
+<div id="mission-bar">
+  <div class="mission-row">
+    <input type="text" id="missionInput" placeholder="N° mission / site (optionnel)">
+    <button class="btn-sm-action" onclick="openSaveModal()">💾 Enregistrer</button>
+    <button class="btn-sm-action" onclick="resetAll()" style="background:var(--light-red);color:var(--red);">↺ Reset</button>
   </div>
 </div>
 
-<div class="progbar">
-  <div class="progtop">
-    <span>Progression</span>
-    <strong id="pct">0%</strong>
+<!-- Tabs -->
+<div id="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('prevol',this)">🛫 Pré-vol</button>
+  <button class="tab-btn" onclick="switchTab('postvol',this)">🛬 Post-vol</button>
+  <button class="tab-btn" onclick="switchTab('urgence',this)">🚨 Urgence</button>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar-wrap" id="progressWrap">
+  <div class="progress-top">
+    <span class="progress-pct" id="progressPct">0%</span>
+    <span class="progress-label" id="progressLabel">0 / 0 éléments cochés</span>
   </div>
-  <div class="progtrack"><div class="progfill" id="pFill"></div></div>
-  <div class="progstats">
-    <b id="nOk">0</b> coches &nbsp; <b id="nCrit">0</b> critiques restants &nbsp; <b id="nTot">0</b> total
-  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-stats" id="progressStats"></div>
 </div>
 
-<div class="actbar">
-  <button class="btn-ok" onclick="checkAll()">Tout cocher</button>
-  <button class="btn-ko" onclick="openOv('ovReset')">Reset</button>
-  <button class="btn-am" onclick="showGo()">GO / NO-GO</button>
+<!-- Action bar -->
+<div class="action-bar">
+  <button class="action-btn go" onclick="checkAll()">✅ Tout cocher</button>
+  <button class="action-btn nogo" onclick="uncheckAll()">✕ Décocher tout</button>
+  <button class="action-btn amber" onclick="checkCritical()">⚡ Critiques seuls</button>
 </div>
 
-<div class="banner" id="banner">
-  <div class="btitle" id="bTitle"></div>
-  <div class="bdesc" id="bDesc"></div>
-  <button class="btn-ov" id="btnOv" onclick="openOv('ovOv')">Passer outre</button>
+<!-- Verdict -->
+<div class="verdict" id="verdict">
+  <div class="verdict-title" id="verdictTitle"></div>
+  <div class="verdict-sub" id="verdictSub"></div>
 </div>
 
-<div id="listContent"></div>
-<div class="spacer"></div>
+<div class="content-area" id="checklistArea"></div>
 
-<div class="savebar">
-  <button class="btn-hist" onclick="showHist()">Hist.</button>
-  <button class="btn-save" onclick="saveMission()">Enregistrer la mission</button>
-  <button onclick="resetChecklist()" style="background:transparent;border:1.5px solid #d8e4f0;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:700;cursor:pointer;color:#5A6478;font-family:inherit;">✕ Annuler</button>
-</div>
-
-<div class="ovlay" id="ovOv">
-  <div class="mdl">
-    <div class="mdl-hdl"></div>
-    <div class="mdl-t red">Items critiques non valides</div>
-    <div class="mdl-b" id="ovOvB"></div>
-    <button class="mbtn red" onclick="doOv()">Autoriser le decollage quand meme</button>
-    <button class="mbtn grey" onclick="closeOv('ovOv')">Retour</button>
-  </div>
-</div>
-
-<div class="ovlay" id="ovReset">
-  <div class="mdl">
-    <div class="mdl-hdl"></div>
-    <div class="mdl-t red">Reinitialiser ?</div>
-    <div class="mdl-b">Tous les items seront decoches.</div>
-    <button class="mbtn red" onclick="doReset()">Reinitialiser</button>
-    <button class="mbtn grey" onclick="closeOv('ovReset')">Annuler</button>
-  </div>
-</div>
-
-<div class="ovlay" id="ovHist">
-  <div class="mdl">
-    <div class="mdl-hdl"></div>
-    <div class="mdl-t blue">Missions sauvegardees</div>
-    <div id="histList" style="max-height:45vh;overflow-y:auto;margin-bottom:12px;"></div>
-    <button class="mbtn grey" onclick="closeOv('ovHist')">Fermer</button>
+<!-- Save modal -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Enregistrer la mission</div>
+    <div class="fgroup">
+      <label>N° mission / référence</label>
+      <input type="text" id="saveMission" placeholder="ex: M2026-042 — Thyez">
+    </div>
+    <div class="fgroup">
+      <label>Date</label>
+      <input type="date" id="saveDate">
+    </div>
+    <div class="fgroup">
+      <label>RPIC (pilote)</label>
+      <input type="text" id="saveRPIC" placeholder="Prénom Nom">
+    </div>
+    <div class="fgroup">
+      <label>Site de vol</label>
+      <input type="text" id="saveSite" placeholder="Commune, lieu-dit">
+    </div>
+    <div class="fgroup">
+      <label>Notes</label>
+      <textarea id="saveNotes" rows="2" placeholder="Observations…" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;font-family:inherit;width:100%;resize:vertical;"></textarea>
+    </div>
+    <div class="save-row">
+      <button class="btn-save" onclick="saveMission()">💾 Sauvegarder</button>
+      <button class="btn-cancel-modal" onclick="closeSaveModal()">Annuler</button>
+    </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-window.onerror = function(msg, src, line, col, err) {
-  var d = document.getElementById('errmsg');
-  d.style.display = 'block';
-  d.textContent = 'ERREUR JS: ' + msg + ' | Ligne: ' + line + (err && err.stack ? '\n' + err.stack : '');
-  return false;
+'use strict';
+
+/* ══════════════════════════════════════
+   DONNÉES CHECKLIST
+══════════════════════════════════════ */
+const CHECKLISTS = {
+  prevol: [
+    {
+      section:'📋 Documentation & Autorisation',
+      items:[
+        {id:'p01',text:'MANEX disponible et à jour (V5.1)',sub:'MANEX_Philippe_V5.1_2026',critical:true},
+        {id:'p02',text:'CATS valide et sur soi',sub:'NLD-RP-q99cvjjh51fz · exp. 15/09/2029',critical:true},
+        {id:'p03',text:'Attestation assurance valide',sub:'COVERDRONE CDA22411846EUR · exp. 10/04/2027',critical:true},
+        {id:'p04',text:'Notification AlphaTango confirmée',sub:'Vérifier le délai préfectoral (10 jours ouvrés)',critical:true},
+        {id:'p05',text:'Autorisation préfectorale obtenue si requise',nogo:true},
+        {id:'p06',text:'Plan de vol / zone de travail défini'},
+        {id:'p07',text:'Contacts d\'urgence notés (15, 17, 18)'},
+      ]
+    },
+    {
+      section:'🌤️ Météo & Espace aérien',
+      items:[
+        {id:'p10',text:'METAR / TAF consulté (CheckWX / SOFIA)',critical:true},
+        {id:'p11',text:'NOTAM consulté pour la zone',critical:true,nogo:true},
+        {id:'p12',text:'Vent inférieur au seuil (config)',critical:true},
+        {id:'p13',text:'Visibilité supérieure au seuil (config)'},
+        {id:'p14',text:'Plafond nuageux suffisant'},
+        {id:'p15',text:'Température dans les limites UAS'},
+        {id:'p16',text:'Zones réglementées vérifiées (Géoportail)'},
+      ]
+    },
+    {
+      section:'🚁 UAS — DJI Mavic 4 Pro',
+      items:[
+        {id:'p20',text:'Inspection visuelle complète du drone',sub:'Carrosserie, bras, hélices — aucune fissure',critical:true},
+        {id:'p21',text:'Hélices en bon état, bien fixées',critical:true,nogo:true},
+        {id:'p22',text:'Batterie de vol chargée (>80% recommandé)',critical:true},
+        {id:'p23',text:'Niveau de batterie RC / télécommande OK'},
+        {id:'p24',text:'Carte mémoire insérée et formatée'},
+        {id:'p25',text:'Caméra propre, gimbal non entravé'},
+        {id:'p26',text:'Capteurs obstacles actifs et calibrés'},
+        {id:'p27',text:'Firmware drone à jour'},
+        {id:'p28',text:'GPS acquis (>8 satellites)'},
+        {id:'p29',text:'Return-to-Home configuré (altitude sécurisée)'},
+      ]
+    },
+    {
+      section:'📡 Télécommande & Application',
+      items:[
+        {id:'p30',text:'DJI Fly / RC Pro démarré et connecté'},
+        {id:'p31',text:'Liaison RC établie et signal stable'},
+        {id:'p32',text:'Paramètres de vol vérifiés (hauteur max, vitesse)'},
+        {id:'p33',text:'Mode de vol sélectionné (Normal / Sport)'},
+        {id:'p34',text:'Paramètres vidéo/photo configurés'},
+      ]
+    },
+    {
+      section:'🗺️ Zone de vol',
+      items:[
+        {id:'p40',text:'Reconnaissance visuelle du site effectuée'},
+        {id:'p41',text:'Obstacles identifiés (lignes HT, bâtiments, arbres)'},
+        {id:'p42',text:'Zone dégagée de personnes non impliquées',critical:true},
+        {id:'p43',text:'Périmètre de sécurité mis en place si nécessaire'},
+        {id:'p44',text:'Point de décollage/atterrissage sécurisé choisi'},
+        {id:'p45',text:'Contact établi avec ATC local si nécessaire'},
+      ]
+    },
+    {
+      section:'👥 Équipage & Briefing',
+      items:[
+        {id:'p50',text:'Briefing d\'équipage effectué (RPIC + OBS)'},
+        {id:'p51',text:'Procédures d\'urgence rappelées à l\'équipage',critical:true},
+        {id:'p52',text:'Rôles et communications définis'},
+        {id:'p53',text:'Trousse de premiers secours accessible'},
+        {id:'p54',text:'Extincteur disponible (si LiPo)'},
+      ]
+    },
+  ],
+  postvol: [
+    {
+      section:'🛬 Atterrissage & Récupération',
+      items:[
+        {id:'q01',text:'Atterrissage contrôlé effectué',critical:true},
+        {id:'q02',text:'Hélices arrêtées avant approche'},
+        {id:'q03',text:'Drone sécurisé sur surface stable'},
+        {id:'q04',text:'Application DJI fermée proprement'},
+      ]
+    },
+    {
+      section:'🔋 Batterie & Énergie',
+      items:[
+        {id:'q10',text:'Batterie de vol déconnectée',critical:true},
+        {id:'q11',text:'Température batterie vérifiée (refroidissement)'},
+        {id:'q12',text:'Niveau batterie noté pour la maintenance'},
+        {id:'q13',text:'Batterie rangée si < 30% (charge de stockage)'},
+      ]
+    },
+    {
+      section:'🔍 Inspection post-vol',
+      items:[
+        {id:'q20',text:'Inspection visuelle complète drone',critical:true},
+        {id:'q21',text:'Hélices inspectées (chocs, fissures)',critical:true},
+        {id:'q22',text:'Bras et moteurs vérifiés'},
+        {id:'q23',text:'Caméra et gimbal inspectés'},
+        {id:'q24',text:'Capteurs nettoyés si nécessaire'},
+        {id:'q25',text:'Carte mémoire sauvegardée'},
+      ]
+    },
+    {
+      section:'📋 Bilan & Documentation',
+      items:[
+        {id:'q30',text:'Vol enregistré dans le carnet (vols.html)',critical:true},
+        {id:'q31',text:'Durée et paramètres de vol notés'},
+        {id:'q32',text:'Incidents ou anomalies documentés'},
+        {id:'q33',text:'REX interne rédigé si événement notable'},
+        {id:'q34',text:'Rapport de mission complété si client'},
+        {id:'q35',text:'Matériel rangé et protégé'},
+        {id:'q36',text:'Prochaine révision planifiée si échéance proche'},
+      ]
+    },
+    {
+      section:'🔒 Sécurisation finale',
+      items:[
+        {id:'q40',text:'Site de vol laissé propre'},
+        {id:'q41',text:'Périmètre de sécurité retiré'},
+        {id:'q42',text:'Notification de fin de vol si requise'},
+        {id:'q43',text:'Équipage remercié et debriefé'},
+      ]
+    },
+  ],
+  urgence: [
+    {
+      section:'🚨 PERTE DE LIAISON RC',
+      items:[
+        {id:'u01',text:'RESTER CALME — ne pas paniquer',critical:true},
+        {id:'u02',text:'Le drone doit activer le Return-to-Home automatique',critical:true},
+        {id:'u03',text:'Surveiller visuellement le drone en permanence'},
+        {id:'u04',text:'Se repositionner pour rétablir la liaison RF'},
+        {id:'u05',text:'Préparer la zone d\'atterrissage d\'urgence'},
+        {id:'u06',text:'Alerter les personnes à proximité si nécessaire'},
+      ]
+    },
+    {
+      section:'🔋 ALARME BATTERIE CRITIQUE',
+      items:[
+        {id:'u10',text:'Interrompre immédiatement la mission',critical:true,nogo:true},
+        {id:'u11',text:'Retour immédiat au point de décollage',critical:true},
+        {id:'u12',text:'Choisir une zone d\'atterrissage dégagée'},
+        {id:'u13',text:'Atterrissage d\'urgence si batterie < 10%',nogo:true},
+        {id:'u14',text:'Ne jamais forcer un vol avec batterie critique'},
+      ]
+    },
+    {
+      section:'🚁 ANOMALIE / PANNE EN VOL',
+      items:[
+        {id:'u20',text:'Identifier la nature de l\'anomalie',critical:true},
+        {id:'u21',text:'Atterrir immédiatement dans zone dégagée',critical:true,nogo:true},
+        {id:'u22',text:'Couper les moteurs après atterrissage complet'},
+        {id:'u23',text:'Sécuriser la batterie'},
+        {id:'u24',text:'Éloigner les personnes du drone'},
+        {id:'u25',text:'Documenter l\'anomalie (photos, notes)'},
+      ]
+    },
+    {
+      section:'🔥 INCENDIE BATTERIE LiPo',
+      items:[
+        {id:'u30',text:'NE PAS toucher le drone / batterie enflammé(e)',critical:true,nogo:true},
+        {id:'u31',text:'Éloigner immédiatement toute personne (30 m min)',critical:true,nogo:true},
+        {id:'u32',text:'Appeler les pompiers : 18 ou 112',critical:true,nogo:true},
+        {id:'u33',text:'Utiliser sable ou extincteur CO₂ (JAMAIS eau)',nogo:true},
+        {id:'u34',text:'Ventiler la zone'},
+        {id:'u35',text:'Ne jamais inhaler les fumées'},
+      ]
+    },
+    {
+      section:'👤 BLESSURE / ACCIDENT',
+      items:[
+        {id:'u40',text:'Arrêter immédiatement les opérations',critical:true,nogo:true},
+        {id:'u41',text:'Appeler le 15 (SAMU) si blessure grave',critical:true,nogo:true},
+        {id:'u42',text:'Sécuriser la scène et le drone'},
+        {id:'u43',text:'Ne pas déplacer la victime si blessure grave'},
+        {id:'u44',text:'Déclarer à la DSAC dans les 72h',critical:true},
+        {id:'u45',text:'Conserver tous les éléments (logs, vidéos, photos)'},
+        {id:'u46',text:'Informer l\'assureur COVERDRONE',critical:true},
+      ]
+    },
+    {
+      section:'✈️ CONFLIT TRAFIC AÉRIEN',
+      items:[
+        {id:'u50',text:'Atterrir IMMÉDIATEMENT — priorité aux aéronefs habités',critical:true,nogo:true},
+        {id:'u51',text:'Contacter la fréquence locale ATC si possible'},
+        {id:'u52',text:'Documenter l\'incident (heure, type, position)'},
+        {id:'u53',text:'Déclarer à la DSAC si événement grave'},
+      ]
+    },
+  ]
 };
 
-var phase = 'pre';
-var mission = '';
-var ovOk = false;
-var mem = {};
+/* ══════════════════════════════════════
+   ÉTAT
+══════════════════════════════════════ */
+let currentTab = 'prevol';
+let states = { prevol:{}, postvol:{}, urgence:{} };
 
-function sGet(k) {
-  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : {}; } catch(e) { return mem[k] || {}; }
+function loadStates(){
+  try{const s=JSON.parse(localStorage.getItem('uas_checklist_states')||'{}');
+    if(s.prevol)states.prevol=s.prevol;
+    if(s.postvol)states.postvol=s.postvol;
+    if(s.urgence)states.urgence=s.urgence;
+  }catch{}
 }
-function sPut(k, v) {
-  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { mem[k] = v; }
-}
+function saveStates(){localStorage.setItem('uas_checklist_states',JSON.stringify(states));}
 
-var PRE = [
-  { s:'Batteries', items:[
-    {id:'p01',t:'Batterie drone sup 80%',sub:'DJI Fly',c:true},
-    {id:'p02',t:'Batterie telecommande sup 60%',sub:'RC-N2 ou RC 2',c:true},
-    {id:'p03',t:'Telephone charge',sub:'Si ecran',c:false}
-  ]},
-  { s:'Documents', items:[
-    {id:'p04',t:'Numero de mission',sub:'Tracabilite',c:true},
-    {id:'p05',t:'NOTAM consultes zone libre',sub:'Sofia / SIA',c:true},
-    {id:'p06',t:'Meteo verifiee',sub:'Vent visibilite pluie',c:true},
-    {id:'p07',t:'Autorisation prefectorale valide',sub:'S02: notif 10j ouvres',c:true},
-    {id:'p08',t:'Assurance COVERDRONE active',sub:'CDA22411846EUR exp 10/04/2027',c:false},
-    {id:'p09',t:'CATS valide',sub:'NLD-RP-q99cvjjh51fz exp 15/09/2029',c:false}
-  ]},
-  { s:'Inspection drone', items:[
-    {id:'p10',t:'Bras deplies verrouilles x4',sub:'Mavic 4 Pro',c:true},
-    {id:'p11',t:'Helices fixees sans dommage',sub:'Controle visuel',c:true},
-    {id:'p12',t:'Cardan libre protege retire',sub:'Camera axe correct',c:true},
-    {id:'p13',t:'Capteurs propres',sub:'Avant arriere bas',c:false},
-    {id:'p14',t:'Marquage UAS-FR-517804 visible',sub:'Obligation reglementaire',c:true},
-    {id:'p15',t:'Module DRI actif',sub:'FRAjqq48j12nfy4cvsy',c:true}
-  ]},
-  { s:'Liaison et GPS', items:[
-    {id:'p16',t:'Telecommande allumee AVANT drone',sub:'Procedure DJI',c:true},
-    {id:'p17',t:'Liaison RC etablie signal vert',sub:'O4 Pro min 4 barres',c:true},
-    {id:'p18',t:'GPS min 8 satellites',sub:'Attendre fixe stable',c:true},
-    {id:'p19',t:'Hauteur max configuree',sub:'S01:120m S02:voir auth',c:true},
-    {id:'p20',t:'Point RTH defini',sub:'Position decollage',c:true}
-  ]},
-  { s:'Zone et Securite', items:[
-    {id:'p21',t:'Zone degagee et securisee',sub:'Perimetre etabli',c:true},
-    {id:'p22',t:'Observateurs en place PDRA-S02',sub:'OBS1 OBS2 radio OK',c:false},
-    {id:'p23',t:'Decision GO prononcee',sub:'CDB: CONTE Philippe',c:true}
-  ]}
-];
-
-var POST = [
-  { s:'Atterrissage', items:[
-    {id:'q01',t:'Drone immobile moteurs arretes',sub:'Avant manipulation',c:true},
-    {id:'q02',t:'Drone eteint AVANT telecommande',sub:'Ordre extinction',c:true},
-    {id:'q03',t:'Heure atterrissage notee',sub:'Duree de vol',c:false}
-  ]},
-  { s:'Batteries post-vol', items:[
-    {id:'q04',t:'Niveau batterie releve',sub:'Carnet de vol',c:false},
-    {id:'q05',t:'Temperature inf 45C avant charge',sub:'Laisser refroidir',c:true}
-  ]},
-  { s:'Inspection post-vol', items:[
-    {id:'q06',t:'Helices sans dommage',sub:'Fissures eclats',c:true},
-    {id:'q07',t:'Bras replies correctement',sub:'Position transport',c:false},
-    {id:'q08',t:'Protege-cardan remis',sub:'Protection transport',c:false},
-    {id:'q09',t:'Incident ou anomalie ?',sub:'Si oui ouvrir REX',c:true}
-  ]},
-  { s:'Tracabilite', items:[
-    {id:'q10',t:'Carnet de vol mis a jour',sub:'Duree lieu scenario',c:true},
-    {id:'q11',t:'Medias transferes',sub:'Photos videos',c:false},
-    {id:'q12',t:'Materiel range inventorie',sub:'Valise helices cables',c:false}
-  ]}
-];
-
-var DATA = {pre:PRE, post:POST};
-
-function stKey() { return 'uas_cl_' + (mission || '_tmp'); }
-function getS() { return sGet(stKey()); }
-function putS(s) { sPut(stKey(), s); }
-function p2(n) { return n < 10 ? '0' + n : String(n); }
-
-function render() {
-  var s = getS();
-  var list = DATA[phase];
-  var html = '';
-  var i, j, sec, item, done, t;
-  for (i = 0; i < list.length; i++) {
-    sec = list[i];
-    html += '<div class="seclbl">' + sec.s + '</div>';
-    for (j = 0; j < sec.items.length; j++) {
-      item = sec.items[j];
-      done = s[item.id] ? true : false;
-      t = s[item.id + '_t'] || '';
-      html += '<div class="item' + (item.c ? ' crit' : '') + (done ? ' done' : '') + '" onclick="tog(\'' + item.id + '\')">';
-      html += '<div class="chk">' + (done ? 'v' : '') + '</div>';
-      html += '<div class="itxt">' + item.t + '</div>';
-      html += '<div class="isub">' + item.sub + '</div>';
-      if (item.c) { html += '<span class="tagc">CRITIQUE</span>'; }
-      if (t) { html += '<span class="tagt">ok ' + t + '</span>'; }
-      html += '</div>';
-    }
-  }
-  document.getElementById('listContent').innerHTML = html;
-  updateStats();
-}
-
-function tog(id) {
-  var s = getS();
-  var n = new Date();
-  if (s[id]) { delete s[id]; delete s[id + '_t']; }
-  else { s[id] = 1; s[id + '_t'] = p2(n.getHours()) + ':' + p2(n.getMinutes()); }
-  putS(s); render();
-  document.getElementById('banner').style.display = 'none';
-}
-
-function updateStats() {
-  var s = getS();
-  var list = DATA[phase];
-  var tot = 0, chk = 0, crit = 0;
-  var i, j, item;
-  for (i = 0; i < list.length; i++) {
-    for (j = 0; j < list[i].items.length; j++) {
-      item = list[i].items[j]; tot++;
-      if (s[item.id]) { chk++; } else if (item.c) { crit++; }
-    }
-  }
-  var p = tot ? Math.round(chk / tot * 100) : 0;
-  document.getElementById('pct').textContent = p + '%';
-  var f = document.getElementById('pFill');
-  f.style.width = p + '%';
-  f.style.background = p === 100 ? '#1D6B37' : (p > 60 ? '#185FA5' : '#BA7517');
-  document.getElementById('nOk').textContent = chk;
-  document.getElementById('nCrit').textContent = crit;
-  document.getElementById('nTot').textContent = tot;
-  var ph, t2, c2;
-  for (ph in DATA) {
-    t2 = 0; c2 = 0;
-    for (i = 0; i < DATA[ph].length; i++) {
-      for (j = 0; j < DATA[ph][i].items.length; j++) {
-        t2++; if (s[DATA[ph][i].items[j].id]) { c2++; }
-      }
-    }
-    document.getElementById(ph === 'pre' ? 'cntPre' : 'cntPost').textContent = c2 + '/' + t2;
-  }
-}
-
-function sw(p) {
-  phase = p;
-  document.getElementById('btnPre').className = p === 'pre' ? 'on' : '';
-  document.getElementById('btnPost').className = p === 'post' ? 'on' : '';
-  document.getElementById('banner').style.display = 'none';
-  render(); window.scrollTo(0, 0);
-}
-
-function checkAll() {
-  var s = getS(); var n = new Date();
-  var t = p2(n.getHours()) + ':' + p2(n.getMinutes());
-  var list = DATA[phase]; var i, j, id;
-  for (i = 0; i < list.length; i++) {
-    for (j = 0; j < list[i].items.length; j++) {
-      id = list[i].items[j].id;
-      if (!s[id]) { s[id] = 1; s[id + '_t'] = t; }
-    }
-  }
-  putS(s); render(); toast('Tous les items coches');
-}
-
-function doReset() {
-  var s = getS(); var list = DATA[phase]; var i, j, id;
-  for (i = 0; i < list.length; i++) {
-    for (j = 0; j < list[i].items.length; j++) {
-      id = list[i].items[j].id; delete s[id]; delete s[id + '_t'];
-    }
-  }
-  ovOk = false; putS(s); closeOv('ovReset'); render(); toast('Reinitialise');
-}
-
-function showGo() {
-  if (phase !== 'pre') { toast('GO/NO-GO en pre-vol seulement'); return; }
-  var s = getS(); var missing = []; var list = DATA.pre; var i, j, item;
-  for (i = 0; i < list.length; i++) {
-    for (j = 0; j < list[i].items.length; j++) {
-      item = list[i].items[j];
-      if (item.c && !s[item.id]) { missing.push(item.t); }
-    }
-  }
-  var b = document.getElementById('banner');
-  b.style.display = 'block';
-  if (missing.length === 0 || ovOk) {
-    b.className = 'banner go';
-    document.getElementById('bTitle').textContent = (ovOk && missing.length) ? 'GO avec derogation' : 'GO - Decollage autorise';
-    document.getElementById('bDesc').textContent = (ovOk && missing.length) ? (missing.length + ' item(s) non valide(s)') : 'Tous les items critiques sont valides.';
-    document.getElementById('btnOv').style.display = 'none';
-  } else {
-    b.className = 'banner nogo';
-    document.getElementById('bTitle').textContent = 'NO-GO - Decollage interdit';
-    document.getElementById('bDesc').textContent = missing.length + ' item(s) critique(s) non valide(s)';
-    document.getElementById('btnOv').style.display = 'block';
-  }
-}
-
-function doOv() { ovOk = true; closeOv('ovOv'); showGo(); toast('Derogation enregistree'); }
-
-function resetChecklist() {
-  if (!confirm('Réinitialiser tous les items de la check-liste ?')) return;
-  document.querySelectorAll('input[type=checkbox]').forEach(cb => {
-    cb.checked = false;
+/* ── Render ── */
+function renderChecklist(){
+  const cl=CHECKLISTS[currentTab];
+  const st=states[currentTab];
+  const area=document.getElementById('checklistArea');
+  let html='';
+  cl.forEach(sec=>{
+    html+=`<div class="section-label">${sec.section}</div>`;
+    sec.items.forEach(item=>{
+      const s=st[item.id]||'none';
+      const cls=s==='ok'?'checked':s==='ko'?'checked-ko':'';
+      const critBadge=item.nogo?'<span class="cl-badge badge-nogo">NO-GO</span>':item.critical?'<span class="cl-badge badge-critical">Critique</span>':'';
+      const checkChar=s==='ok'?'✓':s==='ko'?'✕':'';
+      html+=`<div class="cl-item ${item.critical?'critical':''} ${item.nogo?'nogo-item':''} ${cls}" id="item-${item.id}">
+        <div class="cl-checkbox">${checkChar}</div>
+        <div class="cl-text">${item.text}</div>
+        ${item.sub?`<div class="cl-sub">${item.sub}</div>`:''}
+        ${critBadge}
+        <div class="cl-status-row">
+          <button class="cl-status-btn sts-ok" onclick="setStatus('${item.id}','ok',event)" title="OK">✓</button>
+          <button class="cl-status-btn sts-ko" onclick="setStatus('${item.id}','ko',event)" title="Non conforme">✕</button>
+        </div>
+      </div>`;
+    });
   });
-  const missionEl = document.getElementById('missionId');
-  if (missionEl) missionEl.value = '';
-}
-function saveMission() {
-  var id = document.getElementById('missionId').value;
-  id = id ? id.trim() : '';
-  if (!id) { toast('Saisir un numero de mission'); return; }
-  mission = id;
-  var ml = sGet('uas_cl_missions');
-  ml[id] = {id:id, date:new Date().toISOString(), ov:ovOk};
-  sPut('uas_cl_missions', ml); putS(getS()); toast('Mission ' + id + ' sauvegardee');
+  area.innerHTML=html;
+  updateProgress();
 }
 
-function showHist() {
-  var ml = sGet('uas_cl_missions'); var keys = Object.keys(ml).sort().reverse();
-  var html = ''; var i, k, m, d;
-  if (!keys.length) {
-    html = '<p style="text-align:center;padding:20px;color:#6b7280;">Aucune mission</p>';
+function setStatus(id, status, e){
+  if(e){e.stopPropagation();}
+  const st=states[currentTab];
+  st[id]=st[id]===status?'none':status;
+  saveStates();
+  renderChecklist();
+}
+
+function toggleItem(id){
+  const st=states[currentTab];
+  st[id]=st[id]==='ok'?'none':'ok';
+  saveStates();
+  renderChecklist();
+}
+
+function updateProgress(){
+  const cl=CHECKLISTS[currentTab];
+  const st=states[currentTab];
+  let total=0,ok=0,ko=0,critKo=0;
+  cl.forEach(sec=>sec.items.forEach(item=>{
+    total++;
+    const s=st[item.id]||'none';
+    if(s==='ok')ok++;
+    else if(s==='ko'){ko++;if(item.critical||item.nogo)critKo++;}
+  }));
+  const pct=total?Math.round(ok/total*100):0;
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressLabel').textContent=`${ok} / ${total} éléments conformes`;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressStats').textContent=ko?`⚠️ ${ko} non-conforme(s) — dont ${critKo} critique(s)`:'';
+  // Verdict
+  const v=document.getElementById('verdict');
+  if(pct===100&&ko===0){
+    v.className='verdict go';
+    document.getElementById('verdictTitle').textContent='✅ AUTORISATION DE VOL (GO)';
+    document.getElementById('verdictSub').textContent='Tous les éléments sont conformes. Le vol peut être effectué.';
+  } else if(critKo>0){
+    v.className='verdict nogo';
+    document.getElementById('verdictTitle').textContent='🚫 VOL INTERDIT (NO-GO)';
+    document.getElementById('verdictSub').textContent=`${critKo} élément(s) critique(s) non-conforme(s). Le vol ne peut pas être effectué.`;
   } else {
-    for (i = 0; i < keys.length; i++) {
-      k = keys[i]; m = ml[k]; d = new Date(m.date).toLocaleDateString('fr-FR');
-      html += '<div style="padding:11px 0;border-bottom:1px solid #d8e4f0;cursor:pointer;display:flex;align-items:center;gap:10px;" onclick="loadMission(\'' + k + '\')">';
-      html += '<div style="flex:1;"><div style="font-weight:bold;">' + k + '</div><div style="font-size:11px;color:#6b7280;">' + d + '</div></div>';
-      html += '<span style="color:#185FA5;">-></span></div>';
-    }
+    v.className='verdict';
   }
-  document.getElementById('histList').innerHTML = html; openOv('ovHist');
 }
 
-function loadMission(id) {
-  mission = id; document.getElementById('missionId').value = id;
-  var ml = sGet('uas_cl_missions'); ovOk = ml[id] ? !!ml[id].ov : false;
-  closeOv('ovHist'); render(); toast('Mission ' + id + ' chargee');
+/* ── Actions ── */
+function checkAll(){
+  const cl=CHECKLISTS[currentTab];
+  cl.forEach(sec=>sec.items.forEach(item=>states[currentTab][item.id]='ok'));
+  saveStates();renderChecklist();
+}
+function uncheckAll(){
+  states[currentTab]={};
+  saveStates();renderChecklist();
+}
+function checkCritical(){
+  const cl=CHECKLISTS[currentTab];
+  cl.forEach(sec=>sec.items.forEach(item=>{
+    if(item.critical||item.nogo)states[currentTab][item.id]='ok';
+  }));
+  saveStates();renderChecklist();
+}
+function resetAll(){
+  if(confirm('Réinitialiser toute la check-liste ?')){
+    states[currentTab]={};
+    saveStates();
+    document.getElementById('missionInput').value='';
+    renderChecklist();
+    toast('↺ Check-liste réinitialisée');
+  }
 }
 
-document.getElementById('missionId').addEventListener('input', function() {
-  mission = this.value ? this.value.trim() : ''; ovOk = false;
-});
-
-function openOv(id) { document.getElementById(id).className = 'ovlay show'; }
-function closeOv(id) { document.getElementById(id).className = 'ovlay'; }
-function toast(msg) {
-  var t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
-  setTimeout(function() { t.style.display = 'none'; }, 2500);
+/* ── Tab ── */
+function switchTab(tab, el){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderChecklist();
 }
 
-render();
+/* ── Save modal ── */
+function openSaveModal(){
+  document.getElementById('saveMission').value=document.getElementById('missionInput').value;
+  document.getElementById('saveDate').value=new Date().toISOString().slice(0,10);
+  try{const c=JSON.parse(localStorage.getItem('uas_config')||'{}');const p=(c.pilots||[]).find(x=>x.primary)||{};if(p.nom)document.getElementById('saveRPIC').value=p.nom;}catch{}
+  document.getElementById('saveModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSaveModal(){document.getElementById('saveModal').classList.remove('open');document.body.style.overflow='';}
+
+function saveMission(){
+  const mission={
+    id:crypto.randomUUID(),
+    ref:document.getElementById('saveMission').value||'Sans référence',
+    date:document.getElementById('saveDate').value,
+    rpic:document.getElementById('saveRPIC').value,
+    site:document.getElementById('saveSite').value,
+    notes:document.getElementById('saveNotes').value,
+    prevol:{...states.prevol},
+    postvol:{...states.postvol},
+    urgence:{...states.urgence},
+    savedAt:new Date().toISOString()
+  };
+  try{
+    const missions=JSON.parse(localStorage.getItem('uas_checklist_missions')||'[]');
+    missions.push(mission);
+    localStorage.setItem('uas_checklist_missions',JSON.stringify(missions));
+    closeSaveModal();
+    toast('✅ Mission enregistrée','var(--green)');
+  }catch(e){toast('⚠️ Erreur de sauvegarde','var(--amber)');}
+}
+
+/* ── Toast ── */
+let toastTimer;
+function toast(msg,color='var(--navy)'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=color;
+  t.classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* ── Init ── */
+loadStates();
+renderChecklist();
 </script>
 </body>
 </html>

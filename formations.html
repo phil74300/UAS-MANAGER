@@ -2,516 +2,360 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formations UAS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Formations</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, Helvetica, Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; }
-.hdr { background: #0C447C; padding: 14px 16px; }
-.hdr h1 { color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 3px; }
-.hdr p { color: #aac8e8; font-size: 11px; margin-bottom: 10px; }
-.opcard { background: rgba(255,255,255,0.13); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
-.opav { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; text-align: center; line-height: 32px; font-size: 16px; flex-shrink: 0; }
-.opname { color: #fff; font-size: 13px; font-weight: bold; }
-.opid { color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 1px; }
-
-.statsbar { background: #fff; border-bottom: 1px solid #d8e4f0; display: flex; }
-.stat { flex: 1; text-align: center; padding: 12px 4px; border-right: 1px solid #d8e4f0; }
-.stat:last-child { border-right: none; }
-.statv { font-size: 22px; font-weight: bold; color: #0C447C; }
-.statv.g { color: #1D6B37; }
-.statv.a { color: #BA7517; }
-.statv.r { color: #8B2020; }
-.statl { font-size: 10px; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
-
-.filters { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d8e4f0; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-.chip { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid #d8e4f0; background: #f0f4f8; color: #6b7280; cursor: pointer; font-family: inherit; margin-right: 6px; }
-.chip.on { background: #0C447C; border-color: #0C447C; color: #fff; }
-
-.seclbl { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; padding: 12px 16px 4px; background: #f0f4f8; }
-
-.card { background: #fff; margin: 8px 16px 0; border-radius: 12px; border: 1px solid #d8e4f0; overflow: hidden; }
-.card.v { border-color: #1D6B37; }
-.card.w { border-color: #BA7517; }
-.card.u { border-color: #8B2020; }
-.card.e { border-color: #8B2020; }
-.card.p { border-left: 4px solid #0C447C; }
-.pinbar { background: #0C447C; color: rgba(255,255,255,0.9); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 12px; }
-
-.ctop { padding: 12px 12px 8px; display: flex; align-items: flex-start; gap: 10px; }
-.cico { width: 42px; height: 42px; border-radius: 10px; background: #E6F1FB; text-align: center; line-height: 42px; font-size: 22px; flex-shrink: 0; }
-.cico.v { background: #E8F5E9; }
-.cico.w { background: #FAEEDA; }
-.cico.u { background: #FDECEC; }
-.cico.e { background: #FDECEC; }
-.cinf { flex: 1; min-width: 0; }
-.ctitle { font-size: 14px; font-weight: bold; line-height: 1.2; }
-.ciss { font-size: 11px; color: #6b7280; margin-top: 3px; }
-.ccert { font-size: 10px; font-family: monospace; color: #185FA5; background: #E6F1FB; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
-
-.badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; flex-shrink: 0; white-space: nowrap; }
-.bv { background: #E8F5E9; color: #1D6B37; border: 1px solid #1D6B37; }
-.bw { background: #FAEEDA; color: #BA7517; border: 1px solid #BA7517; }
-.bu { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
-.be { background: #FDECEC; color: #8B2020; border: 1px solid #8B2020; }
-.bn { background: #f0f4f8; color: #6b7280; border: 1px solid #d8e4f0; }
-
-.cbody { padding: 0 12px 10px; }
-.crow { margin-bottom: 4px; font-size: 13px; }
-.crow .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: bold; color: #6b7280; }
-.crow .val { font-weight: bold; }
-.crow .val.r { color: #8B2020; }
-.crow .val.a { color: #BA7517; }
-.crow .val.g { color: #1D6B37; }
-
-.expbar { padding: 0 12px 10px; }
-.extrack { height: 5px; background: #d8e4f0; border-radius: 3px; overflow: hidden; }
-.exfill { height: 5px; border-radius: 3px; }
-
-.cacts { border-top: 1px solid #d8e4f0; display: flex; }
-.cbtn { flex: 1; text-align: center; padding: 11px 4px; border: none; background: transparent; font-size: 13px; font-weight: bold; font-family: inherit; color: #185FA5; cursor: pointer; }
-.cbtn.r { color: #8B2020; }
-.cbtn + .cbtn { border-left: 1px solid #d8e4f0; }
-
-.spacer { height: 90px; }
-
-.botbar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #d8e4f0; padding: 10px 16px 24px; display: flex; gap: 8px; }
-.botbar .btn-exp { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 12px 14px; font-size: 13px; font-weight: bold; font-family: inherit; cursor: pointer; color: #1a1a2e; white-space: nowrap; }
-.botbar .btn-add { flex: 1; background: #0C447C; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
-.btn-back { background: rgba(255,255,255,0.2); border: none; border-radius: 6px; color: #fff; font-size: 12px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
-
-.empty { padding: 60px 20px; text-align: center; color: #6b7280; }
-.empty-ico { font-size: 48px; margin-bottom: 12px; }
-
-.ovlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; }
-.ovlay.show { display: block; }
-.mdl { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 18px 18px 0 0; padding: 0 20px 40px; max-height: 92vh; overflow-y: auto; }
-.mdl-hdl { width: 36px; height: 4px; background: #d8e4f0; border-radius: 2px; margin: 14px auto 0; }
-.mdl-hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 14px; border-bottom: 1px solid #d8e4f0; margin-bottom: 14px; }
-.mdl-t { font-size: 16px; font-weight: bold; color: #0C447C; }
-.mdl-close { background: #f0f4f8; border: 1px solid #d8e4f0; border-radius: 8px; padding: 6px 12px; font-family: inherit; font-size: 13px; cursor: pointer; color: #1a1a2e; }
-
-.fg { margin-bottom: 14px; }
-.fl { display: block; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 6px; }
-.fi, .fs, .fta { width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid #d8e4f0; background: #f0f4f8; color: #1a1a2e; font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; }
-.fta { resize: none; height: 68px; }
-.fhint { font-size: 11px; color: #6b7280; margin-top: 4px; }
-
-.factrow { display: flex; gap: 8px; margin-top: 4px; }
-.fbtn { flex: 1; padding: 13px; border-radius: 10px; border: none; font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer; }
-.fbtn.p { background: #0C447C; color: #fff; }
-.fbtn.c { background: #f0f4f8; color: #1a1a2e; border: 1px solid #d8e4f0; }
-
-#toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: bold; z-index: 300; white-space: nowrap; display: none; pointer-events: none; }
-
-/* ══ UNIFIED BOTTOM NAV ══ */
-
-@media(prefers-color-scheme:dark){
-  
+:root{
+  --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;
+  --green:#1D6B37;--light-green:#E8F5E9;
+  --amber:#BA7517;--light-amber:#FAEEDA;
+  --red:#8B2020;--light-red:#FDECEC;
+  --teal:#006064;--light-teal:#E0F2F1;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface2:#F8FAFD;
+  --text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;
+  --shadow:0 2px 12px rgba(12,68,124,.10);
+  --radius:14px;--header-h:56px;
 }
-
-
-
-
-
-
 @media(prefers-color-scheme:dark){
-  
+  :root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;--light-red:#2A0D0D;--light-teal:#003030;}
 }
-
-
-
-
-  /* ─── BOUTON RETOUR ACCUEIL ─── */
-  .back-btn {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.28); }
-
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+#header{position:sticky;top:0;z-index:200;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 16px 0;height:calc(var(--header-h) + env(safe-area-inset-top));box-shadow:0 2px 12px rgba(12,68,124,.3);overflow:hidden;}
+#header::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80%,rgba(24,95,165,.4),transparent 60%);pointer-events:none;}
+#header h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
+.back-btn{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:4px;transition:background .15s;position:relative;z-index:1;flex-shrink:0;}
+.back-btn:active{background:rgba(255,255,255,.28);}
+.hdr-actions{display:flex;gap:8px;align-items:center;position:relative;z-index:1;}
+.btn-hdr{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+.kpi-strip{display:flex;gap:10px;padding:12px 14px 4px;overflow-x:auto;scrollbar-width:none;}
+.kpi-strip::-webkit-scrollbar{display:none;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:12px;padding:10px 13px;min-width:90px;flex:1;}
+.kpi-card.green{border-top-color:var(--green);}
+.kpi-card.amber{border-top-color:var(--amber);}
+.kpi-card.red{border-top-color:var(--red);}
+.kpi-value{font-size:20px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.kpi-value{color:#7EB8F7;}}
+.kpi-label{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.2;}
+.list-toolbar{padding:10px 14px 6px;display:flex;gap:8px;align-items:center;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:9px 12px 9px 34px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;outline:none;}
+.search-wrap input:focus{border-color:var(--blue);}
+.search-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+.btn-add{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+.filter-row{display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;white-space:nowrap;}
+.chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+#list-area{padding:0 14px calc(80px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.form-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.form-card.valid{border-color:var(--green);}
+.form-card.expireSoon{border-color:var(--amber);}
+.form-card.expired{border-color:var(--red);}
+.form-card-top{display:flex;align-items:flex-start;gap:10px;padding:12px 12px 6px;}
+.form-icon{font-size:22px;flex-shrink:0;}
+.form-info{flex:1;min-width:0;}
+.form-title{font-size:14px;font-weight:800;}
+.form-orga{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+.badge-valid{background:var(--light-green);color:var(--green);}
+.badge-soon{background:var(--light-amber);color:var(--amber);}
+.badge-expired{background:var(--light-red);color:var(--red);}
+.badge-nodexp{background:var(--light-blue);color:var(--blue);}
+.form-card-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:0 12px 8px;}
+.ff .ffl{font-size:9px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px;}
+.ff .ffv{font-size:12px;font-weight:600;}
+.form-card-foot{padding:7px 12px;background:rgba(0,0,0,.02);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);}
+.form-cert{font-size:11px;color:var(--text-muted);font-family:'SF Mono',monospace;}
+.form-actions{display:flex;gap:6px;}
+.btn-sm{border:none;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-edit{background:var(--light-blue);color:var(--blue);}
+.btn-del{background:var(--light-red);color:var(--red);}
+.countdown{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;}
+.countdown.soon{background:var(--light-amber);color:var(--amber);}
+.countdown.expired{background:var(--light-red);color:var(--red);}
+.countdown.ok{background:var(--light-green);color:var(--green);}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--surface);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.23,1);padding-bottom:calc(28px + env(safe-area-inset-bottom));}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.modal-header{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:5;}
+.modal-title{font-size:17px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.modal-title{color:#7EB8F7;}}
+.btn-close{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);font-family:inherit;}
+.form-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.fsec{font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:1px;padding:4px 0 3px;border-bottom:2px solid var(--light-blue);margin-top:2px;}
+@media(prefers-color-scheme:dark){.fsec{color:#7EB8F7;border-bottom-color:var(--border);}}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.frow.full{grid-template-columns:1fr;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+.fgroup label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+.fgroup input,.fgroup select,.fgroup textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;width:100%;font-family:inherit;-webkit-appearance:none;}
+.fgroup input:focus,.fgroup select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12);}
+.fgroup textarea{resize:vertical;min-height:60px;}
+.submit-row{display:flex;gap:10px;margin-top:6px;}
+.btn-submit{flex:1;padding:13px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cancel{padding:13px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.confirm-overlay.open{opacity:1;pointer-events:all;}
+.confirm-box{background:var(--surface);border-radius:18px;padding:24px;max-width:320px;width:90%;text-align:center;}
+.confirm-box h3{font-size:17px;font-weight:800;margin-bottom:8px;}
+.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:18px;}
+.confirm-btns{display:flex;gap:10px;}
+.confirm-btns button{flex:1;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-cc{background:var(--bg);color:var(--text);}
+.btn-cd{background:var(--red);color:#fff;}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(50px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
+<header id="header">
+  <h1>🎓 Formations</h1>
+  <div class="hdr-actions">
+    <button class="btn-hdr" onclick="openModal()" title="Nouvelle formation">＋</button>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </div>
+</header>
 
-<div class="hdr">
-  <h1>Formations &amp; Habilitations</h1>
-  <p>Suivi des certificats - trie par date expiration</p>
-  <div style="display:flex;align-items:center;justify-content:space-between;">
-    <div class="opcard" style="flex:1;margin-right:10px;">
-      <div class="opav">P</div>
-      <div>
-        <div class="opname">CONTE Philippe</div>
-        <div class="opid">FRAjqq48j12nfy4c - UAS-FR-517804</div>
+<div class="kpi-strip">
+  <div class="kpi-card green"><div class="kpi-value" id="kpiValid">0</div><div class="kpi-label">Valides</div></div>
+  <div class="kpi-card amber"><div class="kpi-value" id="kpiSoon">0</div><div class="kpi-label">Expirent bientôt</div></div>
+  <div class="kpi-card red"><div class="kpi-value" id="kpiExp">0</div><div class="kpi-label">Expirées</div></div>
+  <div class="kpi-card"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">Total</div></div>
+</div>
+
+<div class="list-toolbar">
+  <div class="search-wrap"><input type="text" id="searchInput" placeholder="Rechercher formation…" oninput="renderList()"></div>
+  <button class="btn-add" onclick="openModal()">＋ Formation</button>
+</div>
+
+<div class="filter-row">
+  <div class="chip active" onclick="setFilter(this,'all')">Toutes</div>
+  <div class="chip" onclick="setFilter(this,'valid')">✅ Valides</div>
+  <div class="chip" onclick="setFilter(this,'soon')">⚠️ Bientôt</div>
+  <div class="chip" onclick="setFilter(this,'expired')">🚨 Expirées</div>
+  <div class="chip" onclick="setFilter(this,'CATS')">CATS</div>
+  <div class="chip" onclick="setFilter(this,'Pilote')">Pilote</div>
+</div>
+
+<div id="list-area"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Nouvelle formation</span>
+      <button class="btn-close" onclick="closeModal()">Fermer</button>
+    </div>
+    <div class="form-body">
+      <div class="fsec">📋 Identification</div>
+      <div class="frow full">
+        <div class="fgroup"><label>Intitulé de la formation *</label><input type="text" id="fTitre" placeholder="ex: CATS Télépilote, First Person View…" required></div>
+      </div>
+      <div class="frow">
+        <div class="fgroup">
+          <label>Catégorie *</label>
+          <select id="fCategorie" required>
+            <option value="">-- Choisir --</option>
+            <option value="CATS">CATS — Certificat aptitude télépilote</option>
+            <option value="Pilote">Pilote / Rating</option>
+            <option value="Securite">Sécurité aérienne</option>
+            <option value="Reglementaire">Réglementaire UAS</option>
+            <option value="Technique">Technique / maintenance</option>
+            <option value="Metier">Métier (photo, cinéma…)</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="fgroup"><label>Organisme de formation</label><input type="text" id="fOrganisme" placeholder="ex: ENAC, FFA, DJI Academy…"></div>
+      </div>
+
+      <div class="fsec">📅 Dates</div>
+      <div class="frow">
+        <div class="fgroup"><label>Date d'obtention *</label><input type="date" id="fDateObt" required></div>
+        <div class="fgroup"><label>Date d'expiration</label><input type="date" id="fDateExp" placeholder="Laisser vide si illimitée"></div>
+      </div>
+
+      <div class="fsec">🔖 Certificat & Niveau</div>
+      <div class="frow">
+        <div class="fgroup"><label>N° de certificat</label><input type="text" id="fNumCert" placeholder="Référence / numéro"></div>
+        <div class="fgroup">
+          <label>Niveau</label>
+          <select id="fNiveau">
+            <option value="">--</option>
+            <option>Initiation</option><option>Perfectionnement</option>
+            <option>Expert</option><option>Instructeur</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgroup"><label>Score / résultat</label><input type="text" id="fScore" placeholder="ex: 87/100, Mention Bien…"></div>
+        <div class="fgroup"><label>Durée (heures)</label><input type="number" id="fDuree" min="0" step="0.5" placeholder="ex: 8"></div>
+      </div>
+      <div class="frow full">
+        <div class="fgroup"><label>Notes / observations</label><textarea id="fNotes" rows="2" placeholder="Informations complémentaires…"></textarea></div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-submit" onclick="saveFormation()">💾 Enregistrer</button>
+        <button class="btn-cancel" onclick="closeModal()">✕ Annuler</button>
       </div>
     </div>
-    <button class="btn-back" onclick="window.location.href='index.html'">Accueil</button>
   </div>
 </div>
 
-<div class="statsbar">
-  <div class="stat"><div class="statv" id="stTot">-</div><div class="statl">Total</div></div>
-  <div class="stat"><div class="statv g" id="stVal">-</div><div class="statl">Valides</div></div>
-  <div class="stat"><div class="statv a" id="stAl">-</div><div class="statl">Alertes</div></div>
-</div>
-
-<div class="filters">
-  <button class="chip on" onclick="setFilt('all',this)">Toutes</button>
-  <button class="chip" onclick="setFilt('u',this)">Urgentes</button>
-  <button class="chip" onclick="setFilt('w',this)">Bientot</button>
-  <button class="chip" onclick="setFilt('v',this)">Valides</button>
-  <button class="chip" onclick="setFilt('e',this)">Expirees</button>
-</div>
-
-<div id="content"></div>
-<div class="spacer"></div>
-
-<div class="botbar">
-  <button class="btn-exp" onclick="exportCSV()">Export CSV</button>
-  <button class="btn-add" onclick="openAdd()">+ Ajouter</button>
-</div>
-
-<div class="ovlay" id="ovForm">
-  <div class="mdl">
-    <div class="mdl-hdl"></div>
-    <div class="mdl-hdr">
-      <div class="mdl-t" id="formTitle">Nouvelle formation</div>
-      <button class="mdl-close" onclick="closeForm()">Fermer</button>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Supprimer ?</h3>
+    <p>Cette action est irréversible.</p>
+    <div class="confirm-btns">
+      <button class="btn-cc" onclick="cancelDel()">Annuler</button>
+      <button class="btn-cd" onclick="confirmDel()">Supprimer</button>
     </div>
-    <div class="fg">
-      <label class="fl">Type *</label>
-      <select class="fs" id="fType" onchange="onTypeChange()">
-        <option value="">-- Selectionner --</option>
-        <option value="CATS">CATS - Certificat aptitude telepilote</option>
-        <option value="PDRA-S01">Habilitation PDRA-S01</option>
-        <option value="PDRA-S02">Habilitation PDRA-S02</option>
-        <option value="MANEX">Formation MANEX</option>
-        <option value="Premiers secours">Premiers secours PSC1/SST</option>
-        <option value="Reglementation UE">Reglementation UE 2019/947</option>
-        <option value="Meteo">Meteorologie avancee</option>
-        <option value="Radionavigation">Radionavigation</option>
-        <option value="Autre">Autre</option>
-      </select>
-    </div>
-    <div class="fg" id="fgTitle" style="display:none;">
-      <label class="fl">Intitule</label>
-      <input class="fi" id="fTitleC" placeholder="Ex: Inspection thermique">
-    </div>
-    <div class="fg">
-      <label class="fl">Organisme / Emetteur</label>
-      <input class="fi" id="fIss" placeholder="Ex: DGAC, RDW, Skeyes...">
-    </div>
-    <div class="fg">
-      <label class="fl">Numero de certificat</label>
-      <input class="fi" id="fCert" placeholder="Ex: NLD-RP-q99cvjjh51fz">
-    </div>
-    <div class="fg">
-      <label class="fl">Date obtention</label>
-      <input class="fi" id="fDateO" type="date">
-    </div>
-    <div class="fg">
-      <label class="fl">Date expiration *</label>
-      <input class="fi" id="fDateE" type="date" oninput="updateHint()">
-      <div class="fhint" id="fHint"></div>
-    </div>
-    <div class="fg">
-      <label class="fl">Notes</label>
-      <textarea class="fta" id="fNotes" placeholder="Informations complementaires..."></textarea>
-    </div>
-    <div class="factrow">
-      <button class="fbtn c" onclick="closeForm()">Annuler</button>
-      <button class="fbtn p" onclick="saveForm()">Enregistrer</button>
-    </div>
-    <div style="height:10px;"></div>
   </div>
 </div>
-
 <div id="toast"></div>
 
 <script>
-var SK = 'uas_formations';
-var filt = 'all';
-var editId = null;
-var mem = {};
+'use strict';
+const KEY='uas_formations';
+let items=[],editId=null,deleteId=null,activeFilter='all';
 
-function sGet(k) {
-  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return mem[k] || null; }
+function load(){
+  try{items=JSON.parse(localStorage.getItem(KEY))||[];}catch{items=[];}
+  if(!items.length){
+    /* Données pré-remplies depuis config */
+    try{
+      const c=JSON.parse(localStorage.getItem('uas_config')||'{}');
+      if(c.cats){
+        items=[{
+          id:crypto.randomUUID(),
+          titre:'CATS — Certificat Aptitude Télépilote',
+          categorie:'CATS',organisme:'DGAC',
+          dateObt:'',dateExp:c.cats_exp||'',
+          numCert:c.cats||'NLD-RP-q99cvjjh51fz',
+          niveau:'Expert',score:'',duree:'',notes:'',
+          createdAt:new Date().toISOString()
+        }];
+        save();
+      }
+    }catch{}
+  }
 }
-function sPut(k, v) {
-  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { mem[k] = v; }
-}
+function save(){localStorage.setItem(KEY,JSON.stringify(items));}
+let toastTimer;
+function toast(msg,color='var(--navy)'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
 
-var DEFAULT = [{
-  id: 'cats_default',
-  type: 'CATS',
-  title: 'CATS - Certificat aptitude telepilote',
-  iss: 'Rijksdienst voor het Wegverkeer RDW - Pays-Bas',
-  cert: 'NLD-RP-q99cvjjh51fz',
-  dateO: '',
-  dateE: '2029-09-15',
-  notes: 'Reconnu UE 2019/947 - Categories Ouverte et Specifique PDRA.',
-  pin: true
-}];
-
-function loadData() {
-  var d = sGet(SK);
-  if (!d || !d.length) { sPut(SK, DEFAULT); return DEFAULT.slice(); }
-  return d;
-}
-function saveData(d) { sPut(SK, d); }
-
-function getStatus(dateE) {
-  if (!dateE) { return {s:'n', lbl:'-', days:null}; }
-  var now = new Date(); now.setHours(0,0,0,0);
-  var exp = new Date(dateE); exp.setHours(0,0,0,0);
-  var diff = Math.ceil((exp - now) / 86400000);
-  if (diff < 0) { return {s:'e', lbl:'Expiree', days:diff}; }
-  if (diff <= 30) { return {s:'u', lbl:diff+'j', days:diff}; }
-  if (diff <= 90) { return {s:'w', lbl:diff+'j', days:diff}; }
-  return {s:'v', lbl:diff+'j', days:diff};
+function daysUntil(d){if(!d)return null;return Math.floor((new Date(d)-new Date())/86400000);}
+function getStatus(item){
+  if(!item.dateExp)return'nodexp';
+  const du=daysUntil(item.dateExp);
+  if(du<0)return'expired';
+  if(du<=60)return'soon';
+  return'valid';
 }
 
-function fmtDate(str) {
-  if (!str) { return '-'; }
-  var parts = str.split('-');
-  return parts[2] + '/' + parts[1] + '/' + parts[0];
+function updateKPIs(){
+  const valid=items.filter(i=>getStatus(i)==='valid'||getStatus(i)==='nodexp').length;
+  const soon=items.filter(i=>getStatus(i)==='soon').length;
+  const exp=items.filter(i=>getStatus(i)==='expired').length;
+  document.getElementById('kpiValid').textContent=valid;
+  document.getElementById('kpiSoon').textContent=soon;
+  document.getElementById('kpiExp').textContent=exp;
+  document.getElementById('kpiTotal').textContent=items.length;
 }
 
-function getPct(dateO, dateE) {
-  if (!dateE) { return 0; }
-  var exp = new Date(dateE); exp.setHours(0,0,0,0);
-  var now = new Date(); now.setHours(0,0,0,0);
-  var start = dateO ? new Date(dateO) : new Date(exp.getFullYear() - 5, exp.getMonth(), exp.getDate());
-  var tot = exp - start; var el = now - start;
-  if (tot <= 0) { return 100; }
-  return Math.min(100, Math.max(0, Math.round(el / tot * 100)));
-}
+function setFilter(el,f){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeFilter=f;renderList();}
 
-function sortData(data) {
-  return data.slice().sort(function(a, b) {
-    if (a.pin && !b.pin) { return -1; }
-    if (!a.pin && b.pin) { return 1; }
-    if (!a.dateE && !b.dateE) { return 0; }
-    if (!a.dateE) { return 1; }
-    if (!b.dateE) { return -1; }
-    return new Date(a.dateE) - new Date(b.dateE);
+function renderList(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const c=document.getElementById('list-area');
+  let list=[...items];
+  if(activeFilter==='valid')list=list.filter(i=>getStatus(i)==='valid'||getStatus(i)==='nodexp');
+  else if(activeFilter==='soon')list=list.filter(i=>getStatus(i)==='soon');
+  else if(activeFilter==='expired')list=list.filter(i=>getStatus(i)==='expired');
+  else if(activeFilter!=='all')list=list.filter(i=>i.categorie===activeFilter);
+  if(q)list=list.filter(i=>(i.titre||'').toLowerCase().includes(q)||(i.organisme||'').toLowerCase().includes(q)||(i.numCert||'').toLowerCase().includes(q));
+  list.sort((a,b)=>{
+    const sa=getStatus(a),sb=getStatus(b);
+    const order={expired:0,soon:1,valid:2,nodexp:3};
+    return (order[sa]||4)-(order[sb]||4);
   });
+  if(!list.length){c.innerHTML=`<div class="empty-state"><p style="font-size:48px;margin-bottom:12px">🎓</p><p>${q||activeFilter!=='all'?'Aucun résultat.':'Aucune formation enregistrée.'}</p></div>`;return;}
+  const catIcon={CATS:'🏆',Pilote:'✈️',Securite:'🛡️',Reglementaire:'📋',Technique:'🔧',Metier:'🎬',Autre:'📌'};
+  const badgeCls={valid:'badge-valid',soon:'badge-soon',expired:'badge-expired',nodexp:'badge-nodexp'};
+  const badgeTxt={valid:'✅ Valide',soon:'⚠️ Expire bientôt',expired:'🚨 Expirée',nodexp:'♾️ Permanente'};
+  const cardCls={valid:'valid',soon:'expireSoon',expired:'expired',nodexp:'valid'};
+  c.innerHTML=list.map((item,i)=>{
+    const st=getStatus(item);const du=daysUntil(item.dateExp);
+    const countdownTxt=du===null?'':du<0?`Expirée depuis ${Math.abs(du)}j`:du===0?`Expire aujourd'hui`:du<=60?`Expire dans ${du}j`:``;
+    return `<div class="form-card ${cardCls[st]}" style="animation-delay:${i*.04}s">
+      <div class="form-card-top">
+        <div class="form-icon">${catIcon[item.categorie]||'📌'}</div>
+        <div class="form-info">
+          <div class="form-title">${item.titre}</div>
+          <div class="form-orga">${item.categorie}${item.organisme?' · '+item.organisme:''}${item.niveau?' · '+item.niveau:''}</div>
+        </div>
+        <span class="badge ${badgeCls[st]}">${badgeTxt[st]}</span>
+      </div>
+      <div class="form-card-body">
+        ${item.dateObt?`<div class="ff"><span class="ffl">Obtenue</span><span class="ffv">${fmtDate(item.dateObt)}</span></div>`:''}
+        ${item.dateExp?`<div class="ff"><span class="ffl">Expire</span><span class="ffv">${fmtDate(item.dateExp)}</span></div>`:'<div class="ff"><span class="ffl">Validité</span><span class="ffv">Permanente</span></div>'}
+        ${item.duree?`<div class="ff"><span class="ffl">Durée</span><span class="ffv">${item.duree}h</span></div>`:''}
+        ${item.score?`<div class="ff"><span class="ffl">Score</span><span class="ffv" style="color:var(--green)">${item.score}</span></div>`:''}
+      </div>
+      <div class="form-card-foot">
+        <span class="form-cert">${item.numCert||'—'}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${countdownTxt?`<span class="countdown ${st==='expired'?'expired':st==='soon'?'soon':'ok'}">${countdownTxt}</span>`:''}
+          <div class="form-actions">
+            <button class="btn-sm btn-edit" onclick="openModal('${item.id}')">✏️</button>
+            <button class="btn-sm btn-del" onclick="askDel('${item.id}')">🗑</button>
+          </div>
+        </div>
+      </div>
+      ${item.notes?`<div style="padding:6px 12px 8px;font-size:11px;color:var(--text-muted);border-top:1px solid var(--border);">📝 ${item.notes}</div>`:''}
+    </div>`;
+  }).join('');
 }
 
-function render() {
-  var data = loadData();
-  var sorted = sortData(data);
-  var tot = data.length, valid = 0, alert = 0;
-  var i, st;
-  for (i = 0; i < data.length; i++) {
-    st = getStatus(data[i].dateE);
-    if (st.s === 'v') { valid++; }
-    if (st.s === 'u' || st.s === 'w' || st.s === 'e') { alert++; }
-  }
-  document.getElementById('stTot').textContent = tot;
-  document.getElementById('stVal').textContent = valid;
-  document.getElementById('stAl').textContent = alert;
-
-  var filtered = [];
-  for (i = 0; i < sorted.length; i++) {
-    st = getStatus(sorted[i].dateE);
-    if (filt === 'all' || st.s === filt) { filtered.push(sorted[i]); }
-  }
-
-  if (!filtered.length) {
-    document.getElementById('content').innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div>Aucune formation.<br>Appuyez sur <b>+ Ajouter</b>.</div></div>';
-    return;
-  }
-
-  var pinned = [], others = [];
-  for (i = 0; i < filtered.length; i++) {
-    if (filtered[i].pin) { pinned.push(filtered[i]); } else { others.push(filtered[i]); }
-  }
-
-  var html = '';
-  if (pinned.length) {
-    html += '<div class="seclbl">Certificat principal</div>';
-    for (i = 0; i < pinned.length; i++) { html += makeCard(pinned[i]); }
-  }
-  if (others.length) {
-    html += '<div class="seclbl">Autres formations - tri par expiration</div>';
-    for (i = 0; i < others.length; i++) { html += makeCard(others[i]); }
-  }
-  html += '<div style="height:16px;"></div>';
-  document.getElementById('content').innerHTML = html;
+function openModal(id=null){
+  editId=id;
+  document.getElementById('modalTitle').textContent=id?'Modifier formation':'Nouvelle formation';
+  if(id){const it=items.find(x=>x.id===id);if(it)fillForm(it);}else clearForm();
+  document.getElementById('modalOverlay').classList.add('open');document.body.style.overflow='hidden';
 }
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalOut(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
 
-function makeCard(f) {
-  var st = getStatus(f.dateE);
-  var p = getPct(f.dateO, f.dateE);
-  var icons = {CATS:'M', 'PDRA-S01':'S1', 'PDRA-S02':'S2', MANEX:'MX', 'Premiers secours':'PS', 'Reglementation UE':'EU', Meteo:'WX', Radionavigation:'RC'};
-  var ico = icons[f.type] || '?';
-  var badgeClass = {v:'bv', w:'bw', u:'bu', e:'be', n:'bn'}[st.s];
-  var badgeTxt = {v:'OK '+st.days+'j', w:'Bientot '+st.days+'j', u:'URGENT '+st.days+'j', e:'Expiree', n:'-'}[st.s];
-  var fillColor = {v:'#1D6B37', w:'#BA7517', u:'#8B2020', e:'#8B2020', n:'#d8e4f0'}[st.s];
-  var valClass = {v:'g', w:'a', u:'r', e:'r', n:''}[st.s];
-  var restant = '';
-  if (st.days !== null) {
-    restant = st.days >= 0 ? (st.days + ' jours') : ('Exp. depuis ' + Math.abs(st.days) + ' j');
-  }
-
-  var html = '<div class="card ' + st.s + (f.pin ? ' p' : '') + '">';
-  if (f.pin) { html += '<div class="pinbar">Certificat principal</div>'; }
-  html += '<div class="ctop">';
-  html += '<div class="cico ' + st.s + '" style="font-size:14px;font-weight:bold;">' + ico + '</div>';
-  html += '<div class="cinf">';
-  html += '<div class="ctitle">' + (f.title || f.type) + '</div>';
-  html += '<div class="ciss">' + (f.iss || '-') + '</div>';
-  if (f.cert) { html += '<div class="ccert">' + f.cert + '</div>'; }
-  html += '</div>';
-  html += '<span class="badge ' + badgeClass + '">' + badgeTxt + '</span>';
-  html += '</div>';
-  html += '<div class="cbody">';
-  if (f.dateO) { html += '<div class="crow"><span class="lbl">Obtenu le </span><span class="val">' + fmtDate(f.dateO) + '</span></div>'; }
-  html += '<div class="crow"><span class="lbl">Expire le </span><span class="val ' + valClass + '">' + fmtDate(f.dateE) + '</span></div>';
-  if (restant) { html += '<div class="crow"><span class="lbl">Restant </span><span class="val ' + valClass + '">' + restant + '</span></div>'; }
-  if (f.notes) { html += '<div class="crow" style="margin-top:4px;"><span style="font-size:12px;color:#6b7280;">' + f.notes + '</span></div>'; }
-  html += '</div>';
-  html += '<div class="expbar"><div class="extrack"><div class="exfill" style="width:' + p + '%;background:' + fillColor + ';"></div></div></div>';
-  html += '<div class="cacts">';
-  html += '<button class="cbtn" onclick="openEdit(\'' + f.id + '\')">Modifier</button>';
-  if (!f.pin) { html += '<button class="cbtn r" onclick="delF(\'' + f.id + '\')">Supprimer</button>'; }
-  html += '</div>';
-  html += '</div>';
-  return html;
+function clearForm(){
+  ['fTitre','fCategorie','fOrganisme','fDateObt','fDateExp','fNumCert','fNiveau','fScore','fDuree','fNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fDateObt').value=new Date().toISOString().slice(0,10);
 }
-
-function setFilt(f, el) {
-  filt = f;
-  var chips = document.querySelectorAll('.chip');
-  var i;
-  for (i = 0; i < chips.length; i++) { chips[i].className = 'chip'; }
-  el.className = 'chip on';
-  render();
+function fillForm(it){
+  const map={fTitre:'titre',fCategorie:'categorie',fOrganisme:'organisme',fDateObt:'dateObt',fDateExp:'dateExp',fNumCert:'numCert',fNiveau:'niveau',fScore:'score',fDuree:'duree',fNotes:'notes'};
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&it[key]!=null)el.value=it[key];});
 }
-
-function openAdd() {
-  editId = null;
-  document.getElementById('formTitle').textContent = 'Nouvelle formation';
-  clearForm();
-  document.getElementById('ovForm').className = 'ovlay show';
+function saveFormation(){
+  const titre=gv('fTitre').trim(),cat=gv('fCategorie'),dateObt=gv('fDateObt');
+  if(!titre||!cat||!dateObt){toast('⚠️ Intitulé, catégorie et date obligatoires','var(--amber)');return;}
+  const item={id:editId||crypto.randomUUID(),titre,categorie:cat,organisme:gv('fOrganisme'),dateObt,dateExp:gv('fDateExp'),numCert:gv('fNumCert'),niveau:gv('fNiveau'),score:gv('fScore'),duree:gv('fDuree'),notes:gv('fNotes'),createdAt:editId?(items.find(x=>x.id===editId)?.createdAt||new Date().toISOString()):new Date().toISOString()};
+  if(editId){const i=items.findIndex(x=>x.id===editId);if(i!==-1)items[i]=item;}else items.push(item);
+  save();closeModal();renderAll();toast(editId?'✅ Mise à jour':'✅ Formation enregistrée','var(--green)');
 }
-
-function openEdit(id) {
-  var data = loadData(); var f = null; var i;
-  for (i = 0; i < data.length; i++) { if (data[i].id === id) { f = data[i]; break; } }
-  if (!f) { return; }
-  editId = id;
-  document.getElementById('formTitle').textContent = 'Modifier';
-  document.getElementById('fType').value = f.type || '';
-  document.getElementById('fTitleC').value = f.title || '';
-  document.getElementById('fIss').value = f.iss || '';
-  document.getElementById('fCert').value = f.cert || '';
-  document.getElementById('fDateO').value = f.dateO || '';
-  document.getElementById('fDateE').value = f.dateE || '';
-  document.getElementById('fNotes').value = f.notes || '';
-  document.getElementById('fgTitle').style.display = f.type === 'Autre' ? 'block' : 'none';
-  updateHint();
-  document.getElementById('ovForm').className = 'ovlay show';
-}
-
-function clearForm() {
-  var ids = ['fType','fTitleC','fIss','fCert','fDateO','fDateE','fNotes'];
-  var i;
-  for (i = 0; i < ids.length; i++) { document.getElementById(ids[i]).value = ''; }
-  document.getElementById('fgTitle').style.display = 'none';
-  document.getElementById('fHint').textContent = '';
-}
-
-function onTypeChange() {
-  var t = document.getElementById('fType').value;
-  document.getElementById('fgTitle').style.display = t === 'Autre' ? 'block' : 'none';
-  if (t === 'CATS' && !editId) {
-    document.getElementById('fIss').value = 'Rijksdienst voor het Wegverkeer RDW - Pays-Bas';
-    document.getElementById('fCert').value = 'NLD-RP-q99cvjjh51fz';
-    document.getElementById('fDateE').value = '2029-09-15';
-    updateHint();
-  }
-}
-
-function updateHint() {
-  var v = document.getElementById('fDateE').value;
-  if (!v) { document.getElementById('fHint').textContent = ''; return; }
-  var st = getStatus(v);
-  var msgs = {e:'Date depassee - certificat expire', u:'Expire dans '+st.days+' jour(s) - urgent', w:'Expire dans '+st.days+' jours - a planifier', v:'Encore '+st.days+' jours de validite', n:''};
-  document.getElementById('fHint').textContent = msgs[st.s] || '';
-}
-
-function saveForm() {
-  var t = document.getElementById('fType').value;
-  if (!t) { toast('Selectionner un type'); return; }
-  var de = document.getElementById('fDateE').value;
-  if (!de) { toast('Date expiration requise'); return; }
-  var tc = document.getElementById('fTitleC').value;
-  var title = (tc ? tc.trim() : '') || t;
-  var f = {
-    id: editId || ('f_' + Date.now()),
-    type: t, title: title,
-    iss: document.getElementById('fIss').value,
-    cert: document.getElementById('fCert').value,
-    dateO: document.getElementById('fDateO').value,
-    dateE: de,
-    notes: document.getElementById('fNotes').value,
-    pin: false
-  };
-  var data = loadData(); var i;
-  if (editId) {
-    for (i = 0; i < data.length; i++) {
-      if (data[i].id === editId) { f.pin = data[i].pin; data[i] = f; break; }
-    }
-  } else { data.push(f); }
-  saveData(data); closeForm(); render();
-  toast(editId ? 'Formation mise a jour' : 'Formation ajoutee');
-}
-
-function delF(id) {
-  if (!confirm('Supprimer cette formation ?')) { return; }
-  var data = loadData(); var nd = []; var i;
-  for (i = 0; i < data.length; i++) { if (data[i].id !== id) { nd.push(data[i]); } }
-  saveData(nd); render(); toast('Supprimee');
-}
-
-function closeForm() { document.getElementById('ovForm').className = 'ovlay'; }
-
-function exportCSV() {
-  var data = sortData(loadData());
-  var csv = '\uFEFFType;Titre;Emetteur;Certificat;Obtention;Expiration;Statut;Jours;Notes\n';
-  var i, f, st, sl, row;
-  var statLabels = {v:'Valide', w:'A renouveler', u:'URGENT', e:'Expiree', n:'-'};
-  for (i = 0; i < data.length; i++) {
-    f = data[i]; st = getStatus(f.dateE); sl = statLabels[st.s];
-    row = [f.type, f.title, f.iss, f.cert, f.dateO, f.dateE, sl, st.days !== null ? st.days : '-', f.notes];
-    csv += row.map(function(v) { return '"' + (v || '').replace(/"/g, '""') + '"'; }).join(';') + '\n';
-  }
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
-  a.download = 'formations_UAS_CONTE.csv';
-  a.click();
-  toast('Export CSV telecharge');
-}
-
-function toast(msg) {
-  var t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
-  setTimeout(function() { t.style.display = 'none'; }, 2500);
-}
-
-render();
+function askDel(id){deleteId=id;document.getElementById('confirmOverlay').classList.add('open');}
+function cancelDel(){deleteId=null;document.getElementById('confirmOverlay').classList.remove('open');}
+function confirmDel(){if(deleteId){items=items.filter(x=>x.id!==deleteId);save();renderAll();toast('🗑 Supprimé');}cancelDel();}
+function gv(id){const el=document.getElementById(id);return el?el.value:'';}
+function fmtDate(d){if(!d)return'—';const[y,m,j]=d.split('-');return`${j}/${m}/${y}`;}
+function renderAll(){updateKPIs();renderList();}
+load();renderAll();
 </script>
 </body>
 </html>
