@@ -1,37 +1,28 @@
 // ============================================================
-//  UAS Manager — Service Worker v2.0
-//  Stratégie : Cache-First pour assets statiques
-//              Network-First pour APIs externes
+//  UAS Manager — Service Worker v2.1
+//  Fonctionne sur GitHub Pages (/UAS-MANAGER/) et Capacitor (/)
 // ============================================================
 
-const CACHE_NAME = 'uas-manager-v2.0.0';
+const CACHE_NAME = 'uas-manager-v2.1.0';
+
+// Détection automatique du chemin de base (GitHub Pages vs Capacitor)
+const BASE = (() => {
+  const m = self.location.pathname.match(/^(\/[^/]+)\/sw\.js$/);
+  return (m && m[1] !== '/capacitor') ? m[1] : '';
+})();
+
+const PAGES = [
+  'index.html', 'config.html', 'vols.html', 'maintenance.html',
+  'checklist.html', 'rex.html', 'meteo.html', 'adsb.html',
+  'zones.html', 'notification.html', 'planificateur.html', 'clients.html',
+  'rapport.html', 'dashboard.html', 'statistiques.html', 'briefing.html',
+  'bilans.html', 'dji_logs.html', 'replay.html', 'formations.html',
+  'alertes.html', 'rgpd.html', 'privacy.html', 'manifest.json'
+];
 
 const STATIC_ASSETS = [
-  '/UAS-MANAGER/',
-  '/UAS-MANAGER/index.html',
-  '/UAS-MANAGER/config.html',
-  '/UAS-MANAGER/vols.html',
-  '/UAS-MANAGER/maintenance.html',
-  '/UAS-MANAGER/checklist.html',
-  '/UAS-MANAGER/rex.html',
-  '/UAS-MANAGER/meteo.html',
-  '/UAS-MANAGER/adsb.html',
-  '/UAS-MANAGER/zones.html',
-  '/UAS-MANAGER/notification.html',
-  '/UAS-MANAGER/planificateur.html',
-  '/UAS-MANAGER/clients.html',
-  '/UAS-MANAGER/rapport.html',
-  '/UAS-MANAGER/dashboard.html',
-  '/UAS-MANAGER/statistiques.html',
-  '/UAS-MANAGER/briefing.html',
-  '/UAS-MANAGER/bilans.html',
-  '/UAS-MANAGER/dji_logs.html',
-  '/UAS-MANAGER/replay.html',
-  '/UAS-MANAGER/formations.html',
-  '/UAS-MANAGER/alertes.html',
-  '/UAS-MANAGER/rgpd.html',
-  '/UAS-MANAGER/manifest.json',
-  '/UAS-MANAGER/sw.js'
+  BASE + '/',
+  ...PAGES.map(p => BASE + '/' + p)
 ];
 
 // APIs externes — réseau uniquement, jamais en cache
@@ -48,32 +39,25 @@ const NETWORK_ONLY_DOMAINS = [
 
 // ── Installation ─────────────────────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installation v2.0.0');
+  console.log('[SW] Installation v2.1.0 — BASE:', BASE || '(root)');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Mise en cache des assets statiques');
-        // Ajout progressif — ignorer les erreurs individuelles
-        return Promise.allSettled(
-          STATIC_ASSETS.map(url => cache.add(url).catch(e => console.warn('[SW] Impossible de cacher:', url, e)))
-        );
-      })
+      .then(cache => Promise.allSettled(
+        STATIC_ASSETS.map(url =>
+          cache.add(url).catch(e => console.warn('[SW] Skip:', url, e.message))
+        )
+      ))
       .then(() => self.skipWaiting())
   );
 });
 
 // ── Activation & nettoyage anciens caches ────────────────────
 self.addEventListener('activate', event => {
-  console.log('[SW] Activation v2.0.0');
+  console.log('[SW] Activation v2.1.0');
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => {
-            console.log('[SW] Suppression ancien cache:', key);
-            return caches.delete(key);
-          })
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
@@ -84,17 +68,14 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // APIs externes → réseau uniquement
-  const isNetworkOnly = NETWORK_ONLY_DOMAINS.some(domain => url.hostname.includes(domain));
-  if (isNetworkOnly) {
+  if (NETWORK_ONLY_DOMAINS.some(d => url.hostname.includes(d))) {
     event.respondWith(fetch(event.request).catch(() => new Response('', {status: 503})));
     return;
   }
 
-  // IGN / Tuiles cartographiques → réseau avec cache
-  const isMapTile = url.hostname.includes('geopf.fr') ||
-                    url.hostname.includes('openstreetmap.org') ||
-                    url.hostname.includes('arcgisonline.com') ||
-                    url.hostname.includes('opentopomap.org');
+  // Tuiles cartographiques → cache avec revalidation
+  const isMapTile = ['geopf.fr','openstreetmap.org','arcgisonline.com','opentopomap.org']
+    .some(d => url.hostname.includes(d));
 
   if (isMapTile && event.request.method === 'GET') {
     event.respondWith(
@@ -102,8 +83,7 @@ self.addEventListener('fetch', event => {
         if (cached) return cached;
         return fetch(event.request).then(resp => {
           if (resp && resp.status === 200 && resp.type !== 'opaque') {
-            const clone = resp.clone();
-            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+            caches.open(CACHE_NAME).then(c => c.put(event.request, resp.clone()));
           }
           return resp;
         }).catch(() => new Response('', {status: 503}));
@@ -112,18 +92,18 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Assets statiques → Cache-First avec revalidation en arrière-plan
+  // Assets statiques → Cache-First + revalidation en arrière-plan
   if (event.request.method === 'GET') {
     event.respondWith(
       caches.match(event.request).then(cached => {
-        const networkFetch = fetch(event.request).then(networkResp => {
-          if (networkResp && networkResp.status === 200) {
-            caches.open(CACHE_NAME).then(c => c.put(event.request, networkResp.clone()));
+        const networkFetch = fetch(event.request).then(resp => {
+          if (resp && resp.status === 200) {
+            caches.open(CACHE_NAME).then(c => c.put(event.request, resp.clone()));
           }
-          return networkResp;
+          return resp;
         }).catch(() => null);
 
-        return cached || networkFetch.then(r => r || caches.match('/UAS-MANAGER/index.html'));
+        return cached || networkFetch.then(r => r || caches.match(BASE + '/index.html'));
       })
     );
   }
@@ -131,10 +111,8 @@ self.addEventListener('fetch', event => {
 
 // ── Messages depuis l'app ─────────────────────────────────────
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  if (event.data && event.data.type === 'GET_VERSION') {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data?.type === 'GET_VERSION') {
     event.ports[0].postMessage({ version: CACHE_NAME });
   }
 });

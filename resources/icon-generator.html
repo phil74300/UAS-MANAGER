@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>UAS Manager — Générateur d'icône App Store</title>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0D1220;color:#E8EEF8;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;gap:20px;}
+  h1{font-size:18px;opacity:.7;}
+  canvas{border-radius:22%;}
+  button{background:#185FA5;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
+  button:hover{background:#0C447C;}
+  p{font-size:13px;opacity:.5;text-align:center;max-width:400px;line-height:1.6;}
+</style>
+</head>
+<body>
+<h1>Générateur d'icône UAS Manager</h1>
+<canvas id="c" width="1024" height="1024"></canvas>
+<button onclick="download()">⬇ Télécharger icon.png (1024×1024)</button>
+<p>Enregistre ce fichier sous <strong>resources/icon.png</strong> dans ton projet, puis pousse sur GitHub. Codemagic l'utilisera pour générer toutes les tailles d'icônes iOS.</p>
+
+<script>
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+const S = 1024;
+
+// Fond navy avec coins arrondis (pour prévisualisation — Apple arrondit automatiquement)
+ctx.fillStyle = '#0C447C';
+const r = S * 0.22;
+ctx.beginPath();
+ctx.moveTo(r, 0);
+ctx.lineTo(S - r, 0);
+ctx.quadraticCurveTo(S, 0, S, r);
+ctx.lineTo(S, S - r);
+ctx.quadraticCurveTo(S, S, S - r, S);
+ctx.lineTo(r, S);
+ctx.quadraticCurveTo(0, S, 0, S - r);
+ctx.lineTo(0, r);
+ctx.quadraticCurveTo(0, 0, r, 0);
+ctx.closePath();
+ctx.fill();
+
+// Dégradé d'ambiance
+const grad = ctx.createRadialGradient(S * 0.75, S * 0.3, 0, S * 0.75, S * 0.3, S * 0.6);
+grad.addColorStop(0, 'rgba(24,95,165,0.5)');
+grad.addColorStop(1, 'rgba(24,95,165,0)');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, S, S);
+
+const cx = S / 2;
+const cy = S / 2 - 30;
+
+// Bras du drone — 4 directions
+ctx.strokeStyle = '#E6F1FB';
+ctx.lineWidth = 28;
+ctx.lineCap = 'round';
+const armLen = 220;
+const angle45 = Math.PI / 4;
+[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([dx, dy]) => {
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + dx * armLen * Math.cos(angle45), cy + dy * armLen * Math.sin(angle45));
+  ctx.stroke();
+});
+
+// Moteurs (cercles aux extrémités des bras)
+const motorRadius = 70;
+[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([dx, dy]) => {
+  const mx = cx + dx * armLen * Math.cos(angle45);
+  const my = cy + dy * armLen * Math.sin(angle45);
+  ctx.beginPath();
+  ctx.arc(mx, my, motorRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#1D6B37';
+  ctx.fill();
+  ctx.strokeStyle = '#E6F1FB';
+  ctx.lineWidth = 8;
+  ctx.stroke();
+  // Hélice
+  ctx.strokeStyle = '#E6F1FB';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx - motorRadius + 12, my);
+  ctx.lineTo(mx + motorRadius - 12, my);
+  ctx.stroke();
+});
+
+// Corps central du drone
+ctx.beginPath();
+ctx.arc(cx, cy, 90, 0, Math.PI * 2);
+ctx.fillStyle = '#185FA5';
+ctx.fill();
+ctx.strokeStyle = '#E6F1FB';
+ctx.lineWidth = 10;
+ctx.stroke();
+
+// Caméra (rectangle arrondi sous le corps)
+ctx.beginPath();
+const camW = 80, camH = 50;
+ctx.roundRect(cx - camW/2, cy + 80, camW, camH, 10);
+ctx.fillStyle = '#0D1220';
+ctx.fill();
+ctx.strokeStyle = '#E6F1FB';
+ctx.lineWidth = 6;
+ctx.stroke();
+// Objectif caméra
+ctx.beginPath();
+ctx.arc(cx, cy + 80 + camH/2, 14, 0, Math.PI * 2);
+ctx.fillStyle = '#006064';
+ctx.fill();
+ctx.strokeStyle = '#E6F1FB';
+ctx.lineWidth = 4;
+ctx.stroke();
+
+// Texte "UAS" en bas
+ctx.fillStyle = '#E6F1FB';
+ctx.font = 'bold 72px -apple-system, Arial';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('UAS', cx, cy + 230);
+
+// Texte "MANAGER" plus petit
+ctx.fillStyle = 'rgba(230,241,251,0.6)';
+ctx.font = '600 36px -apple-system, Arial';
+ctx.fillText('MANAGER', cx, cy + 290);
+
+function download() {
+  const link = document.createElement('a');
+  link.download = 'icon.png';
+  link.href = c.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>

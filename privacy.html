@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Politique de confidentialité — UAS Manager</title>
+<style>
+  :root{--navy:#0C447C;--bg:#F0F4FA;--surface:#FFFFFF;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
+  @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;}}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top,20px) 20px env(safe-area-inset-bottom,20px);}
+  header{background:var(--navy);color:#fff;padding:20px;margin:-20px -20px 28px;text-align:center;}
+  header h1{font-size:20px;font-weight:800;}
+  header p{font-size:12px;opacity:.7;margin-top:4px;}
+  section{background:var(--surface);border-radius:14px;padding:18px;margin-bottom:16px;border:1px solid var(--border);}
+  h2{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+  @media(prefers-color-scheme:dark){h2{color:#7EB8F7;}}
+  p,li{font-size:14px;line-height:1.6;color:var(--text-muted);}
+  ul{padding-left:18px;margin-top:6px;}
+  li{margin-bottom:4px;}
+  strong{color:var(--text);}
+  .updated{text-align:center;font-size:12px;color:var(--text-muted);margin-top:20px;padding-bottom:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Politique de confidentialité</h1>
+  <p>UAS Manager — CONTE Philippe</p>
+</header>
+
+<section>
+  <h2>1. Présentation</h2>
+  <p>UAS Manager est une application mobile destinée aux télépilotes professionnels de drones (UAS) opérant en France sous les scénarios PDRA-S01 et PDRA-S02. Cette politique décrit la manière dont l'application collecte, utilise et protège vos données.</p>
+</section>
+
+<section>
+  <h2>2. Données collectées</h2>
+  <p>UAS Manager fonctionne <strong>principalement hors ligne</strong>. Toutes les données saisies sont stockées exclusivement sur votre appareil :</p>
+  <ul>
+    <li>Informations exploitant et drones (configuration)</li>
+    <li>Journal de vols (carnet de vol numérique)</li>
+    <li>Listes de contrôle (checklists)</li>
+    <li>Fiches de maintenance</li>
+    <li>Retours d'expérience (REX)</li>
+    <li>Formations et certifications</li>
+    <li>Clients et missions</li>
+    <li>Photos de rapports</li>
+  </ul>
+  <p style="margin-top:10px;"><strong>Aucune donnée personnelle n'est transmise à des serveurs tiers</strong> sans votre action explicite.</p>
+</section>
+
+<section>
+  <h2>3. APIs et services externes</h2>
+  <p>L'application peut se connecter aux services tiers suivants, uniquement à votre demande :</p>
+  <ul>
+    <li><strong>CheckWX</strong> — données météo METAR/TAF (clé API fournie par vous)</li>
+    <li><strong>OpenWeatherMap</strong> — météo locale (clé API fournie par vous)</li>
+    <li><strong>SOFIA DSAC</strong> — consultation des NOTAMs (service public DGAC)</li>
+    <li><strong>ADS-B Exchange / adsb.lol</strong> — trafic aérien en direct</li>
+    <li><strong>Géoportail IGN</strong> — cartographie et zones réglementées</li>
+    <li><strong>AlphaTango DGAC</strong> — consultation du registre drones</li>
+  </ul>
+  <p style="margin-top:10px;">Ces services sont soumis à leurs propres politiques de confidentialité.</p>
+</section>
+
+<section>
+  <h2>4. Géolocalisation</h2>
+  <p>L'application peut accéder à votre position GPS uniquement pour :</p>
+  <ul>
+    <li>Afficher les aéronefs ADS-B autour de vous</li>
+    <li>Centrer la carte sur votre position</li>
+  </ul>
+  <p style="margin-top:10px;">La localisation n'est activée que lors de votre utilisation active du module concerné. Votre position n'est jamais stockée ni transmise.</p>
+</section>
+
+<section>
+  <h2>5. Caméra et photos</h2>
+  <p>L'accès à la caméra et à la photothèque est requis uniquement pour :</p>
+  <ul>
+    <li>Joindre des photos aux rapports de mission</li>
+    <li>Signer les rapports</li>
+  </ul>
+  <p style="margin-top:10px;">Les photos sont stockées localement sur votre appareil et n'ont jamais transmises à des serveurs.</p>
+</section>
+
+<section>
+  <h2>6. Stockage local</h2>
+  <p>L'application utilise le stockage local de votre appareil (<strong>localStorage</strong>) pour conserver vos données. Ces données restent sur votre appareil et ne sont accessibles qu'à UAS Manager. Vous pouvez exporter ou supprimer toutes vos données depuis le module <strong>RGPD</strong> de l'application.</p>
+</section>
+
+<section>
+  <h2>7. Notifications</h2>
+  <p>L'application peut envoyer des notifications locales pour vous alerter des échéances (renouvellement CATS, assurance, formations). Ces notifications sont générées localement et ne nécessitent pas de connexion réseau.</p>
+</section>
+
+<section>
+  <h2>8. Aucune publicité, aucun tracking</h2>
+  <p>UAS Manager ne contient <strong>aucune publicité</strong>, aucun traceur analytique, aucun SDK de marketing tiers. L'application ne collecte pas de données d'utilisation.</p>
+</section>
+
+<section>
+  <h2>9. Vos droits (RGPD)</h2>
+  <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et d'effacement de vos données. L'ensemble de ces actions est disponible directement dans l'application, module <strong>RGPD</strong>.</p>
+</section>
+
+<section>
+  <h2>10. Contact</h2>
+  <p>Pour toute question relative à cette politique de confidentialité :</p>
+  <ul>
+    <li><strong>Responsable :</strong> CONTE Philippe</li>
+    <li><strong>Email :</strong> contact@conteops.fr</li>
+    <li><strong>Activité :</strong> Télépilote professionnel UAS — PDRA-S01 / PDRA-S02</li>
+  </ul>
+</section>
+
+<p class="updated">Dernière mise à jour : mai 2026</p>
+
+</body>
+</html>

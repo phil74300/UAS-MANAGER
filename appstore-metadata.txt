@@ -1,0 +1,99 @@
+===========================================================
+  UAS Manager — Métadonnées App Store Connect
+  À copier-coller dans App Store Connect lors de la soumission
+===========================================================
+
+BUNDLE ID : com.conteops.uasmanager
+CATÉGORIE PRINCIPALE : Utilitaires
+CATÉGORIE SECONDAIRE : Navigation
+ÂGE : 4+ (aucun contenu inapproprié)
+PRIX : Gratuit (ou payant selon ton choix)
+
+──────────────────────────────────────────────────────────
+NOM DE L'APP (30 car. max)
+──────────────────────────────────────────────────────────
+UAS Manager
+
+──────────────────────────────────────────────────────────
+SOUS-TITRE (30 car. max)
+──────────────────────────────────────────────────────────
+Gestionnaire drones PDRA-S01/S02
+
+──────────────────────────────────────────────────────────
+DESCRIPTION (4000 car. max)
+──────────────────────────────────────────────────────────
+UAS Manager est l'application de référence pour les télépilotes professionnels de drones opérant en France sous les scénarios PDRA-S01 et PDRA-S02.
+
+Conçue spécifiquement pour iPhone et iPad, UAS Manager centralise toutes les tâches opérationnelles du télépilote en une seule application fluide et disponible hors ligne.
+
+📋 CARNET DE VOL NUMÉRIQUE
+Enregistrez chaque vol avec tous les champs réglementaires : scénario, site, altitude max, distance VLOS, météo, batterie, RPIC. Export CSV conforme pour vos bilans DGAC.
+
+✅ CHECK-LISTS INTELLIGENTES
+Check-lists pré-vol (37 items), post-vol (20 items) et urgence (28 items) avec verdict GO / NO-GO automatique basé sur les items critiques.
+
+🔧 MAINTENANCE & REX
+Suivi complet de la maintenance de votre flotte avec planning des révisions, retours d'expérience (REX) internes et déclarations DSAC.
+
+🌤 MÉTÉO OPÉRATIONNELLE
+METAR et TAF en temps réel via CheckWX, avec briefing GO/NO-GO basé sur vos limites opérationnelles personnalisées.
+
+✈️ TRAFIC AÉRIEN ADS-B
+Visualisation du trafic en direct autour de vous (ADS-B) avec affichage des zones réglementées sur fond cartographique IGN.
+
+📍 ZONES RÉGLEMENTÉES
+Consultation des zones de vol réglementées (CTR, D, P, R, natura 2000) sur fond cartographique IGN Géoportail.
+
+📊 STATISTIQUES & BILANS
+Tableaux de bord avec graphiques d'activité, heatmap annuelle, bilan financier et suivi des certifications.
+
+🔔 NOTIFICATIONS & RAPPELS
+Alertes automatiques avant expiration CATS, assurance, formations. Intégration Apple Reminders.
+
+👥 CLIENTS & MISSIONS
+Gestion des clients, devis et rapports de mission signés numériquement (PDF).
+
+🔒 100% HORS LIGNE & RGPD
+Toutes vos données restent sur votre iPhone. Aucune publicité, aucun tracking. Export RGPD complet.
+
+──────────────────────────────────────────────────────────
+MOTS-CLÉS (100 car. max, séparés par virgules)
+──────────────────────────────────────────────────────────
+drone,UAS,télépilote,PDRA,vol,checklist,maintenance,carnet,ADS-B,météo,DGAC
+
+──────────────────────────────────────────────────────────
+URL DE SUPPORT
+──────────────────────────────────────────────────────────
+https://phil74300.github.io/UAS-MANAGER/
+
+──────────────────────────────────────────────────────────
+URL POLITIQUE DE CONFIDENTIALITÉ (obligatoire)
+──────────────────────────────────────────────────────────
+https://phil74300.github.io/UAS-MANAGER/privacy.html
+
+──────────────────────────────────────────────────────────
+INFORMATIONS DE REVUE APPLE (notes pour les reviewers)
+──────────────────────────────────────────────────────────
+Cette application est destinée aux télépilotes professionnels de drones
+en France. Toutes les données sont stockées localement (localStorage).
+L'application ne nécessite pas de compte utilisateur.
+
+Pour tester : toutes les fonctionnalités sont accessibles sans inscription.
+Les modules météo et ADS-B nécessitent une connexion internet.
+Une clé API CheckWX gratuite peut être obtenue sur checkwx.com.
+
+──────────────────────────────────────────────────────────
+SCREENSHOTS REQUIS (à créer avec un simulateur iPhone)
+──────────────────────────────────────────────────────────
+Format requis par Apple :
+- iPhone 6.9" (iPhone 16 Pro Max) : 1320 × 2868 px
+- iPhone 6.5" (iPhone 15 Plus)    : 1242 × 2688 px (obligatoire)
+- iPad Pro 13"                     : 2048 × 2732 px (si iPad supporté)
+
+Écrans recommandés à capturer :
+1. index.html     — Page d'accueil avec avatar et grille modules
+2. vols.html      — Formulaire nouveau vol avec chronomètre
+3. checklist.html — Check-list pré-vol avec verdict GO
+4. dashboard.html — Tableau de bord avec graphiques
+5. briefing.html  — Briefing météo avec rose des vents
+6. zones.html     — Carte zones réglementées IGN

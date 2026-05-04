@@ -1,0 +1,185 @@
+# ============================================================
+#  UAS Manager — Codemagic CI/CD
+#  Build iOS App Store depuis le cloud (sans Xcode local)
+#  Doc : https://docs.codemagic.io/yaml-quick-start/building-a-capacitor-app/
+# ============================================================
+
+workflows:
+
+  # ── TestFlight (test interne avant soumission) ─────────────
+  ios-testflight:
+    name: UAS Manager — TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic   # Connexion configurée dans Codemagic UI
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.conteops.uasmanager
+      vars:
+        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+        BUNDLE_ID: com.conteops.uasmanager
+        APP_STORE_APP_ID: $APP_STORE_APP_ID   # À renseigner dans Codemagic UI
+      node: 18.19.0
+      xcode: latest
+      cocoapods: default
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+
+      - name: Initialize Capacitor iOS
+        script: |
+          npx cap add ios || true
+          npx cap copy ios
+          npx cap update ios
+
+      - name: Generate app icons & splash
+        script: |
+          mkdir -p resources
+          # Copier l'icône source si présente
+          if [ -f resources/icon.png ]; then
+            cp resources/icon.png resources/splash.png 2>/dev/null || true
+            npx @capacitor/assets generate --ios 2>/dev/null || true
+          fi
+
+      - name: Patch Info.plist — permissions iOS
+        script: |
+          PLIST="ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSLocationWhenInUseUsageDescription string 'Localisation utilisée pour ADS-B et les zones de vol'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSCameraUsageDescription string 'Caméra utilisée pour les rapports de mission'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSPhotoLibraryUsageDescription string 'Accès aux photos pour les rapports de mission'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSPhotoLibraryAddUsageDescription string 'Sauvegarde des rapports dans la photothèque'" \
+            "$PLIST" 2>/dev/null || true
+
+      - name: Build iOS IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME" \
+            --config Release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      email:
+        recipients:
+          - contact@conteops.fr   # Remplace par ton email
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false   # Passe à true quand prêt pour production
+
+  # ── App Store Production ────────────────────────────────────
+  ios-production:
+    name: UAS Manager — App Store Production
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.conteops.uasmanager
+      vars:
+        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+        BUNDLE_ID: com.conteops.uasmanager
+        APP_STORE_APP_ID: $APP_STORE_APP_ID
+      node: 18.19.0
+      xcode: latest
+      cocoapods: default
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+
+    scripts:
+      - name: Install npm dependencies
+        script: npm ci
+
+      - name: Initialize Capacitor iOS
+        script: |
+          npx cap add ios || true
+          npx cap copy ios
+          npx cap update ios
+
+      - name: Generate app icons & splash
+        script: |
+          if [ -f resources/icon.png ]; then
+            cp resources/icon.png resources/splash.png 2>/dev/null || true
+            npx @capacitor/assets generate --ios 2>/dev/null || true
+          fi
+
+      - name: Patch Info.plist — permissions iOS
+        script: |
+          PLIST="ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSLocationWhenInUseUsageDescription string 'Localisation utilisée pour ADS-B et les zones de vol'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSCameraUsageDescription string 'Caméra utilisée pour les rapports de mission'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSPhotoLibraryUsageDescription string 'Accès aux photos pour les rapports de mission'" \
+            "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c \
+            "Add :NSPhotoLibraryAddUsageDescription string 'Sauvegarde des rapports dans la photothèque'" \
+            "$PLIST" 2>/dev/null || true
+
+      - name: Set version depuis le tag git
+        script: |
+          TAG=${FCI_TAG:-v1.0.0}
+          VERSION=${TAG#v}
+          PLIST="ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
+
+      - name: Build iOS IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME" \
+            --config Release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - contact@conteops.fr
+        notify:
+          success: true
+          failure: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: true
+        release_type: MANUAL
