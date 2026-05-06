@@ -121,7 +121,160 @@ html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystem
 
 .info-note{font-size:11px;color:var(--text-muted);background:var(--light-blue);border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.5;}
 .sec-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin:14px 0 8px;display:flex;align-items:center;justify-content:space-between;}
+
+  /* ─── COPYRIGHT ─── */
+  .copyright-footer{
+    text-align:center;
+    padding:16px 14px calc(8px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--border);
+    margin-top:8px;
+  }
+  .copyright-footer .cf-app{font-size:12px;font-weight:800;color:var(--navy);}
+  .copyright-footer .cf-author{font-size:11px;color:var(--text-muted);margin-top:2px;}
+  .copyright-footer .cf-copy{font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:.2px;}
+  @media(prefers-color-scheme:dark){.copyright-footer .cf-app{color:#7EB8F7;}}
+
 </style>
+<script>
+// ═══ Vérification licence UAS Manager ═══
+(function(){{
+  const VALID = {{
+    '661167d03b591c0664d0de4de5ebb5111e8a21ccce81072b8c18dfc3b8b6911e':'personal',
+    '79748d392f53f3094c2e0590b7d030a325764a341740ccd646d2880dd11b1f52':'personal',
+    'b38959260809305837807838f60d963e982a92f39ec23e7ee1c7875db10b9c9f':'standard',
+  }};
+  const STD = ['maintenance','rex','notification','planificateur','briefing',
+               'dashboard','alertes','bilans','formations'];
+  const PRO = ['statistiques','clients','rapport','replay','dji_logs','export_zip'];
+  const feat = 'rapport';
+
+  function getPlan(){{
+    try{{
+      const raw = localStorage.getItem('uas_license');
+      if(!raw) return 'free';
+      const l = JSON.parse(raw);
+      if(l.expires && new Date(l.expires) < new Date()) return 'free';
+      // Vérifier que le hash est valide
+      if(l.hash && VALID[l.hash]) return VALID[l.hash];
+      // Sinon vérifier le plan stocké mais non validé
+      return 'free';
+    }}catch{{ return 'free'; }}
+  }}
+
+  function canAccess(f){{
+    const p = getPlan();
+    if(p === 'personal') return true;
+    if(p === 'pro') return true;
+    if(p === 'standard') return !PRO.includes(f);
+    return false; // free
+  }}
+
+  if(!canAccess(feat)){{
+    const p = getPlan();
+    const needPro = PRO.includes(feat);
+    const planLabel = needPro ? '🏆 Pro — 19,99€/mois' : '⭐ Standard — 9,99€/mois';
+    const planColor = needPro ? '#1D6B37' : '#BA7517';
+    const planBg    = needPro ? '#E8F5E9'  : '#FAEEDA';
+
+    document.documentElement.style.height = '100%';
+    document.body.style.cssText = 'margin:0;padding:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#F0F4FA;font-family:-apple-system,sans-serif;';
+
+    const LABELS = {{
+      maintenance:'🔧 Maintenance UAS', rex:'⚠️ REX / Incidents',
+      notification:'📋 Notification AlphaTango', planificateur:'🗓️ Planificateur',
+      briefing:'🌤️ Briefing GO/NO-GO', dashboard:'📊 Tableau de bord',
+      alertes:'🔔 Alertes & Rappels', bilans:'📅 Bilans',
+      formations:'🎓 Formations', statistiques:'📈 Statistiques avancées',
+      clients:'💼 Clients & Devis', rapport:'📷 Rapport de mission',
+      replay:'🎬 Replay de vol DJI', dji_logs:'📁 Logs DJI', export_zip:'🗜️ Export ZIP',
+    }};
+
+    const STD_LIST = ['✈️ Vols illimités','🔧 Maintenance','⚠️ REX / Incidents',
+      '📋 Notification AlphaTango','🗓️ Planificateur','🌤️ Briefing GO/NO-GO',
+      '📊 Dashboard','🔔 Alertes','📅 Bilans','🎓 Formations'];
+    const PRO_LIST = ['📈 Statistiques avancées','💼 Clients & Devis PDF',
+      '📷 Rapport + photos','🎬 Replay vol DJI','📁 Logs DJI','🗜️ Export ZIP'];
+
+    document.body.innerHTML = `
+      <div style="max-width:380px;width:100%;padding:24px;text-align:center;">
+        <div style="font-size:52px;margin-bottom:12px;">🔒</div>
+        <div style="font-size:20px;font-weight:900;color:#0C447C;margin-bottom:8px;">${{LABELS[feat]||feat}}</div>
+        <div style="display:inline-block;background:${{planBg}};color:${{planColor}};padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px;">Nécessite ${{planLabel}}</div>
+        <div style="background:#fff;border:1px solid #D0DCF0;border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">
+          <div style="font-size:11px;font-weight:700;color:#5A6478;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">⭐ Standard — 9,99€/mois</div>
+          ${{STD_LIST.map(f=>`<div style="font-size:12px;padding:3px 0;border-bottom:1px solid #F0F4FA;">${{f}}</div>`).join('')}}
+        </div>
+        ${{needPro?`<div style="background:#fff;border:1px solid #D0DCF0;border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;"><div style="font-size:11px;font-weight:700;color:#5A6478;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🏆 Pro — 19,99€/mois</div>${{[...STD_LIST,...PRO_LIST].map(f=>`<div style="font-size:12px;padding:3px 0;border-bottom:1px solid #F0F4FA;">${{f}}</div>`).join('')}}</div>`:'}}
+        <a href="activation.html" style="display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border-radius:12px;padding:14px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px;">🔓 Activer ma licence</a>
+        <a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour à l'accueil</a>
+        <div style="margin-top:14px;font-size:10px;color:#5A6478;">© 2026 Philippe CONTE · UAS Manager</div>
+      </div>`;
+    // Stopper l'exécution du reste de la page
+    document.addEventListener('DOMContentLoaded', function(e){{ e.stopImmediatePropagation(); }}, true);
+  }}
+}})();
+</script>
+<script>
+/* UAS Manager — Vérification licence — © 2026 Philippe CONTE */
+(function() {
+  var VALID_HASHES = {
+    '661167d03b591c0664d0de4de5ebb5111e8a21ccce81072b8c18dfc3b8b6911e': 'personal',
+    '79748d392f53f3094c2e0590b7d030a325764a341740ccd646d2880dd11b1f52': 'personal',
+    'b38959260809305837807838f60d963e982a92f39ec23e7ee1c7875db10b9c9f': 'standard'
+  };
+  var STD = ['maintenance','rex','notification','planificateur','briefing','dashboard','alertes','bilans','formations'];
+  var PRO = ['statistiques','clients','rapport','replay','dji_logs','export_zip'];
+  var FEAT = 'rapport';
+
+  function getPlan() {
+    try {
+      var raw = localStorage.getItem('uas_license');
+      if (!raw) return 'free';
+      var l = JSON.parse(raw);
+      if (l.expires && l.expires !== '2099-12-31' && new Date(l.expires) < new Date()) return 'free';
+      if (l.hash && VALID_HASHES[l.hash]) return VALID_HASHES[l.hash];
+      return 'free';
+    } catch(e) { return 'free'; }
+  }
+
+  function canAccess(f) {
+    var p = getPlan();
+    if (p === 'personal') return true;
+    if (p === 'pro')      return true;
+    if (p === 'standard') return STD.includes(f);
+    return false;
+  }
+
+  if (!canAccess(FEAT)) {
+    var needPro   = PRO.includes(FEAT);
+    var planLabel = needPro ? '🏆 Pro — 19,99€/mois' : '⭐ Standard — 9,99€/mois';
+    var planColor = needPro ? '#1D6B37' : '#BA7517';
+    var planBg    = needPro ? '#E8F5E9' : '#FAEEDA';
+    var stdList   = ['✈️ Vols illimités','🔧 Maintenance','⚠️ REX / Incidents','📋 Notification AlphaTango','🗓️ Planificateur','🌤️ Briefing GO/NO-GO','📊 Dashboard','🔔 Alertes','📅 Bilans','🎓 Formations'];
+    var proList   = ['📈 Statistiques avancées','💼 Clients & Devis PDF','📷 Rapport + photos','🎬 Replay vol DJI','📁 Logs DJI','🗜️ Export ZIP'];
+    var allList   = needPro ? stdList.concat(proList) : stdList;
+
+    document.documentElement.style.cssText = 'height:100%;';
+    document.body.style.cssText = 'margin:0;padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F0F4FA;font-family:-apple-system,sans-serif;';
+
+    var html = '<div style="max-width:380px;width:100%;padding:24px;text-align:center;">'
+      + '<div style="font-size:52px;margin-bottom:12px;">🔒</div>'
+      + '<div style="font-size:20px;font-weight:900;color:#0C447C;margin-bottom:8px;">📷 Rapport de mission</div>'
+      + '<div style="display:inline-block;background:' + planBg + ';color:' + planColor + ';padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px;">Nécessite ' + planLabel + '</div>'
+      + '<div style="background:#fff;border:1px solid #D0DCF0;border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">'
+      + '<div style="font-size:11px;font-weight:700;color:#5A6478;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">' + planLabel + '</div>'
+      + allList.map(function(f) { return '<div style="font-size:12px;padding:3px 0;border-bottom:1px solid #F0F4FA;">' + f + '</div>'; }).join('')
+      + '</div>'
+      + '<a href="activation.html" style="display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border-radius:12px;padding:14px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px;">🔓 Activer ma licence</a>'
+      + '<a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour à l\'accueil</a>'
+      + '<div style="margin-top:14px;font-size:10px;color:#5A6478;">© 2026 Philippe CONTE · UAS Manager</div>'
+      + '</div>';
+
+    document.body.innerHTML = html;
+    throw new Error('UAS_LICENSE_REQUIRED');
+  }
+})();
+</script>
 </head>
 <body>
 <header id="header">
@@ -763,6 +916,14 @@ ${photosHTML}
 ${sigHTML}
 
 <div class="footer">${c.nom||'CONTE Philippe'} · ${c.alphatango||'FRAjqq48j12nfy4c'} · ${drone} · Rapport ${num}</div>
+
+  <!-- COPYRIGHT FOOTER -->
+  <div class="copyright-footer">
+    <div class="cf-app">UAS Manager</div>
+    <div class="cf-author">© 2026 Philippe CONTE · Thyez, Haute-Savoie</div>
+    <div class="cf-copy">contephil74@gmail.com · Tous droits réservés</div>
+  </div>
+
 </body></html>`);
   win.document.close();
   setTimeout(()=>win.print(),600);
@@ -816,5 +977,13 @@ function showToast(msg,type=''){
 load();
 renderList();
 </script>
+
+  <!-- COPYRIGHT FOOTER -->
+  <div class="copyright-footer">
+    <div class="cf-app">UAS Manager</div>
+    <div class="cf-author">© 2026 Philippe CONTE · Thyez, Haute-Savoie</div>
+    <div class="cf-copy">contephil74@gmail.com · Tous droits réservés</div>
+  </div>
+
 </body>
 </html>

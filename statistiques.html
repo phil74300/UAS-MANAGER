@@ -196,6 +196,67 @@ html,body{min-height:100%;font-family:-apple-system,'SF Pro Text',BlinkMacSystem
   }}
 }})();
 </script>
+<script>
+/* UAS Manager — Vérification licence — © 2026 Philippe CONTE */
+(function() {
+  var VALID_HASHES = {
+    '661167d03b591c0664d0de4de5ebb5111e8a21ccce81072b8c18dfc3b8b6911e': 'personal',
+    '79748d392f53f3094c2e0590b7d030a325764a341740ccd646d2880dd11b1f52': 'personal',
+    'b38959260809305837807838f60d963e982a92f39ec23e7ee1c7875db10b9c9f': 'standard'
+  };
+  var STD = ['maintenance','rex','notification','planificateur','briefing','dashboard','alertes','bilans','formations'];
+  var PRO = ['statistiques','clients','rapport','replay','dji_logs','export_zip'];
+  var FEAT = 'statistiques';
+
+  function getPlan() {
+    try {
+      var raw = localStorage.getItem('uas_license');
+      if (!raw) return 'free';
+      var l = JSON.parse(raw);
+      if (l.expires && l.expires !== '2099-12-31' && new Date(l.expires) < new Date()) return 'free';
+      if (l.hash && VALID_HASHES[l.hash]) return VALID_HASHES[l.hash];
+      return 'free';
+    } catch(e) { return 'free'; }
+  }
+
+  function canAccess(f) {
+    var p = getPlan();
+    if (p === 'personal') return true;
+    if (p === 'pro')      return true;
+    if (p === 'standard') return STD.includes(f);
+    return false;
+  }
+
+  if (!canAccess(FEAT)) {
+    var needPro   = PRO.includes(FEAT);
+    var planLabel = needPro ? '🏆 Pro — 19,99€/mois' : '⭐ Standard — 9,99€/mois';
+    var planColor = needPro ? '#1D6B37' : '#BA7517';
+    var planBg    = needPro ? '#E8F5E9' : '#FAEEDA';
+    var stdList   = ['✈️ Vols illimités','🔧 Maintenance','⚠️ REX / Incidents','📋 Notification AlphaTango','🗓️ Planificateur','🌤️ Briefing GO/NO-GO','📊 Dashboard','🔔 Alertes','📅 Bilans','🎓 Formations'];
+    var proList   = ['📈 Statistiques avancées','💼 Clients & Devis PDF','📷 Rapport + photos','🎬 Replay vol DJI','📁 Logs DJI','🗜️ Export ZIP'];
+    var allList   = needPro ? stdList.concat(proList) : stdList;
+
+    document.documentElement.style.cssText = 'height:100%;';
+    document.body.style.cssText = 'margin:0;padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F0F4FA;font-family:-apple-system,sans-serif;';
+
+    var html = '<div style="max-width:380px;width:100%;padding:24px;text-align:center;">'
+      + '<div style="font-size:52px;margin-bottom:12px;">🔒</div>'
+      + '<div style="font-size:20px;font-weight:900;color:#0C447C;margin-bottom:8px;">📈 Statistiques avancées</div>'
+      + '<div style="display:inline-block;background:' + planBg + ';color:' + planColor + ';padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px;">Nécessite ' + planLabel + '</div>'
+      + '<div style="background:#fff;border:1px solid #D0DCF0;border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">'
+      + '<div style="font-size:11px;font-weight:700;color:#5A6478;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">' + planLabel + '</div>'
+      + allList.map(function(f) { return '<div style="font-size:12px;padding:3px 0;border-bottom:1px solid #F0F4FA;">' + f + '</div>'; }).join('')
+      + '</div>'
+      + '<a href="activation.html" style="display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border-radius:12px;padding:14px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px;">🔓 Activer ma licence</a>'
+      + '<a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour à l\'accueil</a>'
+      + '<div style="margin-top:14px;font-size:10px;color:#5A6478;">© 2026 Philippe CONTE · UAS Manager</div>'
+      + '</div>';
+
+    document.body.innerHTML = html;
+    throw new Error('UAS_LICENSE_REQUIRED');
+  }
+})();
+</script>
 </head>
 <body>
 <header id="header">
