@@ -123,7 +123,21 @@
   /* ─── TOAST ─── */
   #toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;white-space:nowrap;transition:transform .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none;}
   #toast.visible{transform:translateX(-50%) translateY(0);}
+
+  /* ─── BADGES PLAN SUR LES CARTES ─── */
+  .mod-card .lock-badge{
+    position:absolute;top:8px;right:8px;
+    font-size:9px;font-weight:700;
+    padding:2px 7px;border-radius:8px;
+    z-index:2;
+  }
+  .lock-std{ background:var(--light-amber);color:var(--amber); }
+  .lock-pro{ background:var(--light-green);color:var(--green); }
+  .mod-card.locked{ opacity:.6; }
+  .mod-card.locked::after{ content:''; }
+
 </style>
+<script src="license.js"></script>
 </head>
 <body>
 
@@ -169,7 +183,7 @@
       <div class="mod-label">Carnet de vol</div>
       <div class="mod-desc">Enregistrement & suivi des vols</div>
     </a>
-    <a class="mod-card c-green" href="maintenance.html">
+    <a class="mod-card c-green" href="maintenance.html" class="mod-locked-std">
       <div class="mod-icon">🔧</div>
       <div class="mod-label">Maintenance</div>
       <div class="mod-desc">Interventions & suivi UAS</div>
@@ -179,7 +193,7 @@
       <div class="mod-label">Check-list</div>
       <div class="mod-desc">Pré-vol · Post-vol · Urgence</div>
     </a>
-    <a class="mod-card c-red" href="rex.html">
+    <a class="mod-card c-red" href="rex.html" class="mod-locked-std">
       <div class="mod-icon">⚠️</div>
       <div class="mod-label">REX / Incidents</div>
       <div class="mod-desc">Retours d'expérience</div>
@@ -199,7 +213,7 @@
       <div class="mod-label">Zones de vol</div>
       <div class="mod-desc">Géoportail · Zones UAS · GPS pilote</div>
     </a>
-    <a class="mod-card c-blue" href="notification.html">
+    <a class="mod-card c-blue" href="notification.html" class="mod-locked-std">
       <div class="mod-icon">📋</div>
       <div class="mod-label">Notification vol</div>
       <div class="mod-desc">AlphaTango · Préfecture · Récapitulatif</div>
@@ -208,42 +222,42 @@
 
   <div class="sec-title">Nouveaux modules</div>
   <div class="grid-2">
-    <a class="mod-card c-navy" href="dashboard.html">
+    <a class="mod-card c-navy" href="dashboard.html" class="mod-locked-std">
       <div class="mod-icon">📊</div>
       <div class="mod-label">Tableau de bord</div>
       <div class="mod-desc">KPIs · Alertes · Graphiques · Flotte</div>
     </a>
-    <a class="mod-card c-teal" href="briefing.html">
+    <a class="mod-card c-teal" href="briefing.html" class="mod-locked-std">
       <div class="mod-icon">🌤️</div>
       <div class="mod-label">Briefing pré-vol</div>
       <div class="mod-desc">GO/NO-GO · METAR · TAF · Rose des vents</div>
     </a>
-    <a class="mod-card c-green" href="clients.html">
+    <a class="mod-card c-green" href="clients.html" class="mod-locked-pro">
       <div class="mod-icon">💼</div>
       <div class="mod-label">Clients & Devis</div>
       <div class="mod-desc">Gestion clients · Devis PDF · Facturation</div>
     </a>
-    <a class="mod-card c-blue" href="planificateur.html">
+    <a class="mod-card c-blue" href="planificateur.html" class="mod-locked-std">
       <div class="mod-icon">🗓️</div>
       <div class="mod-label">Planificateur</div>
       <div class="mod-desc">Calendrier missions · Rappels · Suivi</div>
     </a>
-    <a class="mod-card c-amber" href="rapport.html">
+    <a class="mod-card c-amber" href="rapport.html" class="mod-locked-pro">
       <div class="mod-icon">📷</div>
       <div class="mod-label">Rapport de mission</div>
       <div class="mod-desc">Photos · Constat · Signature · PDF</div>
     </a>
-    <a class="mod-card c-teal" href="replay.html">
+    <a class="mod-card c-teal" href="replay.html" class="mod-locked-pro">
       <div class="mod-icon">🎬</div>
       <div class="mod-label">Replay de vol</div>
       <div class="mod-desc">Telemetry DJI · Carte · Altitude · Vitesse</div>
     </a>
-    <a class="mod-card c-red" href="alertes.html">
+    <a class="mod-card c-red" href="alertes.html" class="mod-locked-std">
       <div class="mod-icon">🔔</div>
       <div class="mod-label">Alertes & Rappels</div>
       <div class="mod-desc">Échéances · Notifications · Rappels iOS</div>
     </a>
-    <a class="mod-card c-green" href="statistiques.html">
+    <a class="mod-card c-green" href="statistiques.html" class="mod-locked-pro">
       <div class="mod-icon">📈</div>
       <div class="mod-label">Statistiques</div>
       <div class="mod-desc">Graphiques · Heatmap · Records · CA</div>
@@ -257,17 +271,17 @@
 
   <div class="sec-title">Bilans & analyses</div>
   <div class="grid-2">
-    <a class="mod-card c-blue" href="bilans.html">
+    <a class="mod-card c-blue" href="bilans.html" class="mod-locked-std">
       <div class="mod-icon">📊</div>
       <div class="mod-label">Bilans</div>
       <div class="mod-desc">Mensuel · Annuel · Synthèse</div>
     </a>
-    <a class="mod-card c-green" href="formations.html">
+    <a class="mod-card c-green" href="formations.html" class="mod-locked-std">
       <div class="mod-icon">🎓</div>
       <div class="mod-label">Formations</div>
       <div class="mod-desc">Qualifications & suivi</div>
     </a>
-    <a class="mod-card c-amber" href="dji_logs.html">
+    <a class="mod-card c-amber" href="dji_logs.html" class="mod-locked-pro">
       <div class="mod-icon">📁</div>
       <div class="mod-label">Logs DJI</div>
       <div class="mod-desc">Import & analyse des vols DJI</div>
@@ -285,11 +299,48 @@
   </div>
 
   <div class="version" id="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
+
+  <!-- COPYRIGHT -->
+  <div style="text-align:center;margin-top:10px;padding:14px 16px;border-top:1px solid var(--border);">
+    <div style="font-size:13px;font-weight:800;color:var(--navy);letter-spacing:-.2px;">UAS Manager</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">
+      Conçu & développé par <strong style="color:var(--text);">Philippe CONTE</strong>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
+      Opérateur UAS · Thyez, Haute-Savoie · France
+    </div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:6px;letter-spacing:.3px;">
+      © 2026 Philippe CONTE · Tous droits réservés
+    </div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">
+      <a href="mailto:contephil74@gmail.com" style="color:var(--blue);text-decoration:none;font-weight:600;">contephil74@gmail.com</a>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
+      <span style="font-size:9px;background:var(--light-blue);color:var(--blue);padding:3px 8px;border-radius:10px;font-weight:700;">PWA · iOS Safari</span>
+      <span style="font-size:9px;background:var(--light-green);color:var(--green);padding:3px 8px;border-radius:10px;font-weight:700;">RGPD Conforme</span>
+      <span style="font-size:9px;background:var(--light-amber);color:var(--amber);padding:3px 8px;border-radius:10px;font-weight:700;">EASA · DGAC</span>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
+// ─── VÉRIFICATION LICENCE ────────────────────────────────
+// Mode Free automatique si pas de licence — pas de redirection forcée
+(function checkLicense(){
+  try{
+    const raw = localStorage.getItem('uas_license');
+    if(raw){
+      const l = JSON.parse(raw);
+      if(l.expires && new Date(l.expires) < new Date()){
+        localStorage.removeItem('uas_license');
+      }
+    }
+    // Si aucune licence = plan Free (pas de redirection)
+  }catch{ localStorage.removeItem('uas_license'); }
+})();
+
 // ─── UTILS ───────────────────────────────────────────────
 function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
 
@@ -379,6 +430,59 @@ function checkAlerts(c){
 
 // ─── INIT ────────────────────────────────────────────────
 loadAvatar();
+
+// ─── BADGES LICENCE SUR LES CARTES ──────────────────────
+function applyLockBadges(){
+  if(typeof UAS_LICENSE === 'undefined') return;
+  const plan = UAS_LICENSE.getPlan();
+
+  document.querySelectorAll('.mod-locked-std').forEach(card => {
+    if(!['standard','pro','personal'].includes(plan)){
+      card.classList.add('locked');
+      if(!card.querySelector('.lock-badge')){
+        const b = document.createElement('div');
+        b.className = 'lock-badge lock-std';
+        b.textContent = '⭐ Standard';
+        card.appendChild(b);
+      }
+    }
+  });
+
+  document.querySelectorAll('.mod-locked-pro').forEach(card => {
+    if(!['pro','personal'].includes(plan)){
+      card.classList.add('locked');
+      if(!card.querySelector('.lock-badge')){
+        const b = document.createElement('div');
+        b.className = 'lock-badge lock-pro';
+        b.textContent = '🏆 Pro';
+        card.appendChild(b);
+      }
+    }
+  });
+
+  // Badge plan dans le header pilote
+  const cats = document.getElementById('hdr-cats');
+  if(cats && plan !== 'free'){
+    const meta = UAS_LICENSE.PLANS_META[plan];
+    const planBadge = document.createElement('div');
+    planBadge.style.cssText = `background:${meta.bg};color:${meta.color};padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0;margin-left:6px;`;
+    planBadge.textContent = meta.icon + ' ' + meta.label;
+    cats.parentNode.insertBefore(planBadge, cats.nextSibling);
+  }
+
+  // Bouton "Activer / Mettre à niveau" si plan Free
+  if(plan === 'free'){
+    const upgradeBtn = document.createElement('a');
+    upgradeBtn.href = 'activation.html';
+    upgradeBtn.style.cssText = 'display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;text-align:center;padding:13px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:12px;';
+    upgradeBtn.innerHTML = '🔓 Activer une licence — Standard 6,99€/mois · Pro 19,99€/mois';
+    const content = document.getElementById('content');
+    if(content) content.insertBefore(upgradeBtn, content.firstChild);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', applyLockBadges);
+
 loadConfig();
 window.addEventListener('storage',e=>{
   if(e.key==='uas_config'||e.key==='uas_config_updated') loadConfig();
