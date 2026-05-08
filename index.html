@@ -300,15 +300,15 @@
   <div class="version" id="version-line">UAS Manager v1.0 · MANEX V5.1 · PDRA-S01/S02</div>
 
   <!-- COPYRIGHT -->
-  <div style="text-align:center;margin-top:10px;padding:14px 16px;border-top:1px solid var(--border);">
+  <div style="text-align:center;margin-top:10px;padding:14px 16px;border-top:1px solid var(--border);" id="secret-zone">
     <div style="font-size:13px;font-weight:800;color:var(--navy);letter-spacing:-.2px;">UAS Manager</div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">
-      Conçu & développé par <strong style="color:var(--text);">Philippe CONTE</strong>
+      Conçu &amp; développé par <strong style="color:var(--text);">Philippe CONTE</strong>
     </div>
     <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
       Opérateur UAS · Thyez, Haute-Savoie · France
     </div>
-    <div style="font-size:10px;color:var(--text-muted);margin-top:6px;letter-spacing:.3px;">
+    <div style="font-size:10px;color:var(--text-muted);margin-top:6px;letter-spacing:.3px;" id="tap-target" onclick="secretTap()">
       © 2026 Philippe CONTE · Tous droits réservés
     </div>
     <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">
@@ -319,6 +319,7 @@
       <span style="font-size:9px;background:var(--light-green);color:var(--green);padding:3px 8px;border-radius:10px;font-weight:700;">RGPD Conforme</span>
       <span style="font-size:9px;background:var(--light-amber);color:var(--amber);padding:3px 8px;border-radius:10px;font-weight:700;">EASA · DGAC</span>
     </div>
+    <div id="secret-dots" style="margin-top:6px;height:8px;display:flex;align-items:center;justify-content:center;gap:3px;"></div>
   </div>
 </div>
 
@@ -487,6 +488,79 @@ window.addEventListener('storage',e=>{
   if(e.key==='uas_config'||e.key==='uas_config_updated') loadConfig();
   if(e.key==='uas_avatar') loadAvatar();
 });
+</script>
+
+<script>
+// ═══ ACCÈS SECRET KEYGEN ═══
+// Tapper 7x sur le copyright pour accéder au générateur de licences
+var _tapCount = 0;
+var _tapTimer = null;
+
+function secretTap() {
+  _tapCount++;
+  
+  // Afficher les points de progression
+  var dots = document.getElementById('secret-dots');
+  if (dots) {
+    dots.innerHTML = Array(_tapCount).fill('<span style="width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block;"></span>').join('');
+  }
+  
+  // Reset après 3 secondes d'inactivité
+  clearTimeout(_tapTimer);
+  _tapTimer = setTimeout(function() {
+    _tapCount = 0;
+    var dots = document.getElementById('secret-dots');
+    if (dots) dots.innerHTML = '';
+  }, 3000);
+  
+  // 7 taps = accès keygen
+  if (_tapCount >= 7) {
+    _tapCount = 0;
+    if (dots) dots.innerHTML = '';
+    clearTimeout(_tapTimer);
+    
+    // Vérifier que c'est bien Philippe CONTE
+    var raw = localStorage.getItem('uas_license');
+    var isCreator = false;
+    if (raw) {
+      try {
+        var l = JSON.parse(raw);
+        var creatorHashes = [
+          'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
+          'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
+          '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb',
+        ];
+        isCreator = l.hash && creatorHashes.indexOf(l.hash) >= 0;
+      } catch(e) {}
+    }
+    
+    if (isCreator) {
+      // Accès direct — créateur identifié
+      window.location.href = 'keygen.html';
+    } else {
+      // Demander la clé maître
+      var input = prompt('🔐 Accès administrateur
+
+Entrez votre clé maître :');
+      if (input) {
+        var key = input.trim().toUpperCase();
+        crypto.subtle.digest('SHA-256', new TextEncoder().encode(key)).then(function(buf) {
+          var hash = Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          var masterHashes = [
+            'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
+            'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
+            '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb',
+          ];
+          if (masterHashes.indexOf(hash) >= 0) {
+            window.location.href = 'keygen.html';
+          } else {
+            alert('❌ Clé incorrecte');
+          }
+        });
+      }
+    }
+  }
+}
 </script>
 </body>
 </html>
