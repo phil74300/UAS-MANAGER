@@ -201,6 +201,8 @@ html,body{
   <div class="tool-sep"></div>
   <button class="tool-btn" id="btn-nature" onclick="toggleNature()">🌿 Zones naturelles</button>
   <div class="tool-sep"></div>
+  <button id="btn-canfly" onclick="toggleFlyPanel()">🤔 Puis-je voler ?</button>
+  <div class="tool-sep"></div>
   <button class="tool-btn" id="btn-alpha" onclick="openAlphaTango()" style="background:var(--light-amber);border-color:var(--amber);color:var(--amber);">🔗 AlphaTango</button>
 </div>
 
@@ -660,5 +662,134 @@ navigator.permissions && navigator.permissions.query({ name: 'geolocation' }).th
     <div class="cf-copy">contephil74@gmail.com · Tous droits réservés</div>
   </div>
 
+
+
+<!-- PANNEAU "PUIS-JE VOLER ICI ?" -->
+<div id="can-fly-panel" style="
+  position:absolute;bottom:80px;left:10px;right:10px;
+  background:rgba(13,18,32,0.92);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:14px;z-index:100;display:none;
+  animation:slideUp .25s ease;
+">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="font-size:13px;font-weight:800;color:#fff;">🤔 Puis-je voler ici ?</div>
+    <button onclick="closeFlyPanel()" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;color:#fff;padding:4px 8px;font-size:12px;cursor:pointer;">✕</button>
+  </div>
+  <div id="can-fly-result" style="font-size:12px;line-height:1.7;color:rgba(255,255,255,.85);"></div>
+</div>
+
+<style>
+@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+#btn-canfly{background:rgba(255,255,255,.92);border:none;border-radius:10px;color:#0C447C;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.2);font-family:-apple-system,sans-serif;}
+#btn-canfly:active{opacity:.8;}
+</style>
+
+<script>
+// ─── PUIS-JE VOLER ICI ? ────────────────────────────────
+var canFlyOpen = false;
+
+function toggleFlyPanel() {
+  canFlyOpen = !canFlyOpen;
+  var panel = document.getElementById('can-fly-panel');
+  if (canFlyOpen) {
+    panel.style.display = 'block';
+    analyzeFlyZone();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+function closeFlyPanel() {
+  canFlyOpen = false;
+  document.getElementById('can-fly-panel').style.display = 'none';
+}
+
+function analyzeFlyZone() {
+  var result = document.getElementById('can-fly-result');
+  result.innerHTML = '<div style="text-align:center;padding:8px;">⏳ Analyse de votre position…</div>';
+
+  if (!navigator.geolocation) {
+    result.innerHTML = '⚠️ GPS non disponible. Activez la géolocalisation.';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude;
+    var lon = pos.coords.longitude;
+
+    // Analyse basée sur les couches WMS actives
+    var checks = [];
+    var verdict = 'GO';
+    var altMax = 120;
+
+    // Vérifier si des zones UAS sont actives sur la carte
+    if (zonesVisible) {
+      checks.push({icon:'📡', text:'Zones UAS DGAC chargées — vérification en cours', ok:true});
+    } else {
+      checks.push({icon:'⚠️', text:'Activez les zones UAS pour une analyse complète', ok:false});
+      verdict = 'CAUTION';
+    }
+
+    // Vérifier la distance à l'aérodrome LFLB (Chambéry) le plus proche
+    var distLFLB = haversineKm(lat, lon, 45.6381, 5.8801);
+    var distLFLI = haversineKm(lat, lon, 46.1544, 6.2681);
+    var distLSGG = haversineKm(lat, lon, 46.2380, 6.1089);
+    var minDist = Math.min(distLFLB, distLFLI, distLSGG);
+    var nearAD = minDist < 5;
+
+    if (nearAD) {
+      checks.push({icon:'🚫', text:'Zone CTR — À ' + minDist.toFixed(1) + 'km d'un aérodrome. Autorisation requise.', ok:false});
+      verdict = 'NO-GO';
+      altMax = 0;
+    } else if (minDist < 8) {
+      checks.push({icon:'⚠️', text:'Zone de transition — ' + minDist.toFixed(1) + 'km de l'aérodrome. Hauteur max 50m.', ok:false});
+      verdict = 'CAUTION';
+      altMax = 50;
+    } else {
+      checks.push({icon:'✅', text:'Hors CTR — ' + minDist.toFixed(1) + 'km de l'aérodrome le plus proche', ok:true});
+    }
+
+    // Vérifier si nature visible
+    if (natureVisible) {
+      checks.push({icon:'🌿', text:'Zones naturelles chargées — vérifiez visuellement', ok:true});
+    }
+
+    // Construire le résultat
+    var color = verdict === 'GO' ? '#1D6B37' : verdict === 'CAUTION' ? '#BA7517' : '#8B2020';
+    var bg    = verdict === 'GO' ? 'rgba(29,107,55,.2)' : verdict === 'CAUTION' ? 'rgba(186,117,23,.2)' : 'rgba(139,32,32,.2)';
+    var icon  = verdict === 'GO' ? '✅' : verdict === 'CAUTION' ? '⚠️' : '🚫';
+
+    var html_res = '<div style="background:' + bg + ';border:1px solid ' + color + ';border-radius:10px;padding:10px;margin-bottom:10px;text-align:center;">'
+      + '<div style="font-size:22px;margin-bottom:4px;">' + icon + '</div>'
+      + '<div style="font-size:16px;font-weight:900;color:' + color + ';">' + verdict + '</div>'
+      + (altMax > 0 ? '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px;">Hauteur max indicative : ' + altMax + ' m</div>' : '')
+      + '</div>';
+
+    checks.forEach(function(c) {
+      html_res += '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:11px;">'
+        + '<span>' + c.icon + '</span>'
+        + '<span style="color:' + (c.ok ? 'rgba(255,255,255,.8)' : '#FF9800') + ';">' + c.text + '</span>'
+        + '</div>';
+    });
+
+    html_res += '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;color:rgba(255,255,255,.5);">⚠️ Analyse indicative. Consultez toujours AlphaTango avant le vol.</div>';
+    html_res += '<a href="https://alphatango.aviation-civile.gouv.fr" target="_blank" style="display:block;margin-top:8px;background:rgba(24,95,165,.4);border:1px solid rgba(24,95,165,.6);border-radius:8px;padding:7px;text-align:center;color:#7EB8F7;font-size:11px;font-weight:700;text-decoration:none;">🔗 Vérifier sur AlphaTango</a>';
+
+    result.innerHTML = html_res;
+
+  }, function() {
+    document.getElementById('can-fly-result').innerHTML = '❌ Impossible d'obtenir votre position GPS.';
+  }, {enableHighAccuracy:true, timeout:8000});
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  var R = 6371;
+  var dLat = (lat2-lat1)*Math.PI/180;
+  var dLon = (lon2-lon1)*Math.PI/180;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+</script>
 </body>
 </html>

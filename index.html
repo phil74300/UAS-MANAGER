@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_17.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -136,6 +136,23 @@
   .mod-card.locked{ opacity:.6; }
   .mod-card.locked::after{ content:''; }
 
+
+  /* ─── BADGES PLAN CARTES ─── */
+  .mod-card{position:relative;}
+  .plan-badge{
+    position:absolute;top:7px;right:7px;
+    font-size:9px;font-weight:700;padding:2px 7px;
+    border-radius:8px;z-index:2;pointer-events:none;
+    white-space:nowrap;
+  }
+  .pb-free    {background:#F0F4FA;color:#5A6478;border:1px solid #D0DCF0;}
+  .pb-standard{background:#FAEEDA;color:#BA7517;}
+  .pb-pro     {background:#E8F5E9;color:#1D6B37;}
+  .pb-vip     {background:#EDE7F6;color:#5C35A0;}
+  .pb-personal{background:#E6F1FB;color:#185FA5;}
+  .mod-card.locked-card{opacity:0.55;}
+  .mod-card.locked-card .plan-badge{background:var(--light-red);color:var(--red);}
+
 </style>
 </head>
 <body>
@@ -149,14 +166,14 @@
       <h1>Tableau de<br><span>bord opérateur</span></h1>
       <p class="header-sub">Gestion des vols UAS · PDRA-S01 / PDRA-S02</p>
     </div>
-    <a id="btn-config" href="file:///Users/contephilippe/Downloads/config.html" title="Configuration">⚙️</a>
+    <a id="btn-config" href="config.html" title="Configuration">⚙️</a>
   </div>
 
   <!-- Bande pilote : avatar + infos -->
   <div class="pilot-strip">
     <!-- Avatar cliquable → changer la photo -->
-    <div class="pilot-avatar-wrap" onclick="document.getElementById(&#39;avatar-input&#39;).click()" title="Changer la photo">
-      <img id="pilot-avatar-img" class="pilot-avatar" src="file:///Users/contephilippe/Downloads/index_17.html" alt="👨‍✈️" onerror="this.style.display=&#39;none&#39;;document.getElementById(&#39;pilot-avatar-emoji&#39;).style.display=&#39;flex&#39;" style="display: none;">
+    <div class="pilot-avatar-wrap" onclick="document.getElementById('avatar-input').click()" title="Changer la photo">
+      <img id="pilot-avatar-img" class="pilot-avatar" src="" alt="👨‍✈️" onerror="this.style.display='none';document.getElementById('pilot-avatar-emoji').style.display='flex'">
       <div id="pilot-avatar-emoji" class="pilot-avatar" style="display:flex;align-items:center;justify-content:center;">👨‍✈️</div>
       <div class="avatar-edit-badge">✏️</div>
     </div>
@@ -177,42 +194,42 @@
 
   <div class="sec-title">Modules opérationnels</div>
   <div class="grid-2">
-    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/vols.html">
+    <a class="mod-card c-blue" href="vols.html">
       <div class="mod-icon">✈️</div>
       <div class="mod-label">Carnet de vol</div>
-      <div class="mod-desc">Enregistrement &amp; suivi des vols</div>
+      <div class="mod-desc">Enregistrement & suivi des vols</div>
     </a>
-    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/maintenance.html">
+    <a class="mod-card c-green" href="maintenance.html" class="mod-locked-std">
       <div class="mod-icon">🔧</div>
       <div class="mod-label">Maintenance</div>
-      <div class="mod-desc">Interventions &amp; suivi UAS</div>
+      <div class="mod-desc">Interventions & suivi UAS</div>
     </a>
-    <a class="mod-card c-amber" href="file:///Users/contephilippe/Downloads/checklist.html">
+    <a class="mod-card c-amber" href="checklist.html">
       <div class="mod-icon">☑️</div>
       <div class="mod-label">Check-list</div>
       <div class="mod-desc">Pré-vol · Post-vol · Urgence</div>
     </a>
-    <a class="mod-card c-red" href="file:///Users/contephilippe/Downloads/rex.html">
+    <a class="mod-card c-red" href="rex.html" class="mod-locked-std">
       <div class="mod-icon">⚠️</div>
       <div class="mod-label">REX / Incidents</div>
       <div class="mod-desc">Retours d'expérience</div>
     </a>
-    <a class="mod-card c-teal" href="file:///Users/contephilippe/Downloads/meteo.html">
+    <a class="mod-card c-teal" href="meteo.html">
       <div class="mod-icon">🌦️</div>
-      <div class="mod-label">Météo &amp; NOTAM</div>
+      <div class="mod-label">Météo & NOTAM</div>
       <div class="mod-desc">METAR · TAF · Briefing SIA</div>
     </a>
-    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/adsb.html">
+    <a class="mod-card c-navy" href="adsb.html">
       <div class="mod-icon">📡</div>
       <div class="mod-label">ADS-B Trafic</div>
       <div class="mod-desc">Carte aéronefs temps réel</div>
     </a>
-    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/zones.html">
+    <a class="mod-card c-green" href="zones.html">
       <div class="mod-icon">🗺️</div>
       <div class="mod-label">Zones de vol</div>
       <div class="mod-desc">Géoportail · Zones UAS · GPS pilote</div>
     </a>
-    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/notification.html">
+    <a class="mod-card c-blue" href="notification.html" class="mod-locked-std">
       <div class="mod-icon">📋</div>
       <div class="mod-label">Notification vol</div>
       <div class="mod-desc">AlphaTango · Préfecture · Récapitulatif</div>
@@ -221,69 +238,69 @@
 
   <div class="sec-title">Nouveaux modules</div>
   <div class="grid-2">
-    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/dashboard.html">
+    <a class="mod-card c-navy" href="dashboard.html" class="mod-locked-std">
       <div class="mod-icon">📊</div>
       <div class="mod-label">Tableau de bord</div>
       <div class="mod-desc">KPIs · Alertes · Graphiques · Flotte</div>
     </a>
-    <a class="mod-card c-teal" href="file:///Users/contephilippe/Downloads/briefing.html">
+    <a class="mod-card c-teal" href="briefing.html" class="mod-locked-std">
       <div class="mod-icon">🌤️</div>
       <div class="mod-label">Briefing pré-vol</div>
       <div class="mod-desc">GO/NO-GO · METAR · TAF · Rose des vents</div>
     </a>
-    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/clients.html">
+    <a class="mod-card c-green" href="clients.html" class="mod-locked-pro">
       <div class="mod-icon">💼</div>
-      <div class="mod-label">Clients &amp; Devis</div>
+      <div class="mod-label">Clients & Devis</div>
       <div class="mod-desc">Gestion clients · Devis PDF · Facturation</div>
     </a>
-    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/planificateur.html">
+    <a class="mod-card c-blue" href="planificateur.html" class="mod-locked-std">
       <div class="mod-icon">🗓️</div>
       <div class="mod-label">Planificateur</div>
       <div class="mod-desc">Calendrier missions · Rappels · Suivi</div>
     </a>
-    <a class="mod-card c-amber" href="file:///Users/contephilippe/Downloads/rapport.html">
+    <a class="mod-card c-amber" href="rapport.html" class="mod-locked-pro">
       <div class="mod-icon">📷</div>
       <div class="mod-label">Rapport de mission</div>
       <div class="mod-desc">Photos · Constat · Signature · PDF</div>
     </a>
-    <a class="mod-card c-teal" href="file:///Users/contephilippe/Downloads/replay.html">
+    <a class="mod-card c-teal" href="replay.html" class="mod-locked-pro">
       <div class="mod-icon">🎬</div>
       <div class="mod-label">Replay de vol</div>
       <div class="mod-desc">Telemetry DJI · Carte · Altitude · Vitesse</div>
     </a>
-    <a class="mod-card c-red" href="file:///Users/contephilippe/Downloads/alertes.html">
+    <a class="mod-card c-red" href="alertes.html" class="mod-locked-std">
       <div class="mod-icon">🔔</div>
-      <div class="mod-label">Alertes &amp; Rappels</div>
+      <div class="mod-label">Alertes & Rappels</div>
       <div class="mod-desc">Échéances · Notifications · Rappels iOS</div>
     </a>
-    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/statistiques.html">
+    <a class="mod-card c-green" href="statistiques.html" class="mod-locked-pro">
       <div class="mod-icon">📈</div>
       <div class="mod-label">Statistiques</div>
       <div class="mod-desc">Graphiques · Heatmap · Records · CA</div>
     </a>
-    <a class="mod-card c-navy" href="file:///Users/contephilippe/Downloads/rgpd.html">
+    <a class="mod-card c-navy" href="rgpd.html">
       <div class="mod-icon">🔒</div>
       <div class="mod-label">Confidentialité</div>
       <div class="mod-desc">RGPD · Export données · Politique</div>
     </a>
   </div>
 
-  <div class="sec-title">Bilans &amp; analyses</div>
+  <div class="sec-title">Bilans & analyses</div>
   <div class="grid-2">
-    <a class="mod-card c-blue" href="file:///Users/contephilippe/Downloads/bilans.html">
+    <a class="mod-card c-blue" href="bilans.html" class="mod-locked-std">
       <div class="mod-icon">📊</div>
       <div class="mod-label">Bilans</div>
       <div class="mod-desc">Mensuel · Annuel · Synthèse</div>
     </a>
-    <a class="mod-card c-green" href="file:///Users/contephilippe/Downloads/formations.html">
+    <a class="mod-card c-green" href="formations.html" class="mod-locked-std">
       <div class="mod-icon">🎓</div>
       <div class="mod-label">Formations</div>
-      <div class="mod-desc">Qualifications &amp; suivi</div>
+      <div class="mod-desc">Qualifications & suivi</div>
     </a>
-    <a class="mod-card c-amber" href="file:///Users/contephilippe/Downloads/dji_logs.html">
+    <a class="mod-card c-amber" href="dji_logs.html" class="mod-locked-pro">
       <div class="mod-icon">📁</div>
       <div class="mod-label">Logs DJI</div>
-      <div class="mod-desc">Import &amp; analyse des vols DJI</div>
+      <div class="mod-desc">Import & analyse des vols DJI</div>
     </a>
   </div>
 
@@ -314,7 +331,7 @@
       border-radius:10px;transition:background .15s;-webkit-touch-callout:none;
     ">
       © 2026 Philippe CONTE · Tous droits réservés
-    </div><div style="height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none;"><div style="height: 100%; width: 0%; background: var(--navy); border-radius: 2px; transition: none;"></div></div>
+    </div>
     <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">
       <a href="mailto:contephil74@gmail.com" style="color:var(--blue);text-decoration:none;font-weight:600;">contephil74@gmail.com</a>
     </div>
@@ -605,5 +622,86 @@ window.addEventListener('storage',e=>{
 })();
 </script>
 
+<script>
+// ─── BADGES PLAN SUR CARTES D'ACCUEIL ───────────────────
+(function() {
+  var LIC = 'uas_license';
+  var PLAN_MODULES = {
+    standard: ['maintenance','rex','notification','planificateur','briefing','dashboard','alertes','bilans','formations'],
+    pro:      ['statistiques','clients','rapport','replay','dji_logs'],
+    vip:      ['statistiques','clients','rapport','replay','dji_logs'],
+    personal: [],
+    free:     []
+  };
+  var PLAN_LABELS = {free:'🆓 Gratuit',standard:'⭐ Standard',pro:'🏆 Pro',vip:'💎 VIP',personal:'👤 Créateur'};
+  var PLAN_CLASS  = {free:'pb-free',standard:'pb-standard',pro:'pb-pro',vip:'pb-vip',personal:'pb-personal'};
 
-</body></html>
+  function getPlan() {
+    try {
+      var r = localStorage.getItem(LIC);
+      if (!r) return 'free';
+      var l = JSON.parse(r);
+      if (l.expires && l.expires !== '2099-12-31' && new Date(l.expires) < new Date()) return 'free';
+      return l.plan || 'free';
+    } catch(e) { return 'free'; }
+  }
+
+  function applyBadges() {
+    var plan = getPlan();
+    var label = PLAN_LABELS[plan] || '🆓 Gratuit';
+    var cls   = PLAN_CLASS[plan]  || 'pb-free';
+    var std   = PLAN_MODULES.standard;
+    var pro   = PLAN_MODULES.pro;
+
+    // Ajouter badge plan sur TOUTES les cartes
+    document.querySelectorAll('a.mod-card[href]').forEach(function(card) {
+      if (card.querySelector('.plan-badge')) return; // déjà fait
+      var href  = card.getAttribute('href') || '';
+      var mod   = href.replace('.html','');
+      var badge = document.createElement('div');
+      badge.className = 'plan-badge ' + cls;
+
+      if (plan === 'personal') {
+        badge.textContent = '👤';
+      } else if (plan === 'free') {
+        if (std.indexOf(mod) >= 0 || pro.indexOf(mod) >= 0) {
+          badge.textContent = '🔒';
+          card.classList.add('locked-card');
+        } else {
+          badge.textContent = '🆓';
+        }
+      } else if (plan === 'standard') {
+        if (pro.indexOf(mod) >= 0) {
+          badge.textContent = '🔒 Pro';
+          badge.className = 'plan-badge pb-pro';
+          card.classList.add('locked-card');
+        } else {
+          badge.textContent = '⭐';
+        }
+      } else if (plan === 'pro' || plan === 'vip') {
+        badge.textContent = plan === 'vip' ? '💎' : '🏆';
+      }
+
+      card.appendChild(badge);
+    });
+
+    // Bandeau upgrade si Free
+    if (plan === 'free') {
+      var existing = document.getElementById('upgrade-banner');
+      if (!existing) {
+        var banner = document.createElement('a');
+        banner.id = 'upgrade-banner';
+        banner.href = 'activation.html';
+        banner.style.cssText = 'display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;text-align:center;padding:12px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:12px;';
+        banner.textContent = '🔓 Activer une licence — Standard · Pro · VIP';
+        var content = document.getElementById('content');
+        if (content) content.insertBefore(banner, content.firstChild);
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', applyBadges);
+})();
+</script>
+</body>
+</html>

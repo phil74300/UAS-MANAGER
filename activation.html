@@ -6,165 +6,222 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>UAS Manager — Activation</title>
 <style>
-:root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--light-red:#FDECEC;--bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
-@media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-green:#0F2318;--light-red:#2A0D0D;}}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px;}
+:root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--light-red:#FDECEC;--purple:#5C35A0;--light-purple:#EDE7F6;--bg:#F0F4FA;--surface:#fff;--surface2:#F8FAFD;--text:#0D1220;--text-muted:#5A6478;--border:#D0DCF0;}
+@media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--surface2:#1C2840;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-green:#0F2318;--light-red:#2A0D0D;}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+.page{min-height:100vh;min-height:-webkit-fill-available;display:flex;align-items:center;justify-content:center;padding:24px 16px;}
 .wrap{width:100%;max-width:400px;}
 .logo{text-align:center;margin-bottom:24px;}
-.logo-icon{font-size:60px;display:block;margin-bottom:10px;}
+.logo span{font-size:60px;display:block;margin-bottom:10px;}
 .logo-name{font-size:24px;font-weight:900;color:var(--navy);}
 @media(prefers-color-scheme:dark){.logo-name{color:#7EB8F7;}}
-.logo-sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 18px;margin-bottom:12px;box-shadow:0 4px 20px rgba(12,68,124,.12);}
+.logo-sub{font-size:11px;color:var(--text-muted);margin-top:4px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 16px;box-shadow:0 4px 20px rgba(12,68,124,.10);margin-bottom:12px;}
 .card-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px;}
 .card-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;}
-/* Plans */
-.plans{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:14px;}
-.plan{border:2px solid var(--border);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:var(--surface2);}
-.plan.active-std{border-color:#BA7517;background:#FAEEDA;}
-.plan.active-pro{border-color:#1D6B37;background:#E8F5E9;}
-.plan.active-per{border-color:#185FA5;background:#E6F1FB;}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.plan{border:2px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;background:var(--surface2);transition:all .15s;}
+.plan.sel-std{border-color:var(--amber);background:var(--light-amber);}
+.plan.sel-pro{border-color:var(--green);background:var(--light-green);}
+.plan.sel-vip{border-color:var(--purple);background:var(--light-purple);}
+.plan.sel-per{border-color:var(--blue);background:var(--light-blue);}
 .plan-icon{font-size:18px;}
 .plan-name{font-size:10px;font-weight:700;color:var(--text);margin-top:3px;}
 .plan-price{font-size:9px;color:var(--text-muted);margin-top:1px;}
-/* Input */
-.key-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-weight:700;padding:13px 14px;font-family:'SF Mono','Courier New',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;transition:border-color .15s;}
+.key-wrap{position:relative;margin-bottom:10px;}
+.key-input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;font-weight:700;padding:12px 40px 12px 12px;font-family:'SF Mono','Courier New',monospace;letter-spacing:1px;text-transform:uppercase;transition:border-color .15s;}
 .key-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
-/* Boutons */
-.btn-primary{width:100%;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
-.btn-free{width:100%;background:var(--surface2);color:var(--text-muted);border:1.5px solid var(--border);border-radius:11px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
-/* Status */
-.status{margin-top:10px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:600;text-align:center;display:none;}
-.status.ok{background:var(--light-green);color:var(--green);display:block;}
-.status.err{background:var(--light-red);color:var(--red);display:block;}
-.status.warn{background:var(--light-amber);color:var(--amber);display:block;}
-/* Activé */
-.activated{display:none;text-align:center;}
+.key-input::placeholder{font-family:-apple-system,sans-serif;letter-spacing:0;text-transform:none;font-size:12px;font-weight:400;color:var(--text-muted);}
+.eye-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:16px;cursor:pointer;padding:4px;}
+.btn-main{width:100%;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .15s;margin-bottom:8px;}
+.btn-main:active{opacity:.85;}
+.btn-free{width:100%;background:var(--surface2);color:var(--text-muted);border:1.5px solid var(--border);border-radius:11px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.status{display:none;margin-top:10px;padding:10px;border-radius:9px;font-size:12px;font-weight:600;text-align:center;}
+.s-ok{background:var(--light-green);color:var(--green);}
+.s-err{background:var(--light-red);color:var(--red);}
+.s-warn{background:var(--light-amber);color:var(--amber);}
+.activated{display:none;text-align:center;padding:20px 0;}
 .act-icon{font-size:56px;margin-bottom:12px;}
-.act-title{font-size:20px;font-weight:900;color:var(--green);margin-bottom:6px;}
-.act-badge{display:inline-block;background:var(--light-green);color:var(--green);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;}
-.act-sub{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;}
+.act-title{font-size:20px;font-weight:900;color:var(--green);margin-bottom:8px;}
+.act-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;}
+.act-sub{font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;}
 .btn-go{width:100%;background:var(--green);color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
-.footer{text-align:center;margin-top:12px;font-size:10px;color:var(--text-muted);}
-.spin{display:inline-block;animation:rot 1s linear infinite;}
+.btn-go:active{opacity:.85;}
+.footer{text-align:center;margin-top:14px;font-size:10px;color:var(--text-muted);line-height:1.7;}
+.footer a{color:var(--blue);text-decoration:none;}
+.spin{display:inline-block;animation:rot .8s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
+<div class="page">
 <div class="wrap">
 
-  <!-- LOGO -->
-  <div class="logo">
-    <span class="logo-icon">🛸</span>
-    <div class="logo-name">UAS Manager</div>
-    <div class="logo-sub">© 2026 Philippe CONTE · Tous droits réservés</div>
-  </div>
+<div class="logo">
+  <span>🛸</span>
+  <div class="logo-name">UAS Manager</div>
+  <div class="logo-sub">© 2026 Philippe CONTE · Tous droits réservés</div>
+</div>
 
-  <!-- ÉCRAN ACTIVATION -->
-  <div id="screen-activation">
-    <div class="card">
-      <div class="card-title">🔑 Activation</div>
-      <div class="card-sub">Saisissez votre clé de licence pour débloquer l'application.</div>
+<div class="card" id="screen-form">
+  <div class="card-title">🔑 Activation de licence</div>
+  <div class="card-sub">Entrez votre clé pour débloquer toutes les fonctionnalités.</div>
 
-      <div class="plans">
-        <div class="plan active-std" id="p-std" onclick="selPlan('standard')">
-          <div class="plan-icon">⭐</div>
-          <div class="plan-name">Standard</div>
-          <div class="plan-price">9,99€/mois</div>
-        </div>
-        <div class="plan" id="p-pro" onclick="selPlan('pro')">
-          <div class="plan-icon">🏆</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">19,99€/mois</div>
-        </div>
-        <div class="plan" id="p-per" onclick="selPlan('personal')">
-          <div class="plan-icon">👤</div>
-          <div class="plan-name">Créateur</div>
-          <div class="plan-price">Philippe C.</div>
-        </div>
-      </div>
-
-      <!-- Clé saisie en MAJUSCULES automatiquement -->
-      <input class="key-input" type="text" id="key-field"
-             placeholder="EX: UAS-CONTE-2026"
-             autocomplete="off" autocorrect="off"
-             autocapitalize="characters" spellcheck="false"
-             oninput="this.value=this.value.toUpperCase()">
-
-      <button class="btn-primary" onclick="doActivate()">🔓 Activer</button>
-      <button class="btn-free" onclick="doFree()">Continuer gratuitement (fonctions limitées)</button>
-      <div class="status" id="status-msg"></div>
+  <div class="plans">
+    <div class="plan sel-std" id="p-std" onclick="selPlan('standard')">
+      <div class="plan-icon">⭐</div>
+      <div class="plan-name">Standard</div>
+      <div class="plan-price">9,99€/mois</div>
     </div>
-
-    <div class="footer">
-      ⭐ Standard : 9,99€/mois &nbsp;·&nbsp; 🏆 Pro : 19,99€/mois<br>
-      Contact : contephil74@gmail.com
+    <div class="plan" id="p-pro" onclick="selPlan('pro')">
+      <div class="plan-icon">🏆</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">19,99€/mois</div>
+    </div>
+    <div class="plan" id="p-vip" onclick="selPlan('vip')">
+      <div class="plan-icon">💎</div>
+      <div class="plan-name">VIP</div>
+      <div class="plan-price">29,99€/mois</div>
+    </div>
+    <div class="plan" id="p-per" onclick="selPlan('personal')">
+      <div class="plan-icon">👤</div>
+      <div class="plan-name">Créateur</div>
+      <div class="plan-price">Philippe C.</div>
     </div>
   </div>
 
-  <!-- ÉCRAN ACTIVÉ -->
-  <div class="activated" id="screen-activated">
-    <div class="act-icon">✅</div>
-    <div class="act-title">Activé !</div>
-    <div class="act-badge" id="act-badge">👤 Créateur</div>
-    <div class="act-sub" id="act-sub">Bienvenue Philippe. Accès complet débloqué.</div>
-    <button class="btn-go" onclick="location.href=\'index.html\'">🚀 Ouvrir UAS Manager</button>
-    <div class="footer" style="margin-top:14px;">
-      <button onclick="doReset()" style="background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;text-decoration:underline;">Changer de licence</button>
-    </div>
+  <div class="key-wrap">
+    <input class="key-input" type="password" id="key-field"
+      placeholder="Votre clé de licence…"
+      autocomplete="off" autocorrect="off" autocapitalize="characters"
+      spellcheck="false">
+    <button class="eye-btn" onclick="toggleEye()" type="button" id="eye-btn">👁</button>
   </div>
 
+  <button class="btn-main" onclick="doActivate()" id="btn-activate">🔓 Activer</button>
+  <button class="btn-free" onclick="doFree()">Continuer gratuitement (fonctions limitées)</button>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="activated card" id="screen-ok">
+  <div class="act-icon">✅</div>
+  <div class="act-title">Activé !</div>
+  <div class="act-badge" id="act-badge"></div>
+  <div class="act-sub" id="act-sub"></div>
+  <button class="btn-go" onclick="window.location.href='index.html'">🚀 Ouvrir UAS Manager</button>
+  <div style="margin-top:12px;">
+    <button onclick="doReset()" style="background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit;">Changer de licence</button>
+  </div>
+</div>
+
+<div class="footer">
+  ⭐ Standard 9,99€ · 🏆 Pro 19,99€ · 💎 VIP 29,99€/mois<br>
+  <a href="mailto:contephil74@gmail.com">contephil74@gmail.com</a>
+</div>
+
+</div>
 </div>
 
 <script>
-// UAS Manager — Activation © 2026 Philippe CONTE
 var LIC_KEY = 'uas_license';
 
-// Hashes SHA-256 des clés valides (clés en clair jamais stockées)
 var VALID = {
-  'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b': {plan:'personal', label:'👤 Créateur', name:'Philippe CONTE'},
-  'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b': {plan:'personal', label:'👤 Créateur', name:'Philippe CONTE'},
-  'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b':  {plan:'personal', label:'👤 Créateur', name:'Philippe CONTE'},
-  'c99ec493b521ded8b32a90c87c55e239f7e629a3dc7454792d42f30d311dff88': {plan:'standard', label:'⭐ Standard', name:'Utilisateur Standard'},
+  '58b16f27b0515ec76bae034476425e46fbbbdbbedeb6c5102aa2869b3331375f': {plan:'personal',label:'👤 Créateur',expires:null},
+  'ce5ca2b8288045d3de2e39128fcfc253df4ead31a04a1e0e7ee91c0a1da23054': {plan:'personal',label:'👤 Créateur',expires:null},
+  'f107699320d414446012ce316b21bd4c19b3b77a0ab02c70a38dc2be589b910e': {plan:'personal',label:'👤 Créateur',expires:null},
+  'daf4816da63f025f060670b09b32a74474921847ffb936e2d0f4b0d2d2afceee': {plan:'standard',label:'⭐ Standard',expires:'2027-12-31'},
+  'b8f456e2238242633508f57e588677b5d85025c59b91eb35e809e90e2554acb2': {plan:'pro',label:'🏆 Pro',expires:'2027-12-31'},
+  'dd9e45bf2772abd2f236ee257ea016e98ad898e4b3f5438c75941a915df25cde': {plan:'vip',label:'💎 VIP',expires:'2027-12-31'},
+};
+
+var PLAN_STYLES = {
+  personal: {bg:'#E6F1FB',color:'#185FA5'},
+  standard: {bg:'#FAEEDA',color:'#BA7517'},
+  pro:      {bg:'#E8F5E9',color:'#1D6B37'},
+  vip:      {bg:'#EDE7F6',color:'#5C35A0'},
+  free:     {bg:'#F0F4FA',color:'#5A6478'},
 };
 
 var selPlanVal = 'standard';
 
 function selPlan(p) {
   selPlanVal = p;
-  document.getElementById('p-std').className = 'plan' + (p==='standard'?' active-std':'');
-  document.getElementById('p-pro').className = 'plan' + (p==='pro'?' active-pro':'');
-  document.getElementById('p-per').className = 'plan' + (p==='personal'?' active-per':'');
+  ['std','pro','vip','per'].forEach(function(x){ document.getElementById('p-'+x).className='plan'; });
+  var map = {standard:'std',pro:'pro',vip:'vip',personal:'per'};
+  if(map[p]) document.getElementById('p-'+map[p]).className = 'plan sel-'+map[p];
+}
+
+function toggleEye() {
+  var f = document.getElementById('key-field');
+  var b = document.getElementById('eye-btn');
+  f.type = f.type === 'password' ? 'text' : 'password';
+  b.textContent = f.type === 'password' ? '👁' : '🙈';
 }
 
 async function sha256(str) {
-  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str.toUpperCase()));
   return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
 }
 
 async function doActivate() {
-  var key = document.getElementById('key-field').value.trim().toUpperCase();
-  if (!key) { showStatus('⚠️ Entrez votre clé', 'warn'); return; }
+  var raw = document.getElementById('key-field').value.trim();
+  if (!raw) { showStatus('⚠️ Entrez votre clé', 'warn'); return; }
 
-  showStatus('<span class="spin">⏳</span> Vérification…', '');
-  var hash = await sha256(key);
-  var lic = VALID[hash];
+  var btn = document.getElementById('btn-activate');
+  btn.innerHTML = '<span class="spin">⏳</span> Vérification…';
+  btn.disabled = true;
 
-  if (!lic) {
-    showStatus('❌ Clé invalide. Vérifiez et réessayez.', 'err');
-    return;
+  try {
+    var hash = await sha256(raw);
+    var lic = VALID[hash];
+
+    if (!lic) {
+      showStatus('❌ Clé invalide. Vérifiez et réessayez.', 'err');
+      btn.innerHTML = '🔓 Activer'; btn.disabled = false;
+      return;
+    }
+
+    if (lic.expires && new Date(lic.expires) < new Date()) {
+      showStatus('⏰ Cette clé a expiré. Contactez Philippe CONTE.', 'err');
+      btn.innerHTML = '🔓 Activer'; btn.disabled = false;
+      return;
+    }
+
+    // Sauvegarder
+    var data = {hash:hash, plan:lic.plan, label:lic.label,
+                expires:lic.expires, activatedAt:new Date().toISOString()};
+    localStorage.setItem(LIC_KEY, JSON.stringify(data));
+
+    // Afficher l'écran succès
+    showActivated(data);
+
+  } catch(e) {
+    showStatus('❌ Erreur. Réessayez.', 'err');
+    btn.innerHTML = '🔓 Activer'; btn.disabled = false;
   }
+}
 
-  var data = {hash:hash, plan:lic.plan, name:lic.name, label:lic.label,
-              activatedAt:new Date().toISOString(), expires:null};
-  localStorage.setItem(LIC_KEY, JSON.stringify(data));
-  showActivated(data);
+function showActivated(data) {
+  document.getElementById('screen-form').style.display = 'none';
+  var s = document.getElementById('screen-ok');
+  s.style.display = 'block';
+  var ps = PLAN_STYLES[data.plan] || PLAN_STYLES.standard;
+  var badge = document.getElementById('act-badge');
+  badge.textContent = data.label;
+  badge.style.background = ps.bg;
+  badge.style.color = ps.color;
+  var sub = document.getElementById('act-sub');
+  if (data.plan === 'personal') {
+    sub.textContent = 'Bienvenue Philippe. Accès complet permanent débloqué.';
+  } else {
+    sub.textContent = 'Licence ' + data.label + ' activée.' + (data.expires ? ' Valide jusqu'au ' + new Date(data.expires).toLocaleDateString('fr-FR') + '.' : '');
+  }
 }
 
 function doFree() {
   localStorage.removeItem(LIC_KEY);
-  location.href = 'index.html';
+  window.location.href = 'index.html';
 }
 
 function doReset() {
@@ -173,38 +230,30 @@ function doReset() {
 }
 
 function showStatus(msg, type) {
-  var el = document.getElementById('status-msg');
-  el.innerHTML = msg;
-  el.className = 'status ' + type;
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status s-' + type;
+  el.style.display = 'block';
+  setTimeout(function(){ el.style.display='none'; }, 4000);
 }
 
-function showActivated(data) {
-  document.getElementById('screen-activation').style.display = 'none';
-  var scr = document.getElementById('screen-activated');
-  scr.style.display = 'block';
-  document.getElementById('act-badge').textContent = data.label;
-  var sub = data.plan === 'personal'
-    ? 'Bienvenue Philippe. Accès complet et permanent débloqué sans restriction.'
-    : 'Licence ' + data.label + ' activée avec succès.';
-  document.getElementById('act-sub').textContent = sub;
-}
-
-function init() {
+// Auto-check au chargement
+(function() {
   var raw = localStorage.getItem(LIC_KEY);
-  if (raw) {
-    try {
-      var l = JSON.parse(raw);
-      if (l.plan && l.hash && VALID[l.hash]) { showActivated(l); return; }
-    } catch(e) {}
-  }
-  document.getElementById('screen-activation').style.display = 'block';
-}
+  if (!raw) return;
+  try {
+    var l = JSON.parse(raw);
+    if (l.hash && VALID[l.hash]) {
+      if (!l.expires || new Date(l.expires) >= new Date()) {
+        showActivated(l);
+      }
+    }
+  } catch(e) {}
+})();
 
-document.getElementById('key-field').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') doActivate();
+document.getElementById('key-field').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') doActivate();
 });
-
-init();
 </script>
 </body>
 </html>
