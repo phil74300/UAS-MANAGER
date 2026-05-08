@@ -579,11 +579,7 @@ window.addEventListener('storage',e=>{
     var isCreator = false;
     try {
       var l = JSON.parse(localStorage.getItem('uas_license') || '{}');
-      var CH = [
-        'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
-        'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
-        '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb'
-      ];
+      var CH = ['3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e','691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df','ca2a5ef74a9f6f8911a5913612841bb1a8087eb7f5978bb0b81ca803ac73da42'];
       isCreator = CH.indexOf(l.hash) >= 0;
     } catch(e) {}
 
@@ -596,11 +592,7 @@ window.addEventListener('storage',e=>{
         .then(function(buf) {
           var h = Array.from(new Uint8Array(buf))
             .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-          var MH = [
-            'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
-            'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
-            '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb'
-          ];
+          var MH = ['3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e','691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df','ca2a5ef74a9f6f8911a5913612841bb1a8087eb7f5978bb0b81ca803ac73da42'];
           if (MH.indexOf(h) >= 0) {
             window.location.href = 'keygen.html';
           } else {
