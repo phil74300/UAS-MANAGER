@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_16.html -->
+<!-- saved from url=(0051)file:///Users/contephilippe/Downloads/index_17.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -156,7 +156,7 @@
   <div class="pilot-strip">
     <!-- Avatar cliquable → changer la photo -->
     <div class="pilot-avatar-wrap" onclick="document.getElementById(&#39;avatar-input&#39;).click()" title="Changer la photo">
-      <img id="pilot-avatar-img" class="pilot-avatar" src="file:///Users/contephilippe/Downloads/index_16.html" alt="👨‍✈️" onerror="this.style.display=&#39;none&#39;;document.getElementById(&#39;pilot-avatar-emoji&#39;).style.display=&#39;flex&#39;" style="display: none;">
+      <img id="pilot-avatar-img" class="pilot-avatar" src="file:///Users/contephilippe/Downloads/index_17.html" alt="👨‍✈️" onerror="this.style.display=&#39;none&#39;;document.getElementById(&#39;pilot-avatar-emoji&#39;).style.display=&#39;flex&#39;" style="display: none;">
       <div id="pilot-avatar-emoji" class="pilot-avatar" style="display:flex;align-items:center;justify-content:center;">👨‍✈️</div>
       <div class="avatar-edit-badge">✏️</div>
     </div>
@@ -308,13 +308,13 @@
     <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">
       Opérateur UAS · Thyez, Haute-Savoie · France
     </div>
-    <div id="tap-target" onclick="secretTap()" style="
+    <div id="tap-target" style="
       font-size:10px;color:var(--text-muted);margin-top:6px;letter-spacing:.3px;
-      padding:14px 20px;cursor:default;user-select:none;-webkit-user-select:none;
-      border-radius:8px;transition:background .1s;
+      padding:16px 24px;cursor:default;user-select:none;-webkit-user-select:none;
+      border-radius:10px;transition:background .15s;-webkit-touch-callout:none;
     ">
       © 2026 Philippe CONTE · Tous droits réservés
-    </div>
+    </div><div style="height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none;"><div style="height: 100%; width: 0%; background: var(--navy); border-radius: 2px; transition: none;"></div></div>
     <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">
       <a href="mailto:contephil74@gmail.com" style="color:var(--blue);text-decoration:none;font-weight:600;">contephil74@gmail.com</a>
     </div>
@@ -494,77 +494,115 @@ window.addEventListener('storage',e=>{
 });
 </script>
 
-<script>
-// ═══ ACCÈS SECRET KEYGEN ═══
-// Tapper 7x sur le copyright pour accéder au générateur de licences
-var _tapCount = 0;
-var _tapTimer = null;
 
-function secretTap() {
-  _tapCount++;
-  
-  // Afficher les points de progression
-  var dots = document.getElementById('secret-dots');
-  if (dots) {
-    dots.innerHTML = Array(_tapCount).fill('<span style="width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block;"></span>').join('');
+<script>
+// ═══ ACCÈS SECRET — Appui long 3s sur le copyright ═══
+(function() {
+  var el = document.getElementById('tap-target');
+  if (!el) return;
+
+  var pressTimer = null;
+  var progressBar = null;
+  var animFrame = null;
+  var startTime = null;
+  var DURATION = 3000; // 3 secondes
+
+  // Créer la barre de progression
+  var barWrap = document.createElement('div');
+  barWrap.style.cssText = 'height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden;display:none;';
+  progressBar = document.createElement('div');
+  progressBar.style.cssText = 'height:100%;width:0%;background:var(--navy);border-radius:2px;transition:none;';
+  barWrap.appendChild(progressBar);
+  el.parentNode.insertBefore(barWrap, el.nextSibling);
+
+  function startPress(e) {
+    e.preventDefault();
+    startTime = Date.now();
+    barWrap.style.display = 'block';
+    el.style.background = 'rgba(24,95,165,0.06)';
+    animateProgress();
   }
-  
-  // Reset après 3 secondes d'inactivité
-  clearTimeout(_tapTimer);
-  _tapTimer = setTimeout(function() {
-    _tapCount = 0;
-    var dots = document.getElementById('secret-dots');
-    if (dots) dots.innerHTML = '';
-  }, 3000);
-  
-  // 7 taps = accès keygen
-  if (_tapCount >= 7) {
-    _tapCount = 0;
-    if (dots) dots.innerHTML = '';
-    clearTimeout(_tapTimer);
-    
-    // Vérifier que c'est bien Philippe CONTE
-    var raw = localStorage.getItem('uas_license');
-    var isCreator = false;
-    if (raw) {
-      try {
-        var l = JSON.parse(raw);
-        var creatorHashes = [
-          'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
-          'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
-          '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb',
-        ];
-        isCreator = l.hash && creatorHashes.indexOf(l.hash) >= 0;
-      } catch(e) {}
+
+  function animateProgress() {
+    var elapsed = Date.now() - startTime;
+    var pct = Math.min(100, (elapsed / DURATION) * 100);
+    progressBar.style.width = pct + '%';
+
+    if (pct < 100) {
+      animFrame = requestAnimationFrame(animateProgress);
+    } else {
+      // 3 secondes atteintes — accès accordé
+      endPress(true);
     }
-    
+  }
+
+  function endPress(success) {
+    cancelAnimationFrame(animFrame);
+    clearTimeout(pressTimer);
+    el.style.background = '';
+
+    if (!success) {
+      // Annulé — reset barre
+      progressBar.style.width = '0%';
+      barWrap.style.display = 'none';
+      return;
+    }
+
+    // Succès — flash vert
+    progressBar.style.background = '#1D6B37';
+    setTimeout(function() {
+      progressBar.style.width = '0%';
+      barWrap.style.display = 'none';
+      progressBar.style.background = 'var(--navy)';
+      openKeygen();
+    }, 400);
+  }
+
+  function openKeygen() {
+    var isCreator = false;
+    try {
+      var l = JSON.parse(localStorage.getItem('uas_license') || '{}');
+      var CH = [
+        'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
+        'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
+        '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb'
+      ];
+      isCreator = CH.indexOf(l.hash) >= 0;
+    } catch(e) {}
+
     if (isCreator) {
-      // Accès direct — créateur identifié
       window.location.href = 'keygen.html';
     } else {
-      // Demander la clé maître
-      var input = prompt('🔐 Accès administrateur
-
-Entrez votre clé maître :');
-      if (input) {
-        var key = input.trim().toUpperCase();
-        crypto.subtle.digest('SHA-256', new TextEncoder().encode(key)).then(function(buf) {
-          var hash = Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-          var masterHashes = [
+      var k = prompt('🔐 Clé administrateur :');
+      if (!k) return;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(k.trim().toUpperCase()))
+        .then(function(buf) {
+          var h = Array.from(new Uint8Array(buf))
+            .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          var MH = [
             'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b',
             'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336',
-            '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb',
+            '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb'
           ];
-          if (masterHashes.indexOf(hash) >= 0) {
+          if (MH.indexOf(h) >= 0) {
             window.location.href = 'keygen.html';
           } else {
             alert('❌ Clé incorrecte');
           }
         });
-      }
     }
   }
-}
+
+  // Touch events (iOS)
+  el.addEventListener('touchstart', startPress, { passive: false });
+  el.addEventListener('touchend',   function(e) { e.preventDefault(); endPress(false); }, { passive: false });
+  el.addEventListener('touchcancel',function(e) { endPress(false); }, { passive: false });
+
+  // Mouse events (desktop)
+  el.addEventListener('mousedown', startPress);
+  el.addEventListener('mouseup',   function() { endPress(false); });
+  el.addEventListener('mouseleave',function() { endPress(false); });
+})();
 </script>
 
 
