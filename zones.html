@@ -163,6 +163,19 @@ html,body{
   transition:opacity .15s;
 }
 .geo-ext-link:active{opacity:.8;}
+
+  /* ─── COPYRIGHT ─── */
+  .copyright-footer{
+    text-align:center;
+    padding:16px 14px calc(8px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--border);
+    margin-top:8px;
+  }
+  .copyright-footer .cf-app{font-size:12px;font-weight:800;color:var(--navy);}
+  .copyright-footer .cf-author{font-size:11px;color:var(--text-muted);margin-top:2px;}
+  .copyright-footer .cf-copy{font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:.2px;}
+  @media(prefers-color-scheme:dark){.copyright-footer .cf-app{color:#7EB8F7;}}
+
 </style>
 </head>
 <body>
@@ -384,7 +397,7 @@ const pilotIcon = L.divIcon({
     "></div>
   </div>
   <style>
-    @keyframes gpspulse{0%,100%{box-shadow:0 0 0 2px rgba(29,107,55,.4);}50%{box-shadow:0 0 0 5px rgba(29,107,55,.1);}}
+    @keyframes gpspulse{0%,100%{box-shadow:0 0 0 2px rgba(29,107,55,.4);}50%{box-shadow:0 0 0 5px rgba(29,107,55,.1);}
   </style>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
@@ -639,5 +652,13 @@ navigator.permissions && navigator.permissions.query({ name: 'geolocation' }).th
   if (r.state === 'granted') startGPS();
 });
 </script>
+
+  <!-- COPYRIGHT FOOTER -->
+  <div class="copyright-footer">
+    <div class="cf-app">UAS Manager</div>
+    <div class="cf-author">© 2026 Philippe CONTE · Thyez, Haute-Savoie</div>
+    <div class="cf-copy">contephil74@gmail.com · Tous droits réservés</div>
+  </div>
+
 </body>
 </html>
