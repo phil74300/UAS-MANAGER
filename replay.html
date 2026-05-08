@@ -226,49 +226,36 @@ html,body{height:100%;height:-webkit-fill-available;font-family:-apple-system,'S
         <a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:12px;padding:12px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour à l'accueil</a>
         <div style="margin-top:14px;font-size:10px;color:#5A6478;">© 2026 Philippe CONTE · UAS Manager</div>
       </div>`;
-    // Stopper l'exécution du reste de la page
-    document.addEventListener('DOMContentLoaded', function(e){ e.stopImmediatePropagation(); }, true);
   }
 })();
 </script>
 </head>
 <body>
 <script>
-/* UAS Manager Licence Check - (c) 2026 Philippe CONTE */
-var _ok=(function(){
-  var H={    'd570d30c7b29a196ebea1029385752a801ca454e1ef7b8f6782b6ef1bae6d75b':'personal',
-    'fac9fd0ddf5685c6765e26a5a812266e2e2375d34e7e43d870b742e8632b1336':'personal',
-    '73894b1d5ff3e83b25e82bf0d8567f99ca223e9efadea1da6a0e16636f18d4bb':'personal',
-    'c99ec493b521ded8b32a90c87c55e239f7e629a3dc7454792d42f30d311dff88':'standard',
-  };
-  var S=['maintenance','rex','notification','planificateur','briefing','dashboard','alertes','bilans','formations'];
-  var F='replay';
-  try{
-    var r=localStorage.getItem('uas_license');
-    if(!r) return false;
+(function(){
+var H={'3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e':'personal','691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df':'personal','ca2a5ef74a9f6f8911a5913612841bb1a8087eb7f5978bb0b81ca803ac73da42':'personal','8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564':'standard','39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f':'pro','93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5':'vip'};
+var STD=['maintenance','rex','notification','planificateur','briefing','dashboard','alertes','bilans','formations'];
+var ok=false;
+try{
+  var r=localStorage.getItem('uas_license');
+  if(r){
     var l=JSON.parse(r);
-    if(l.expires&&l.expires!='2099-12-31'&&new Date(l.expires)<new Date()) return false;
-    var p=l.hash&&H[l.hash]?H[l.hash]:'free';
-    if(p=='personal'||p=='pro') return true;
-    if(p=='standard') return S.indexOf(F)>=0;
-    return false;
-  }catch(e){return false;}
-})();
-if(!_ok){
-  document.write('<style>body{visibility:hidden!important}</style>');
-  window.addEventListener('DOMContentLoaded',function(){
-    document.body.style.cssText='margin:0;padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F0F4FA;font-family:-apple-system,sans-serif;visibility:visible;';
-    document.body.innerHTML='<div style="max-width:380px;width:100%;padding:24px;text-align:center;">'
-      +'<div style="font-size:52px;margin-bottom:12px;">🔒</div>'
-      +'<div style="font-size:20px;font-weight:900;color:#0C447C;margin-bottom:8px;">🎬 Replay de vol DJI</div>'
-      +'<div style="display:inline-block;background:#E8F5E9;color:#1D6B37;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;">🏆 Pro — 19,99€/mois</div>'
-      +'<div style="background:#fff;border:1px solid #D0DCF0;border-radius:12px;padding:14px;margin-bottom:12px;text-align:left;"><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Vols illimites</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Maintenance</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">REX</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Notification AlphaTango</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Planificateur</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Briefing GO/NO-GO</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Dashboard</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Alertes</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Bilans</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Formations</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Statistiques avancees</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Clients et Devis PDF</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Rapport de mission</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Replay vol DJI</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Logs DJI</div></div>'
-      +'<a href="activation.html" style="display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border-radius:11px;padding:14px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px;">🔓 Activer ma licence</a>'
-      +'<a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:11px;padding:11px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour accueil</a>'
-      +'<div style="margin-top:12px;font-size:10px;color:#5A6478;">(c) 2026 Philippe CONTE - UAS Manager</div>'
-      +'</div>';
+    var exp=l.expires;
+    if(!exp||exp==='2099-12-31'||new Date(exp)>=new Date()){
+      var p=H[l.hash]||'free';
+      if(p==='personal'||p==='pro') ok=true;
+      else if(p==='standard'&&STD.indexOf('replay')>=0) ok=true;
+    }
+  }
+}catch(e){}
+if(!ok){
+  document.write('<style>body{display:none!important}</style>');
+  document.addEventListener('DOMContentLoaded',function(){
+    document.body.style.cssText='display:flex!important;margin:0;padding:0;min-height:100vh;align-items:center;justify-content:center;background:#F0F4FA;font-family:-apple-system,sans-serif;';
+    document.body.innerHTML='<div style="max-width:360px;width:100%;padding:24px;text-align:center;"><div style="font-size:48px;margin-bottom:12px;">🔒</div><div style="font-size:18px;font-weight:900;color:#0C447C;margin-bottom:8px;">🎬 Replay de vol DJI</div><div style="background:#E8F5E9;color:#1D6B37;display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;">🏆 Pro — 19,99€/mois</div><div style="background:#fff;border:1px solid #D0DCF0;border-radius:12px;padding:14px;margin-bottom:12px;text-align:left;"><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Vols illimites</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Maintenance</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">REX</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Notification AlphaTango</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Planificateur</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Briefing GO/NO-GO</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Dashboard</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Alertes</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Bilans</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Formations</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Statistiques avancees</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Clients et Devis PDF</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Rapport de mission</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Replay vol DJI</div><div style="font-size:11px;padding:3px 0;border-bottom:1px solid #f0f4fa;">Logs DJI</div></div><a href="activation.html" style="display:block;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border-radius:11px;padding:13px;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:8px;">🔓 Activer</a><a href="index.html" style="display:block;border:1.5px solid #D0DCF0;border-radius:11px;padding:11px;font-size:13px;font-weight:600;color:#5A6478;text-decoration:none;">← Retour</a></div>';
   });
 }
+})();
 </script>
 <div id="app">
 
