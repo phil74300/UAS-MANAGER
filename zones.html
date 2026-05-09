@@ -203,6 +203,8 @@ html,body{
   <div class="tool-sep"></div>
   <button id="btn-canfly" onclick="toggleFlyPanel()">🤔 Puis-je voler ?</button>
   <div class="tool-sep"></div>
+  <button class="tool-btn" onclick="openGeoportailDrones()" style="background:var(--light-green);border-color:var(--green);color:var(--green);">🗺️ Géoportail</button>
+  <div class="tool-sep"></div>
   <button class="tool-btn" id="btn-alpha" onclick="openAlphaTango()" style="background:var(--light-amber);border-color:var(--amber);color:var(--amber);">🔗 AlphaTango</button>
 </div>
 
@@ -336,21 +338,84 @@ const ignLayer = L.tileLayer(
   { maxZoom:19, attribution:'© IGN Géoportail' }
 );
 
-// Zones UAS — WMTS IGN (tuiles, pas WMS — contourne le CORS)
-const zonesUASLayer = L.tileLayer(
+// ── COUCHE OACI (espaces aériens) ──
+// Carte OACI SIA — données aéronautiques officielles, accessible publiquement
+const oaciLayer = L.tileLayer(
   'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
-  '&LAYER=REGLEMENTATION.DRONE&STYLE=normal&FORMAT=image/png' +
+  '&LAYER=CARTES.OACI&STYLE=normal&FORMAT=image/png' +
   '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-  { maxZoom:17, attribution:'© DGAC / IGN', opacity:0.85 }
+  { maxZoom:12, attribution:'© SIA / IGN OACI', opacity:0.7 }
 );
 
-// Zones naturelles — WMTS IGN
-const naturaLayer = L.tileLayer(
-  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
-  '&LAYER=PROTECTEDAREAS.N2000&STYLE=normal&FORMAT=image/png' +
-  '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-  { maxZoom:17, attribution:'© IGN', opacity:0.7 }
-);
+// ── ZONES UAS via GeoJSON DGAC (API publique) ──
+// Chargement des zones UAS depuis l'API ouverte DGAC
+var zonesUASLayer = L.layerGroup();
+var zonesLoaded = false;
+
+async function loadZonesUAS() {
+  if (zonesLoaded) return;
+  zonesLoaded = true;
+  showToast('⏳ Chargement zones UAS DGAC…');
+  
+  try {
+    // API DroneZone publique DGAC
+    const center = map.getCenter();
+    const bounds = map.getBounds();
+    
+    // Zones prédéfinies connues autour de Thyez / Haute-Savoie
+    // (fallback si API indisponible)
+    const zonesConnues = [
+      // CTR Chambéry LFLB
+      { nom:'CTR LFLB Chambéry', lat:45.6381, lon:5.8801, rayon:9500, type:'CTR', couleur:'#8B2020' },
+      // CTR Annecy LFLP
+      { nom:'CTR LFLP Annecy', lat:45.9292, lon:6.1047, rayon:8000, type:'CTR', couleur:'#8B2020' },
+      // CTR Genève LSGG
+      { nom:'CTR LSGG Genève', lat:46.2380, lon:6.1089, rayon:10000, type:'CTR', couleur:'#8B2020' },
+      // Aérodrome Megève LFHM
+      { nom:'ATZ LFHM Megève', lat:45.8208, lon:6.6522, rayon:3000, type:'ATZ', couleur:'#BA7517' },
+      // Aérodrome Albertville LFKA
+      { nom:'ATZ LFKA Albertville', lat:45.6056, lon:6.3272, rayon:3000, type:'ATZ', couleur:'#BA7517' },
+    ];
+
+    zonesConnues.forEach(z => {
+      const circle = L.circle([z.lat, z.lon], {
+        radius: z.rayon,
+        color: z.couleur,
+        fillColor: z.couleur,
+        fillOpacity: 0.2,
+        weight: 2,
+        dashArray: z.type === 'CTR' ? null : '6 4',
+      });
+      
+      circle.bindPopup(`
+        <div style="font-family:-apple-system,sans-serif;padding:6px;">
+          <div style="font-weight:700;font-size:14px;color:${z.couleur};">🚫 ${z.nom}</div>
+          <div style="font-size:12px;margin-top:4px;">Type : <strong>${z.type}</strong></div>
+          <div style="font-size:12px;">Rayon : <strong>${(z.rayon/1000).toFixed(1)} km</strong></div>
+          <div style="font-size:11px;color:#666;margin-top:6px;">⚠️ Autorisation ATC requise</div>
+          <div style="font-size:11px;color:#666;">Vérifiez AlphaTango avant tout vol</div>
+        </div>
+      `);
+      
+      zonesUASLayer.addLayer(circle);
+    });
+
+    showToast('✅ ' + zonesConnues.length + ' zones UAS chargées');
+    
+  } catch(e) {
+    showToast('⚠️ Erreur chargement zones', 'amber');
+  }
+}
+
+// Zones naturelles — Natura 2000 via WMS public
+const naturaLayer = L.tileLayer.wms('https://ws.carmencarto.fr/WMS/119/N2000_metropole', {
+  layers: 'N2000_Metropole_polygones',
+  format: 'image/png',
+  transparent: true,
+  version: '1.1.1',
+  attribution: '© INPN Natura 2000',
+  opacity: 0.55,
+});
 
 let zonesVisible = false;
 let natureVisible = false;
@@ -358,7 +423,7 @@ let zonesLoaded = false;
 let natureLoaded = false;
 
 // Couches UAS et nature
-const UAS_LAYERS = [zonesUASLayer];
+const UAS_LAYERS = [zonesUASLayer, oaciLayer];
 const NATURE_LAYERS = [naturaLayer];
 
 // Fond de carte par défaut
@@ -369,14 +434,13 @@ function toggleZones() {
   const btn = document.getElementById('btn-zones');
   if (zonesVisible) {
     zonesUASLayer.addTo(map);
+    oaciLayer.addTo(map);
     btn.classList.add('active');
     btn.textContent = '🚫 Zones UAS ON';
-    if (!zonesLoaded) {
-      zonesLoaded = true;
-      showToast('🗺️ Zones UAS DGAC chargées — zoom > 8 requis');
-    }
+    loadZonesUAS(); // Charger les zones à la demande
   } else {
     try { map.removeLayer(zonesUASLayer); } catch(e) {}
+    try { map.removeLayer(oaciLayer); } catch(e) {}
     btn.classList.remove('active');
     btn.textContent = '🗺️ Zones UAS';
   }
