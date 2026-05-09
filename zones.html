@@ -316,66 +316,67 @@ function setLayer(name) {
 
 // ─── COUCHE ZONES UAS (Géoportail WMS) ────────────────────
 // Géoportail expose les zones drone via WMS
-// ─── COUCHES WMS IGN — endpoint public sans clé ────────────
-// Depuis 2024, IGN expose ses données via data.geopf.fr (accès libre)
-const WMS_BASE = 'https://data.geopf.fr/wms-r';
-const WMS_OPTS = (layers, opacity=0.7) => ({
-  layers, format:'image/png', transparent:true,
-  version:'1.3.0', attribution:'© IGN / DGAC', opacity,
-  errorTileUrl: '', // Pas d'erreur visible sur tuile manquante
+// ─── COUCHES DE CARTE ─────────────────────────────────
+// OSM — toujours disponible
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19, attribution:'© OpenStreetMap'
 });
 
-// Gestion erreur WMS globale
-function setupWMSErrorHandler(layer, name) {
-  layer.on('tileerror', function() {
-    // Silencieux — les zones WMS peuvent être lentes
-  });
-  return layer;
-}
+// Satellite Esri — CORS OK, sans clé
+const satLayer = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom:19, attribution:'© Esri' }
+);
 
-// Zones réglementées UAS (DGAC) — couche officielle
-const droneZonesWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('REGLEMENTATION.DRONE', 0.8));
+// IGN Plan — WMTS (tuiles PNG, différent du WMS bloqué)
+const ignLayer = L.tileLayer(
+  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+  '&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png' +
+  '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+  { maxZoom:19, attribution:'© IGN Géoportail' }
+);
 
-// Espaces aériens SIA
-const airspaceWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('BDLIM', 0.5));
+// Zones UAS — WMTS IGN (tuiles, pas WMS — contourne le CORS)
+const zonesUASLayer = L.tileLayer(
+  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+  '&LAYER=REGLEMENTATION.DRONE&STYLE=normal&FORMAT=image/png' +
+  '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+  { maxZoom:17, attribution:'© DGAC / IGN', opacity:0.85 }
+);
 
-// ── ZONES NATURELLES (data.geopf.fr) ──
-const parcsWMS    = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.MN', 0.55));
-const natura2000WMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.N2000', 0.5));
-const reservesWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.RNN', 0.55));
-const znieffWMS   = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.ZNIEFF1', 0.4));
-const biotopeWMS  = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.APB', 0.45));
+// Zones naturelles — WMTS IGN
+const naturaLayer = L.tileLayer(
+  'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+  '&LAYER=PROTECTEDAREAS.N2000&STYLE=normal&FORMAT=image/png' +
+  '&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+  { maxZoom:17, attribution:'© IGN', opacity:0.7 }
+);
 
-// ── GESTION VISIBILITÉ ──
 let zonesVisible = false;
 let natureVisible = false;
-
-const UAS_LAYERS    = [droneZonesWMS, airspaceWMS];
-const NATURE_LAYERS = [parcsWMS, natura2000WMS, reservesWMS, znieffWMS, biotopeWMS];
-
 let zonesLoaded = false;
 let natureLoaded = false;
+
+// Couches UAS et nature
+const UAS_LAYERS = [zonesUASLayer];
+const NATURE_LAYERS = [naturaLayer];
+
+// Fond de carte par défaut
+osmLayer.addTo(map);
 
 function toggleZones() {
   zonesVisible = !zonesVisible;
   const btn = document.getElementById('btn-zones');
   if (zonesVisible) {
-    // Ajouter les couches WMS
-    UAS_LAYERS.forEach(l => {
-      try { l.addTo(map); } catch(e) {}
-    });
+    zonesUASLayer.addTo(map);
     btn.classList.add('active');
-    btn.textContent = '🚫 Zones UAS';
+    btn.textContent = '🚫 Zones UAS ON';
     if (!zonesLoaded) {
       zonesLoaded = true;
-      showToast('⏳ Chargement zones DGAC…');
-      // Timeout si WMS ne répond pas
-      setTimeout(() => {
-        if (zonesVisible) showToast('✅ Zones UAS activées — délai possible selon réseau');
-      }, 3000);
+      showToast('🗺️ Zones UAS DGAC chargées — zoom > 8 requis');
     }
   } else {
-    UAS_LAYERS.forEach(l => { try { map.removeLayer(l); } catch(e) {} });
+    try { map.removeLayer(zonesUASLayer); } catch(e) {}
     btn.classList.remove('active');
     btn.textContent = '🗺️ Zones UAS';
   }
@@ -385,13 +386,18 @@ function toggleNature() {
   natureVisible = !natureVisible;
   const btn = document.getElementById('btn-nature');
   if (natureVisible) {
-    NATURE_LAYERS.forEach(l => l.addTo(map));
-    if (!natureLoaded) { showToast('⏳ Chargement zones naturelles…', 'info'); natureLoaded = true; }
+    naturaLayer.addTo(map);
+    btn.classList.add('active');
+    btn.textContent = '🌿 Nature ON';
+    if (!natureLoaded) {
+      natureLoaded = true;
+      showToast('🌿 Zones Natura 2000 chargées');
+    }
   } else {
-    NATURE_LAYERS.forEach(l => { try{ map.removeLayer(l); }catch{} });
+    try { map.removeLayer(naturaLayer); } catch(e) {}
+    btn.classList.remove('active');
+    btn.textContent = '🌿 Zones naturelles';
   }
-  btn.classList.toggle('active', natureVisible);
-  btn.textContent = natureVisible ? '🌿 Zones naturelles' : '👁 Nature masquée';
 }
 
 // ─── MARQUEUR PILOTE ──────────────────────────────────────
@@ -540,7 +546,7 @@ map.on('click', async (e) => {
   const bounds = map.getBounds();
   const point = map.latLngToContainerPoint(e.latlng);
 
-  const wmsUrl = 'https://wxs.ign.fr/essentiels/geoportail/r/wms';
+  const wmsUrl = 'https://data.geopf.fr/essentiels/geoportail/r/wms';
   const params = new URLSearchParams({
     SERVICE: 'WMS',
     VERSION: '1.3.0',
