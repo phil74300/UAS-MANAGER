@@ -71,7 +71,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .lic-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .lic-copy{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;font-size:11px;cursor:pointer;color:var(--text);font-family:inherit;}
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(12,68,124,.06);}
 .stat-v{font-size:22px;font-weight:800;color:var(--navy);}
 @media(prefers-color-scheme:dark){.stat-v{color:#7EB8F7;}}
@@ -331,9 +331,11 @@ function renderList() {
   var counts = {std:0, pro:0, vip:0, per:0};
   licenses.forEach(function(l){ if(counts[l.plan]!==undefined) counts[l.plan]++; });
   var mrr = counts.std*9.99 + counts.pro*19.99 + counts.vip*29.99;
+  var revoked = licenses.filter(function(l){ return l.revoked; }).length;
   document.getElementById('stats').innerHTML =
     '<div class="stat"><div class="stat-v">' + licenses.length + '</div><div class="stat-l">Total</div></div>' +
-    '<div class="stat"><div class="stat-v" style="color:#1D6B37;">' + (counts.std+counts.pro+counts.vip) + '</div><div class="stat-l">Payantes</div></div>' +
+    '<div class="stat"><div class="stat-v" style="color:#1D6B37;">' + (licenses.length - revoked) + '</div><div class="stat-l">Actives</div></div>' +
+    '<div class="stat"><div class="stat-v" style="color:#8B2020;">' + revoked + '</div><div class="stat-l">Révoquées</div></div>' +
     '<div class="stat"><div class="stat-v" style="color:#BA7517;">' + mrr.toFixed(0) + '€</div><div class="stat-l">MRR</div></div>';
 
   var el = document.getElementById('lic-list');
@@ -355,7 +357,46 @@ function renderList() {
 }
 
 function copyLic(key) {
-  navigator.clipboard.writeText(key).then(function(){ toast('📋 ' + key); });
+  navigator.clipboard.writeText(key)
+    .then(function(){ toast('📋 ' + key); })
+    .catch(function(){
+      // Fallback sélection
+      var tmp = document.createElement('textarea');
+      tmp.value = key; document.body.appendChild(tmp);
+      tmp.select(); document.execCommand('copy');
+      document.body.removeChild(tmp);
+      toast('📋 ' + key);
+    });
+}
+
+function toggleRevoke(id) {
+  var l = licenses.find(function(x){ return x.id === id; });
+  if (!l) return;
+  l.revoked = !l.revoked;
+  saveLicenses();
+  renderList();
+  toast(l.revoked ? '🚫 Licence révoquée — ' + l.key : '✅ Licence réactivée — ' + l.key, l.revoked ? 'amber' : '');
+}
+
+function emailLic(id) {
+  var l = licenses.find(function(x){ return String(x.id) === String(id); });
+  if (!l || !l.email) { toast('⚠️ Pas d\'email', 'amber'); return; }
+  if (l.revoked) { toast('⚠️ Cette licence est révoquée', 'amber'); return; }
+  var p = PLAN_INFO[l.plan] || PLAN_INFO.std;
+  var subj = encodeURIComponent('Votre licence UAS Manager ' + p.icon + ' ' + p.name);
+  var body = encodeURIComponent(
+    'Bonjour ' + l.nom + ',\n\n' +
+    'Voici votre clé de licence UAS Manager :\n\n' +
+    '   ' + l.key + '\n\n' +
+    'Plan : ' + p.icon + ' ' + p.name + ' (' + p.price + ')\n\n' +
+    'Comment activer :\n' +
+    '1. Ouvrez UAS Manager\n' +
+    '2. Entrez la clé dans le champ activation\n' +
+    '3. Appuyez sur Activer\n\n' +
+    'Cordialement,\nPhilippe CONTE\ncontephil74@gmail.com\n\n' +
+    '© 2026 Philippe CONTE · UAS Manager'
+  );
+  window.open('mailto:' + l.email + '?subject=' + subj + '&body=' + body);
 }
 
 // ─── EXPORT CSV ───────────────────────────────────────────

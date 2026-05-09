@@ -196,7 +196,7 @@ html,body{
   <button class="tool-btn" id="btn-osm" onclick="setLayer('osm')">🌍 OSM</button>
   <button class="tool-btn" id="btn-sat" onclick="setLayer('satellite')">🛰️ Satellite</button>
   <div class="tool-sep"></div>
-  <button class="tool-btn" id="btn-zones" onclick="toggleZones()">🚫 Zones UAS</button>
+  <button class="tool-btn" id="btn-zones" onclick="toggleZones()">🗺️ Zones UAS</button>
   <button class="tool-btn" id="btn-thyez" onclick="goThyez()">📍 Thyez</button>
   <div class="tool-sep"></div>
   <button class="tool-btn" id="btn-nature" onclick="toggleNature()">🌿 Zones naturelles</button>
@@ -322,7 +322,16 @@ const WMS_BASE = 'https://data.geopf.fr/wms-r';
 const WMS_OPTS = (layers, opacity=0.7) => ({
   layers, format:'image/png', transparent:true,
   version:'1.3.0', attribution:'© IGN / DGAC', opacity,
+  errorTileUrl: '', // Pas d'erreur visible sur tuile manquante
 });
+
+// Gestion erreur WMS globale
+function setupWMSErrorHandler(layer, name) {
+  layer.on('tileerror', function() {
+    // Silencieux — les zones WMS peuvent être lentes
+  });
+  return layer;
+}
 
 // Zones réglementées UAS (DGAC) — couche officielle
 const droneZonesWMS = L.tileLayer.wms(WMS_BASE, WMS_OPTS('REGLEMENTATION.DRONE', 0.8));
@@ -338,14 +347,12 @@ const znieffWMS   = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.ZNIEFF1',
 const biotopeWMS  = L.tileLayer.wms(WMS_BASE, WMS_OPTS('PROTECTEDAREAS.APB', 0.45));
 
 // ── GESTION VISIBILITÉ ──
-let zonesVisible = true;
-let natureVisible = true;
+let zonesVisible = false;
+let natureVisible = false;
 
 const UAS_LAYERS    = [droneZonesWMS, airspaceWMS];
 const NATURE_LAYERS = [parcsWMS, natura2000WMS, reservesWMS, znieffWMS, biotopeWMS];
 
-// NE PAS ajouter au démarrage — l'utilisateur les active manuellement
-// pour éviter les erreurs si WMS indisponible
 let zonesLoaded = false;
 let natureLoaded = false;
 
@@ -353,13 +360,25 @@ function toggleZones() {
   zonesVisible = !zonesVisible;
   const btn = document.getElementById('btn-zones');
   if (zonesVisible) {
-    UAS_LAYERS.forEach(l => l.addTo(map));
-    if (!zonesLoaded) { showToast('⏳ Chargement zones UAS…', 'info'); zonesLoaded = true; }
+    // Ajouter les couches WMS
+    UAS_LAYERS.forEach(l => {
+      try { l.addTo(map); } catch(e) {}
+    });
+    btn.classList.add('active');
+    btn.textContent = '🚫 Zones UAS';
+    if (!zonesLoaded) {
+      zonesLoaded = true;
+      showToast('⏳ Chargement zones DGAC…');
+      // Timeout si WMS ne répond pas
+      setTimeout(() => {
+        if (zonesVisible) showToast('✅ Zones UAS activées — délai possible selon réseau');
+      }, 3000);
+    }
   } else {
-    UAS_LAYERS.forEach(l => { try{ map.removeLayer(l); }catch{} });
+    UAS_LAYERS.forEach(l => { try { map.removeLayer(l); } catch(e) {} });
+    btn.classList.remove('active');
+    btn.textContent = '🗺️ Zones UAS';
   }
-  btn.classList.toggle('active', zonesVisible);
-  btn.textContent = zonesVisible ? '🚫 Zones UAS' : '👁 UAS masqué';
 }
 
 function toggleNature() {
