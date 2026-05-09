@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>UAS Manager — Bilan annuel</title>
+<style>
+  :root {
+    --navy: #0C447C; --blue: #185FA5; --light-blue: #E6F1FB;
+    --green: #1D6B37; --amber: #BA7517; --light-amber: #FAEEDA;
+    --red: #8B2020; --bg: #F0F4FA; --surface: #FFFFFF;
+    --text: #0D1220; --text-muted: #5A6478; --border: #D0DCF0;
+    --accent: #0C447C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0D1220; --surface: #161E30; --text: #E8EEF8;
+             --text-muted: #7A8BAA; --border: #253050; --light-blue: #1A2D4A; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+  #app { display: flex; flex-direction: column; height: 100%; height: -webkit-fill-available; }
+
+  /* HEADER */
+  #header {
+    background: var(--navy); color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; height: 56px;
+    padding-top: env(safe-area-inset-top); flex-shrink: 0;
+  }
+  #header h1 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .back-btn {
+    background: rgba(255,255,255,0.15); border: none; border-radius: 8px;
+    color: #fff; padding: 6px 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: background 0.15s;
+  }
+  .back-btn:active { background: rgba(255,255,255,0.28); }
+
+  /* CONTENT */
+  #content {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center; gap: 16px;
+  }
+  .ph-icon {
+    font-size: 64px; line-height: 1;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .ph-title { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .ph-desc { font-size: 14px; color: var(--text-muted); max-width: 280px; line-height: 1.5; }
+  .ph-badge {
+    background: var(--light-blue); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 8px 20px;
+    font-size: 13px; font-weight: 600; color: var(--blue);
+    margin-top: 8px;
+  }
+  .ph-back {
+    margin-top: 16px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 12px;
+    padding: 14px 28px; font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transition: opacity 0.15s;
+  }
+  .ph-back:active { opacity: 0.8; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="header">
+    <h1>📊 Bilan annuel</h1>
+    <a class="back-btn" href="index.html">← Accueil</a>
+  </header>
+  <div id="content">
+    <div class="ph-icon">📊</div>
+    <div class="ph-title">Bilan annuel</div>
+    <div class="ph-desc">Statistiques et graphiques annuels</div>
+    <div class="ph-badge">🚧 Module en cours de développement</div>
+    <a class="ph-back" href="index.html">← Retour à l'accueil</a>
+  </div>
+</div>
+</body>
+</html>
