@@ -588,7 +588,7 @@ window.addEventListener('storage',e=>{
     } else {
       var k = prompt('🔐 Clé administrateur :');
       if (!k) return;
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(k.trim().toUpperCase()))
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(k.trim()))
         .then(function(buf) {
           var h = Array.from(new Uint8Array(buf))
             .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
