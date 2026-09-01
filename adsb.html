@@ -6,48 +6,57 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>UAS Manager — ADS-B Trafic</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-  :root {
-    --navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;
-    --light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;
-    --red:#8B2020;--teal:#006064;--bg:#F4F7FB;--surface:#FFFFFF;
-    --text:#1A1A2E;--text-muted:#5A6478;--border:#D0DCF0;--header-h:56px;
-  }
+  :root{--navy:#0C447C;--blue:#185FA5;--light-blue:#E6F1FB;--green:#1D6B37;--light-green:#E8F5E9;--amber:#BA7517;--light-amber:#FAEEDA;--red:#8B2020;--bg:#F4F7FB;--surface:#FFFFFF;--text:#1A1A2E;--text-muted:#5A6478;--border:#D0DCF0;}
   @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--text-muted:#7A8BAA;--border:#253050;--light-blue:#1A2D4A;--light-amber:#2A1E00;--light-green:#0F2318;}}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;height:-webkit-fill-available;font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased;}
   #app{display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;overflow:hidden;}
-  #header{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:var(--header-h);padding-top:env(safe-area-inset-top);flex-shrink:0;z-index:100;gap:10px;}
-  #header h1{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  #header{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top));flex-shrink:0;z-index:100;gap:10px;}
+  #header h1{font-size:17px;font-weight:700;white-space:nowrap;}
   .back-btn{background:rgba(255,255,255,0.15);border:none;border-radius:8px;color:#fff;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;}
   .back-btn:active{background:rgba(255,255,255,0.28);}
-  #disclaimer{background:var(--light-amber);border-bottom:2px solid var(--amber);color:var(--amber);font-size:11px;font-weight:600;text-align:center;padding:7px 12px;flex-shrink:0;line-height:1.3;}
-  #toolbar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-  #toolbar::-webkit-scrollbar{display:none;}
-  .src-btn{background:var(--light-blue);border:1.5px solid var(--border);border-radius:8px;color:var(--navy);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
-  .src-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
-  .src-btn:disabled{opacity:0.6;cursor:default;}
+  #disclaimer{background:var(--light-amber);border-bottom:2px solid var(--amber);color:var(--amber);font-size:11px;font-weight:600;text-align:center;padding:6px 12px;flex-shrink:0;}
+  #tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-shrink:0;}
+  .tab-btn{flex:1;padding:10px 0;font-size:13px;font-weight:700;color:var(--text-muted);background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.15s;}
+  .tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+  @media(prefers-color-scheme:dark){.tab-btn.active{color:#7EB8F7;border-bottom-color:#7EB8F7;}}
+  .panel{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;}
+  .panel.active{display:flex;}
+  #toolbar-pos{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #toolbar-pos::-webkit-scrollbar{display:none;}
+  .tool-btn{background:var(--light-blue);border:1.5px solid var(--border);border-radius:8px;color:var(--navy);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .tool-btn:active{opacity:0.75;}
+  .tool-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .tool-btn:disabled{opacity:0.5;cursor:default;}
   .tool-sep{width:1px;height:22px;background:var(--border);flex-shrink:0;}
-  .open-ext-btn{margin-left:auto;background:var(--light-green);border:1.5px solid var(--green);border-radius:8px;color:var(--green);padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px;}
-  #map-container{flex:1;position:relative;overflow:hidden;min-height:0;background:#1a1a2e;}
-  #map-frame{position:absolute;inset:0;width:100%;height:100%;border:none;display:block;}
-  #loading-overlay{position:absolute;inset:0;background:#0D1220;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:10;transition:opacity 0.4s;}
+  #map{flex:1;min-height:0;}
+  #pos-stats{position:absolute;bottom:16px;left:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:11px;z-index:500;box-shadow:0 2px 12px rgba(12,68,124,0.13);min-width:160px;}
+  .stat-row{display:flex;justify-content:space-between;gap:12px;align-items:center;}
+  .stat-row+.stat-row{margin-top:3px;}
+  .stat-label{color:var(--text-muted);font-weight:500;}
+  .stat-val{font-weight:700;color:var(--navy);}
+  @media(prefers-color-scheme:dark){.stat-val{color:#7EB8F7;}}
+  #toolbar-traf{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  #toolbar-traf::-webkit-scrollbar{display:none;}
+  .src-btn{background:var(--light-blue);border:1.5px solid var(--border);border-radius:8px;color:var(--navy);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .src-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .open-ext-btn{margin-left:auto;background:var(--light-green);border:1.5px solid var(--green);border-radius:8px;color:var(--green);padding:6px 12px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;}
+  #map-frame-wrap{flex:1;position:relative;overflow:hidden;min-height:0;background:#0D1220;}
+  #map-frame{position:absolute;inset:0;width:100%;height:100%;border:none;}
+  #loading-overlay{position:absolute;inset:0;background:#0D1220;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:10;transition:opacity 0.4s;}
   #loading-overlay.hidden{opacity:0;pointer-events:none;}
-  .load-icon{font-size:48px;animation:pulse 1.5s ease-in-out infinite;}
+  .load-icon{font-size:44px;animation:pulse 1.5s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.95);}}
   .load-text{color:#7EB8F7;font-size:14px;font-weight:600;}
-  .load-sub{color:#5A6478;font-size:12px;}
-  #fallback{display:none;position:absolute;inset:0;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;z-index:5;}
-  #fallback.visible{display:flex;}
-  .fallback-icon{font-size:56px;}
-  .fallback-title{font-size:18px;font-weight:800;color:var(--navy);}
-  .fallback-desc{font-size:13px;color:var(--text-muted);line-height:1.5;max-width:300px;}
-  .fallback-btn{display:block;background:var(--navy);color:#fff;border-radius:12px;padding:13px 24px;font-size:14px;font-weight:700;text-decoration:none;margin-top:4px;}
-  .fallback-btn.secondary{background:var(--light-blue);color:var(--navy);margin-top:0;}
-  .copyright-footer{text-align:center;padding:10px 14px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+  .copyright-footer{text-align:center;padding:8px 14px calc(4px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;}
   .copyright-footer .cf-app{font-size:11px;font-weight:800;color:var(--navy);}
-  .copyright-footer .cf-author{font-size:10px;color:var(--text-muted);margin-top:1px;}
+  .copyright-footer .cf-author{font-size:10px;color:var(--text-muted);}
   @media(prefers-color-scheme:dark){.copyright-footer .cf-app{color:#7EB8F7;}}
+  .leaflet-control-zoom{border:none!important;box-shadow:0 2px 12px rgba(12,68,124,0.13)!important;}
+  .leaflet-control-zoom a{background:var(--surface)!important;color:var(--navy)!important;border:1px solid var(--border)!important;font-weight:700!important;}
 </style>
 </head>
 <body>
@@ -57,30 +66,49 @@
     <a class="back-btn" href="index.html">← Accueil</a>
   </header>
   <div id="disclaimer">⚠️ Données non temps réel (délai 10-30s) — Ne pas utiliser comme seul moyen d'évitement de trafic aérien</div>
-  <div id="toolbar">
-    <button class="src-btn active" onclick="switchSource('adsbexchange')" id="btn-adsbexchange">📡 ADSBexchange</button>
-    <div class="tool-sep"></div>
-    <button class="src-btn" onclick="switchSource('radarbox')" id="btn-radarbox">📻 RadarBox</button>
-    <div class="tool-sep"></div>
-    <button class="src-btn" onclick="switchSource('flightradar')" id="btn-flightradar">🌐 FlightRadar</button>
-    <div class="tool-sep"></div>
-    <button class="src-btn" id="btn-gps" onclick="goToGPS()">📍 Ma position</button>
-    <a class="open-ext-btn" id="open-ext" href="https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9" target="_blank">↗ Plein écran</a>
+  <div id="tabs">
+    <button class="tab-btn active" onclick="showTab('position')" id="tab-position">📍 Ma position</button>
+    <button class="tab-btn" onclick="showTab('trafic')" id="tab-trafic">✈️ Trafic aérien</button>
   </div>
-  <div id="map-container">
-    <div id="loading-overlay">
-      <div class="load-icon">📡</div>
-      <div class="load-text">Chargement du trafic aérien…</div>
-      <div class="load-sub">Haute-Savoie · Rayon 100 km</div>
+  <div class="panel active" id="panel-position" style="position:relative;">
+    <div id="toolbar-pos">
+      <button class="tool-btn active" id="btn-gps" onclick="toggleGPS()">📍 Suivi GPS</button>
+      <div class="tool-sep"></div>
+      <button class="tool-btn" onclick="centerMap()">🎯 Centrer</button>
+      <div class="tool-sep"></div>
+      <span style="font-size:11px;color:var(--text-muted);font-weight:600;white-space:nowrap;">Rayon</span>
+      <select id="radius-select" onchange="updateRadius()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-weight:600;color:var(--text);">
+        <option value="500">500m</option>
+        <option value="1000" selected>1km</option>
+        <option value="2000">2km</option>
+        <option value="5000">5km</option>
+        <option value="10000">10km</option>
+      </select>
     </div>
-    <div id="fallback">
-      <div class="fallback-icon">🛡️</div>
-      <div class="fallback-title">Carte non disponible</div>
-      <div class="fallback-desc">Cette source bloque l'integration dans l'app. Ouvre-la directement dans Safari.</div>
-      <a class="fallback-btn" id="fallback-ext-link" href="#" target="_blank">↗ Ouvrir dans Safari</a>
-      <a class="fallback-btn secondary" href="javascript:void(0)" onclick="switchSource('adsbexchange')">← Retour ADSBexchange</a>
+    <div id="map"></div>
+    <div id="pos-stats">
+      <div class="stat-row"><span class="stat-label">Latitude</span><span class="stat-val" id="stat-lat">—</span></div>
+      <div class="stat-row"><span class="stat-label">Longitude</span><span class="stat-val" id="stat-lon">—</span></div>
+      <div class="stat-row"><span class="stat-label">Precision</span><span class="stat-val" id="stat-acc">—</span></div>
+      <div class="stat-row"><span class="stat-label">Altitude</span><span class="stat-val" id="stat-alt">—</span></div>
     </div>
-    <iframe id="map-frame" src="https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9" allowfullscreen allow="geolocation" loading="lazy"></iframe>
+  </div>
+  <div class="panel" id="panel-trafic">
+    <div id="toolbar-traf">
+      <button class="src-btn active" onclick="switchSource('adsbexchange')" id="btn-adsbexchange">📡 ADSBexchange</button>
+      <div class="tool-sep"></div>
+      <button class="src-btn" onclick="switchSource('radarbox')" id="btn-radarbox">📻 RadarBox</button>
+      <div class="tool-sep"></div>
+      <button class="src-btn" onclick="switchSource('flightradar')" id="btn-flightradar">🌐 FlightRadar</button>
+      <a class="open-ext-btn" id="open-ext" href="https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9" target="_blank">↗ Plein écran</a>
+    </div>
+    <div id="map-frame-wrap">
+      <div id="loading-overlay">
+        <div class="load-icon">📡</div>
+        <div class="load-text">Chargement du trafic...</div>
+      </div>
+      <iframe id="map-frame" src="https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9" allowfullscreen allow="geolocation" loading="lazy"></iframe>
+    </div>
   </div>
   <div class="copyright-footer">
     <div class="cf-app">UAS Manager</div>
@@ -88,65 +116,56 @@
   </div>
 </div>
 <script>
-const SOURCES={adsbexchange:{url:'https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9',ext:'https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9'},radarbox:{url:'https://www.radarbox.com/map#?lat=45.9523&lng=6.5016&zoom=9',ext:'https://www.radarbox.com/map#?lat=45.9523&lng=6.5016&zoom=9'},flightradar:{url:'https://www.flightradar24.com/45.95,6.50/10',ext:'https://www.flightradar24.com/45.95,6.50/10'}};
-let currentSource='adsbexchange',loadTimer=null;
-const frame=document.getElementById('map-frame');
-const overlay=document.getElementById('loading-overlay');
-
-function switchSource(name){
-  if(name===currentSource)return;
-  currentSource=name;
-  document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('btn-'+name).classList.add('active');
-  overlay.classList.remove('hidden');
-  document.getElementById('fallback').classList.remove('visible');
-  const src=SOURCES[name];
-  document.getElementById('open-ext').href=src.ext;
-  document.getElementById('fallback-ext-link').href=src.ext;
-  frame.src=src.url;
-  clearTimeout(loadTimer);
-  loadTimer=setTimeout(()=>{overlay.classList.add('hidden');document.getElementById('fallback').classList.add('visible');},8000);
-}
-
-function goToGPS(){
-  const btn=document.getElementById('btn-gps');
+function showTab(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');document.getElementById('tab-'+name).classList.add('active');if(name==='position')setTimeout(()=>map.invalidateSize({animate:false}),100);}
+const DEFAULT_LAT=45.9523,DEFAULT_LON=6.5016;
+const map=L.map('map',{center:[DEFAULT_LAT,DEFAULT_LON],zoom:15,zoomControl:true});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+const pilotIcon=L.divIcon({className:'',html:'<div style="width:36px;height:36px;background:#0C447C;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,0.4);">🛸</div>',iconSize:[36,36],iconAnchor:[18,18]});
+let pilotMarker=L.marker([DEFAULT_LAT,DEFAULT_LON],{icon:pilotIcon,zIndexOffset:1000}).addTo(map).bindPopup('<b>Philippe CONTE</b><br>FRAjqq48j12nfy4c<br>DJI Mavic 4 Pro');
+let radiusCircle=L.circle([DEFAULT_LAT,DEFAULT_LON],{radius:1000,color:'#185FA5',fillColor:'#E6F1FB',fillOpacity:0.15,weight:2,dashArray:'6 4'}).addTo(map);
+let accuracyCircle=null;
+function updateRadius(){radiusCircle.setRadius(parseInt(document.getElementById('radius-select').value));}
+function centerMap(){map.setView(pilotMarker.getLatLng(),15);}
+let gpsWatchId=null,gpsActive=false;
+function toggleGPS(){if(gpsActive)stopGPS();else startGPS();}
+function startGPS(){
   if(!navigator.geolocation){alert('GPS non disponible');return;}
-  btn.textContent='⏳ GPS...';
-  btn.disabled=true;
-  navigator.geolocation.getCurrentPosition(
+  const btn=document.getElementById('btn-gps');
+  btn.textContent='GPS...';btn.disabled=true;
+  gpsWatchId=navigator.geolocation.watchPosition(
     (pos)=>{
-      const lat=pos.coords.latitude.toFixed(4);
-      const lon=pos.coords.longitude.toFixed(4);
-      const url='https://globe.adsbexchange.com/?lat='+lat+'&lon='+lon+'&zoom=11';
-      SOURCES.adsbexchange.url=url;
-      SOURCES.adsbexchange.ext=url;
-      document.getElementById('open-ext').href=url;
-      frame.src=url;
-      document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active'));
-      document.getElementById('btn-adsbexchange').classList.add('active');
-      currentSource='adsbexchange';
-      btn.textContent='📍 Ma position';
-      btn.disabled=false;
-      overlay.classList.remove('hidden');
-      clearTimeout(loadTimer);
-      loadTimer=setTimeout(()=>{overlay.classList.add('hidden');},8000);
+      const lat=pos.coords.latitude,lon=pos.coords.longitude,acc=Math.round(pos.coords.accuracy);
+      const alt=pos.coords.altitude?Math.round(pos.coords.altitude)+' m':'N/A';
+      pilotMarker.setLatLng([lat,lon]);
+      radiusCircle.setLatLng([lat,lon]);
+      if(accuracyCircle)accuracyCircle.remove();
+      accuracyCircle=L.circle([lat,lon],{radius:acc,color:'#1D6B37',fillColor:'#E8F5E9',fillOpacity:0.3,weight:1.5,dashArray:'4 3'}).addTo(map);
+      map.setView([lat,lon],15);
+      document.getElementById('stat-lat').textContent=lat.toFixed(6)+'°';
+      document.getElementById('stat-lon').textContent=lon.toFixed(6)+'°';
+      document.getElementById('stat-acc').textContent='±'+acc+' m';
+      document.getElementById('stat-alt').textContent=alt;
+      updateTrafficPosition(lat,lon);
+      gpsActive=true;btn.textContent='⏹ Arreter GPS';btn.disabled=false;btn.classList.add('active');
     },
     (err)=>{
-      btn.textContent='📍 Ma position';
-      btn.disabled=false;
-      const msgs={1:'GPS refuse',2:'GPS indisponible',3:'Delai GPS depasse'};
-      alert(msgs[err.code]||'Erreur GPS');
+      btn.textContent='📍 Suivi GPS';btn.disabled=false;btn.classList.remove('active');
+      const msgs={1:'GPS refuse',2:'GPS indisponible',3:'Delai depasse'};
+      alert(msgs[err.code]||'Erreur GPS');gpsActive=false;
     },
-    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+    {enableHighAccuracy:true,maximumAge:2000,timeout:15000}
   );
 }
-
-frame.addEventListener('load',()=>{clearTimeout(loadTimer);setTimeout(()=>{overlay.classList.add('hidden');},1000);});
-frame.addEventListener('error',()=>{clearTimeout(loadTimer);overlay.classList.add('hidden');document.getElementById('fallback').classList.add('visible');});
-
-try{const cfg=JSON.parse(localStorage.getItem('uas_config')||'{}');if(cfg.lat&&cfg.lon){const lat=parseFloat(cfg.lat),lon=parseFloat(cfg.lon);if(!isNaN(lat)&&!isNaN(lon)){const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=9';SOURCES.adsbexchange.url=url;SOURCES.adsbexchange.ext=url;frame.src=url;document.getElementById('open-ext').href=url;}}}catch(e){}
-
-loadTimer=setTimeout(()=>{overlay.classList.add('hidden');},8000);
+function stopGPS(){if(gpsWatchId!==null)navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;gpsActive=false;const btn=document.getElementById('btn-gps');btn.textContent='📍 Suivi GPS';btn.classList.remove('active');if(accuracyCircle){accuracyCircle.remove();accuracyCircle=null;}}
+const SOURCES={adsbexchange:'https://globe.adsbexchange.com/?lat=45.9523&lon=6.5016&zoom=9',radarbox:'https://www.radarbox.com/map#?lat=45.9523&lng=6.5016&zoom=9',flightradar:'https://www.flightradar24.com/45.95,6.50/10'};
+let currentSource='adsbexchange',loadTimer=null;
+const frame=document.getElementById('map-frame'),overlay=document.getElementById('loading-overlay');
+function switchSource(name){currentSource=name;document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+name).classList.add('active');overlay.classList.remove('hidden');frame.src=SOURCES[name];document.getElementById('open-ext').href=SOURCES[name];clearTimeout(loadTimer);loadTimer=setTimeout(()=>overlay.classList.add('hidden'),8000);}
+function updateTrafficPosition(lat,lon){const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=10';SOURCES.adsbexchange=url;if(currentSource==='adsbexchange')document.getElementById('open-ext').href=url;}
+frame.addEventListener('load',()=>{clearTimeout(loadTimer);setTimeout(()=>overlay.classList.add('hidden'),1000);});
+try{const cfg=JSON.parse(localStorage.getItem('uas_config')||'{}');if(cfg.lat&&cfg.lon){const lat=parseFloat(cfg.lat),lon=parseFloat(cfg.lon);if(!isNaN(lat)&&!isNaN(lon)){pilotMarker.setLatLng([lat,lon]);radiusCircle.setLatLng([lat,lon]);map.setView([lat,lon],15);const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=9';SOURCES.adsbexchange=url;frame.src=url;document.getElementById('open-ext').href=url;}}}catch(e){}
+loadTimer=setTimeout(()=>overlay.classList.add('hidden'),8000);
+window.addEventListener('beforeunload',()=>{if(gpsWatchId!==null)navigator.geolocation.clearWatch(gpsWatchId);});
 </script>
 </body>
 </html>
