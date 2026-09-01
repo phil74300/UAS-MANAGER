@@ -582,8 +582,7 @@ window.addEventListener('storage',e=>{
 
   // Touch events (iOS)
   el.addEventListener('touchstart', startPress, { passive: false });
-  el.addEventListener('touchend',   function(e) { e.preventDefault(); endPress(false); }, { passive: false });
-  el.addEventListener('touchcancel',function(e) { endPress(false); }, { passive: false });
+  el.addEventListener('touchend',   function(e) { e.preventDefault(); }, { passive: false });
 
   // Mouse events (desktop)
   el.addEventListener('mousedown', startPress);
