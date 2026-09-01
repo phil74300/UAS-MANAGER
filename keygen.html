@@ -4,41 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>UAS Manager — Générateur</title>
+<title>UAS Manager — Generateur</title>
 <style>
 :root{--navy:#0C447C;--blue:#185FA5;--green:#1D6B37;--amber:#BA7517;--red:#8B2020;--purple:#5C35A0;--bg:#F0F4FA;--surface:#fff;--text:#0D1220;--muted:#5A6478;--border:#D0DCF0;}
 @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--muted:#7A8BAA;--border:#253050;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
-/* AUTH */
 #auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
 .auth-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 22px;width:100%;max-width:320px;text-align:center;box-shadow:0 4px 20px rgba(12,68,124,.1);}
 .auth-icon{font-size:48px;margin-bottom:12px;}
 .auth-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px;}
 @media(prefers-color-scheme:dark){.auth-title{color:#7EB8F7;}}
 .auth-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
-.auth-inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-weight:700;padding:12px;font-family:'SF Mono',monospace;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:10px;}
+.auth-inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:24px;font-weight:700;padding:12px;font-family:'SF Mono',monospace;letter-spacing:8px;text-align:center;margin-bottom:10px;}
 .auth-inp:focus{outline:none;border-color:var(--blue);}
-.auth-inp::placeholder{font-family:-apple-system,sans-serif;letter-spacing:0;font-size:13px;font-weight:400;text-transform:none;color:var(--muted);}
+.auth-inp::placeholder{font-family:-apple-system,sans-serif;letter-spacing:0;font-size:13px;font-weight:400;color:var(--muted);}
 .auth-btn{width:100%;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
 .auth-err{margin-top:10px;padding:9px;border-radius:8px;background:#FDECEC;color:#8B2020;font-size:12px;font-weight:600;display:none;}
-/* MAIN */
 #main{display:none;}
-/* HEADER */
 #hdr{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) 14px 0;height:calc(56px + env(safe-area-inset-top));position:sticky;top:0;z-index:100;}
 #hdr h1{font-size:16px;font-weight:800;color:#fff;}
 .back{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;}
-/* CONTENT */
 #content{max-width:560px;margin:0 auto;padding:16px 14px 40px;}
-/* CARD */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(12,68,124,.08);margin-bottom:12px;}
 .card-hdr{background:#F8FAFD;border-bottom:1px solid var(--border);padding:11px 14px;font-size:13px;font-weight:700;}
 @media(prefers-color-scheme:dark){.card-hdr{background:#1C2840;}}
 .card-body{padding:14px;}
-/* PLANS */
 .plan-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
 .plan-btn{border:2px solid var(--border);border-radius:11px;padding:13px 10px;text-align:center;cursor:pointer;background:var(--bg);transition:all .15s;font-family:inherit;}
-.plan-btn:active{opacity:.8;}
 .plan-btn.sel{border-width:2.5px;}
 .sel-std{border-color:#BA7517;background:#FAEEDA;}
 .sel-pro{border-color:#1D6B37;background:#E8F5E9;}
@@ -47,22 +40,18 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .pb-icon{font-size:22px;margin-bottom:4px;}
 .pb-name{font-size:12px;font-weight:700;color:var(--text);}
 .pb-price{font-size:10px;color:var(--muted);margin-top:2px;}
-/* CLIENT */
 .field{margin-bottom:10px;}
 .field label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
 .field input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-weight:500;padding:9px 11px;font-family:inherit;transition:border-color .15s;}
 .field input:focus{outline:none;border-color:var(--blue);}
-/* BOUTON GÉNÉRER */
 .btn-gen{width:100%;background:linear-gradient(135deg,var(--green),#2a9e52);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:4px;}
 .btn-gen:active{opacity:.85;}
-/* RÉSULTAT CLÉ */
 #result{display:none;margin-top:14px;}
 .key-display{background:var(--bg);border:2px solid var(--green);border-radius:11px;padding:16px;text-align:center;font-family:'SF Mono',monospace;font-size:20px;font-weight:800;color:var(--green);letter-spacing:3px;margin-bottom:10px;}
 .btn-copy{width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
 .btn-email{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);font-family:inherit;}
 .info-note{font-size:11px;color:var(--muted);background:#E6F1FB;border-radius:8px;padding:9px 11px;margin-top:8px;line-height:1.5;}
 .info-note.warn{background:#FAEEDA;color:#BA7517;}
-/* LISTE */
 .lic-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
 .lic-row:last-child{border-bottom:none;}
 .lic-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
@@ -70,14 +59,12 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .lic-key{font-size:13px;font-weight:700;font-family:'SF Mono',monospace;letter-spacing:1px;}
 .lic-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .lic-copy{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;font-size:11px;cursor:pointer;color:var(--text);font-family:inherit;}
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(12,68,124,.06);}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;}
 .stat-v{font-size:22px;font-weight:800;color:var(--navy);}
 @media(prefers-color-scheme:dark){.stat-v{color:#7EB8F7;}}
 .stat-l{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600;}
 .empty{text-align:center;padding:24px;font-size:13px;color:var(--muted);}
-/* TOAST */
 #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;transition:transform .25s;pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);}
 #toast.amber{background:var(--amber);}
@@ -86,59 +73,48 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 </style>
 </head>
 <body>
-
-<!-- AUTH -->
 <div id="auth">
   <div class="auth-box">
     <div class="auth-icon">🔐</div>
-    <div class="auth-title">Accès réservé</div>
-    <div class="auth-sub">Générateur de licences UAS Manager<br>Réservé à Philippe CONTE</div>
-    <input class="auth-inp" id="auth-key" type="password" placeholder="Votre clé créateur…" maxlength="14">
-    <button class="auth-btn" onclick="checkAuth()">Accéder →</button>
-    <div class="auth-err" id="auth-err">❌ Clé incorrecte</div>
+    <div class="auth-title">Acces reserve</div>
+    <div class="auth-sub">Generateur de licences UAS Manager<br>Reserve a Philippe CONTE</div>
+    <input class="auth-inp" id="auth-key" type="number" placeholder="Votre code" inputmode="numeric" maxlength="30">
+    <button class="auth-btn" onclick="checkAuth()">Acceder</button>
+    <div class="auth-err" id="auth-err">Code incorrect</div>
   </div>
 </div>
-
-<!-- MAIN -->
 <div id="main">
   <div id="hdr">
-    <h1>⚙️ Générateur de licences</h1>
-    <a class="back" href="index.html">← Accueil</a>
+    <h1>Generateur de licences</h1>
+    <a class="back" href="index.html">Accueil</a>
   </div>
-
   <div id="content">
-
-    <!-- GÉNÉRER -->
     <div class="card">
-      <div class="card-hdr">➕ Nouvelle licence</div>
+      <div class="card-hdr">Nouvelle licence</div>
       <div class="card-body">
-
-        <!-- Choix du plan -->
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Plan</div>
         <div class="plan-row">
           <div class="plan-btn sel sel-std" id="p-std" onclick="selPlan('std')">
             <div class="pb-icon">⭐</div>
             <div class="pb-name">Standard</div>
-            <div class="pb-price">9,99€/mois</div>
+            <div class="pb-price">4,99/mois</div>
           </div>
           <div class="plan-btn" id="p-pro" onclick="selPlan('pro')">
             <div class="pb-icon">🏆</div>
             <div class="pb-name">Pro</div>
-            <div class="pb-price">19,99€/mois</div>
+            <div class="pb-price">9,99/mois</div>
           </div>
           <div class="plan-btn" id="p-vip" onclick="selPlan('vip')">
             <div class="pb-icon">💎</div>
             <div class="pb-name">VIP</div>
-            <div class="pb-price">29,99€/mois</div>
+            <div class="pb-price">19,99/mois</div>
           </div>
           <div class="plan-btn" id="p-per" onclick="selPlan('per')">
             <div class="pb-icon">👤</div>
-            <div class="pb-name">Créateur</div>
-            <div class="pb-price">Accès total</div>
+            <div class="pb-name">Createur</div>
+            <div class="pb-price">Acces total</div>
           </div>
         </div>
-
-        <!-- Infos client -->
         <div class="field">
           <label>Nom du client</label>
           <input id="c-nom" placeholder="Ex: Dupont Jean">
@@ -147,65 +123,47 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
           <label>Email</label>
           <input type="email" id="c-email" placeholder="client@email.com">
         </div>
-
-        <button class="btn-gen" onclick="genKey()">✨ Générer la clé</button>
-
-        <!-- Résultat -->
+        <button class="btn-gen" onclick="genKey()">Generer la cle</button>
         <div id="result">
           <div class="key-display" id="key-display"></div>
-          <button class="btn-copy" onclick="copyKey()">📋 Copier la clé</button>
-          <button class="btn-email" onclick="sendEmail()">📧 Envoyer par email</button>
+          <button class="btn-copy" onclick="copyKey()">Copier la cle</button>
+          <button class="btn-email" onclick="sendEmail()">Envoyer par email</button>
           <div class="info-note warn" id="hash-note"></div>
         </div>
       </div>
     </div>
-
-    <!-- LISTE DES LICENCES -->
     <div class="card">
       <div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>📋 Licences émises</span>
-        <button onclick="exportCSV()" style="background:none;border:none;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;">📥 CSV</button>
+        <span>Licences emises</span>
+        <button onclick="exportCSV()" style="background:none;border:none;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;">CSV</button>
       </div>
       <div class="card-body">
         <div class="stats" id="stats"></div>
         <div id="lic-list"></div>
       </div>
     </div>
-
   </div>
 </div>
-
 <div id="toast"></div>
-
 <script>
-// UAS Manager — Générateur de licences © 2026 Philippe CONTE
-
 var STORE = 'uas_keygen_licenses';
-var AUTH_HASHES = [
-  '3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e',
-  '691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df',
-  'ca2a5ef74a9f6f8911a5913612841bb1a8087eb7f5978bb0b81ca803ac73da42'
-];
-
+var AUTH_HASHES = ['704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c'];
 var PLAN_INFO = {
-  std: {prefix:'STD', name:'Standard', icon:'⭐', bg:'#FAEEDA', color:'#BA7517', price:'9,99€/mois'},
-  pro: {prefix:'PRO', name:'Pro',      icon:'🏆', bg:'#E8F5E9', color:'#1D6B37', price:'19,99€/mois'},
-  vip: {prefix:'VIP', name:'VIP',      icon:'💎', bg:'#EDE7F6', color:'#5C35A0', price:'29,99€/mois'},
-  per: {prefix:'UAS', name:'Créateur', icon:'👤', bg:'#E6F1FB', color:'#185FA5', price:'Accès total'},
+  std: {prefix:'STD', name:'Standard', icon:'⭐', bg:'#FAEEDA', color:'#BA7517', price:'4,99/mois'},
+  pro: {prefix:'PRO', name:'Pro',      icon:'🏆', bg:'#E8F5E9', color:'#1D6B37', price:'9,99/mois'},
+  vip: {prefix:'VIP', name:'VIP',      icon:'💎', bg:'#EDE7F6', color:'#5C35A0', price:'19,99/mois'},
+  per: {prefix:'UAS', name:'Createur', icon:'👤', bg:'#E6F1FB', color:'#185FA5', price:'Acces total'}
 };
-
 var licenses = [];
 var selPlanVal = 'std';
 var lastKey = '';
 var lastHash = '';
 
-// ─── SHA-256 ──────────────────────────────────────────────
 async function sha256(s) {
-  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s.toUpperCase()));
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
 }
 
-// ─── AUTH ─────────────────────────────────────────────────
 async function checkAuth() {
   var key = document.getElementById('auth-key').value.trim();
   if (!key) return;
@@ -225,7 +183,6 @@ document.getElementById('auth-key').addEventListener('keydown', function(e){
   if (e.key === 'Enter') checkAuth();
 });
 
-// ─── PLAN ─────────────────────────────────────────────────
 function selPlan(p) {
   selPlanVal = p;
   Object.keys(PLAN_INFO).forEach(function(k) {
@@ -234,7 +191,6 @@ function selPlan(p) {
   });
 }
 
-// ─── GÉNÉRER CLÉ ──────────────────────────────────────────
 var alpha = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function randChars(n) {
   var r = '';
@@ -248,75 +204,51 @@ function randChars(n) {
 
 async function genKey() {
   var nom = document.getElementById('c-nom').value.trim();
-  if (!nom) { toast('⚠️ Entrez le nom du client', 'amber'); return; }
-
+  if (!nom) { toast('Entrez le nom du client', 'amber'); return; }
   var plan = PLAN_INFO[selPlanVal];
   var rand = randChars(8);
-  var key  = plan.prefix + '-' + rand.slice(0,4) + '-' + rand.slice(4);
+  var key = plan.prefix + '-' + rand.slice(0,4) + '-' + rand.slice(4);
   var hash = await sha256(key);
-
-  lastKey  = key;
+  lastKey = key;
   lastHash = hash;
-
-  // Sauvegarder
   var lic = {
-    id: Date.now(),
-    key: key, hash: hash,
+    id: Date.now(), key: key, hash: hash,
     plan: selPlanVal, planName: plan.name,
     nom: nom, email: document.getElementById('c-email').value.trim(),
-    date: new Date().toISOString().slice(0,10),
-    active: true
+    date: new Date().toISOString().slice(0,10), active: true
   };
   licenses.unshift(lic);
   saveLicenses();
-
-  // Afficher
   document.getElementById('key-display').textContent = key;
-  document.getElementById('hash-note').innerHTML =
-    '⚠️ Hash à ajouter dans activation.html :<br><small style="font-family:monospace;word-break:break-all;">' + hash + '</small>';
+  document.getElementById('hash-note').innerHTML = 'Hash a ajouter dans activation.html :<br><small style="font-family:monospace;word-break:break-all;">' + hash + '</small>';
   document.getElementById('result').style.display = 'block';
   document.getElementById('result').scrollIntoView({behavior:'smooth'});
   renderList();
-  toast('✅ Clé générée : ' + key);
+  toast('Cle generee : ' + key);
 }
 
-// ─── COPY ─────────────────────────────────────────────────
 function copyKey() {
   navigator.clipboard.writeText(lastKey).then(function(){
-    toast('📋 Clé copiée : ' + lastKey);
+    toast('Cle copiee : ' + lastKey);
   }).catch(function(){
-    // Fallback : sélectionner le texte
     var el = document.getElementById('key-display');
     var range = document.createRange();
     range.selectNodeContents(el);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
-    toast('📋 Sélectionnez et copiez la clé');
+    toast('Selectionnez et copiez la cle');
   });
 }
 
-// ─── EMAIL ────────────────────────────────────────────────
 function sendEmail() {
   var lic = licenses[0];
-  if (!lic || !lic.email) { toast('⚠️ Email client manquant', 'amber'); return; }
+  if (!lic || !lic.email) { toast('Email client manquant', 'amber'); return; }
   var plan = PLAN_INFO[lic.plan];
-  var subj = encodeURIComponent('Votre licence UAS Manager ' + plan.icon + ' ' + plan.name);
-  var body = encodeURIComponent(
-    'Bonjour ' + lic.nom + ',\n\n' +
-    'Voici votre clé de licence UAS Manager :\n\n' +
-    '   ' + lic.key + '\n\n' +
-    'Plan : ' + plan.icon + ' ' + plan.name + ' (' + plan.price + ')\n\n' +
-    'Comment activer :\n' +
-    '1. Ouvrez UAS Manager\n' +
-    '2. Entrez la clé dans le champ d\'activation\n' +
-    '3. Appuyez sur Activer\n\n' +
-    'Cordialement,\nPhilippe CONTE\ncontephil74@gmail.com\n\n' +
-    '© 2026 Philippe CONTE · UAS Manager'
-  );
+  var subj = encodeURIComponent('Votre licence UAS Manager ' + plan.name);
+  var body = encodeURIComponent('Bonjour ' + lic.nom + ',\n\nVoici votre cle de licence UAS Manager :\n\n   ' + lic.key + '\n\nPlan : ' + plan.name + ' (' + plan.price + ')\n\nComment activer :\n1. Ouvrez UAS Manager\n2. Entrez la cle dans le champ activation\n3. Appuyez sur Activer\n\nCordialement,\nPhilippe CONTE\ncontephil74@gmail.com');
   window.open('mailto:' + lic.email + '?subject=' + subj + '&body=' + body);
 }
 
-// ─── LISTE ────────────────────────────────────────────────
 function loadLicenses() {
   try { licenses = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { licenses = []; }
   renderList();
@@ -327,81 +259,39 @@ function saveLicenses() {
 }
 
 function renderList() {
-  // Stats
   var counts = {std:0, pro:0, vip:0, per:0};
   licenses.forEach(function(l){ if(counts[l.plan]!==undefined) counts[l.plan]++; });
-  var mrr = counts.std*9.99 + counts.pro*19.99 + counts.vip*29.99;
+  var mrr = counts.std*4.99 + counts.pro*9.99 + counts.vip*19.99;
   var revoked = licenses.filter(function(l){ return l.revoked; }).length;
   document.getElementById('stats').innerHTML =
     '<div class="stat"><div class="stat-v">' + licenses.length + '</div><div class="stat-l">Total</div></div>' +
     '<div class="stat"><div class="stat-v" style="color:#1D6B37;">' + (licenses.length - revoked) + '</div><div class="stat-l">Actives</div></div>' +
-    '<div class="stat"><div class="stat-v" style="color:#8B2020;">' + revoked + '</div><div class="stat-l">Révoquées</div></div>' +
-    '<div class="stat"><div class="stat-v" style="color:#BA7517;">' + mrr.toFixed(0) + '€</div><div class="stat-l">MRR</div></div>';
-
+    '<div class="stat"><div class="stat-v" style="color:#8B2020;">' + revoked + '</div><div class="stat-l">Revoquees</div></div>' +
+    '<div class="stat"><div class="stat-v" style="color:#BA7517;">' + mrr.toFixed(0) + '</div><div class="stat-l">MRR</div></div>';
   var el = document.getElementById('lic-list');
-  if (!licenses.length) {
-    el.innerHTML = '<div class="empty">Aucune licence générée</div>';
-    return;
-  }
+  if (!licenses.length) { el.innerHTML = '<div class="empty">Aucune licence generee</div>'; return; }
   el.innerHTML = licenses.map(function(l) {
     var p = PLAN_INFO[l.plan] || PLAN_INFO.std;
     return '<div class="lic-row">' +
       '<div class="lic-badge" style="background:' + p.bg + ';color:' + p.color + ';">' + p.icon + ' ' + p.name + '</div>' +
-      '<div class="lic-info">' +
-        '<div class="lic-key">' + l.key + '</div>' +
-        '<div class="lic-meta">' + l.nom + (l.email?' · '+l.email:'') + ' · ' + l.date + '</div>' +
-      '</div>' +
-      '<button class="lic-copy" onclick="copyLic(\'' + l.key + '\')">📋</button>' +
+      '<div class="lic-info"><div class="lic-key">' + l.key + '</div><div class="lic-meta">' + l.nom + (l.email?' · '+l.email:'') + ' · ' + l.date + '</div></div>' +
+      '<button class="lic-copy" onclick="copyLic(\'' + l.key + '\')">Copier</button>' +
       '</div>';
   }).join('');
 }
 
 function copyLic(key) {
-  navigator.clipboard.writeText(key)
-    .then(function(){ toast('📋 ' + key); })
-    .catch(function(){
-      // Fallback sélection
-      var tmp = document.createElement('textarea');
-      tmp.value = key; document.body.appendChild(tmp);
-      tmp.select(); document.execCommand('copy');
-      document.body.removeChild(tmp);
-      toast('📋 ' + key);
-    });
+  navigator.clipboard.writeText(key).then(function(){ toast(key); }).catch(function(){
+    var tmp = document.createElement('textarea');
+    tmp.value = key; document.body.appendChild(tmp);
+    tmp.select(); document.execCommand('copy');
+    document.body.removeChild(tmp);
+    toast(key);
+  });
 }
 
-function toggleRevoke(id) {
-  var l = licenses.find(function(x){ return x.id === id; });
-  if (!l) return;
-  l.revoked = !l.revoked;
-  saveLicenses();
-  renderList();
-  toast(l.revoked ? '🚫 Licence révoquée — ' + l.key : '✅ Licence réactivée — ' + l.key, l.revoked ? 'amber' : '');
-}
-
-function emailLic(id) {
-  var l = licenses.find(function(x){ return String(x.id) === String(id); });
-  if (!l || !l.email) { toast('⚠️ Pas d\'email', 'amber'); return; }
-  if (l.revoked) { toast('⚠️ Cette licence est révoquée', 'amber'); return; }
-  var p = PLAN_INFO[l.plan] || PLAN_INFO.std;
-  var subj = encodeURIComponent('Votre licence UAS Manager ' + p.icon + ' ' + p.name);
-  var body = encodeURIComponent(
-    'Bonjour ' + l.nom + ',\n\n' +
-    'Voici votre clé de licence UAS Manager :\n\n' +
-    '   ' + l.key + '\n\n' +
-    'Plan : ' + p.icon + ' ' + p.name + ' (' + p.price + ')\n\n' +
-    'Comment activer :\n' +
-    '1. Ouvrez UAS Manager\n' +
-    '2. Entrez la clé dans le champ activation\n' +
-    '3. Appuyez sur Activer\n\n' +
-    'Cordialement,\nPhilippe CONTE\ncontephil74@gmail.com\n\n' +
-    '© 2026 Philippe CONTE · UAS Manager'
-  );
-  window.open('mailto:' + l.email + '?subject=' + subj + '&body=' + body);
-}
-
-// ─── EXPORT CSV ───────────────────────────────────────────
 function exportCSV() {
-  var rows = ['Plan;Clé;Nom;Email;Date'];
+  var rows = ['Plan;Cle;Nom;Email;Date'];
   licenses.forEach(function(l){
     var p = PLAN_INFO[l.plan];
     rows.push([p?p.name:'', l.key, l.nom, l.email||'', l.date].join(';'));
@@ -414,7 +304,6 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 }
 
-// ─── TOAST ────────────────────────────────────────────────
 var toastTimer;
 function toast(msg, type) {
   var el = document.getElementById('toast');
