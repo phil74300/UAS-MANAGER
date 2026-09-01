@@ -78,10 +78,10 @@
       <div class="tool-sep"></div>
       <span style="font-size:11px;color:var(--text-muted);font-weight:600;white-space:nowrap;">Rayon</span>
       <select id="radius-select" onchange="updateRadius()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-weight:600;color:var(--text);">
-        <option value="50">50m</option>
+        <option value="50" selected>50m</option>
         <option value="100">100m</option>
         <option value="500">500m</option>
-        <option value="1000" selected>1km</option>
+        <option value="1000">1km</option>
         <option value="2000">2km</option>
         <option value="5000">5km</option>
         <option value="10000">10km</option>
@@ -120,14 +120,14 @@
 <script>
 function showTab(name){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');document.getElementById('tab-'+name).classList.add('active');if(name==='position')setTimeout(()=>map.invalidateSize({animate:false}),100);}
 const DEFAULT_LAT=45.9523,DEFAULT_LON=6.5016;
-const map=L.map('map',{center:[DEFAULT_LAT,DEFAULT_LON],zoom:18,zoomControl:true});
+const map=L.map('map',{center:[DEFAULT_LAT,DEFAULT_LON],zoom:19,zoomControl:true});
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
-const pilotIcon=L.divIcon({className:'',html:'<div style="width:36px;height:36px;background:#0C447C;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,0.4);">🛸</div>',iconSize:[36,36],iconAnchor:[18,18]});
+const pilotIcon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#0C447C;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.6);"></div>',iconSize:[14,14],iconAnchor:[7,7]});
 let pilotMarker=L.marker([DEFAULT_LAT,DEFAULT_LON],{icon:pilotIcon,zIndexOffset:1000}).addTo(map).bindPopup('<b>Philippe CONTE</b><br>FRAjqq48j12nfy4c<br>DJI Mavic 4 Pro');
-let radiusCircle=L.circle([DEFAULT_LAT,DEFAULT_LON],{radius:1000,color:'#185FA5',fillColor:'#E6F1FB',fillOpacity:0.15,weight:2,dashArray:'6 4'}).addTo(map);
+let radiusCircle=L.circle([DEFAULT_LAT,DEFAULT_LON],{radius:50,color:'#185FA5',fillColor:'#E6F1FB',fillOpacity:0.15,weight:2,dashArray:'6 4'}).addTo(map);
 let accuracyCircle=null;
 function updateRadius(){radiusCircle.setRadius(parseInt(document.getElementById('radius-select').value));}
-function centerMap(){map.setView(pilotMarker.getLatLng(),18);}
+function centerMap(){map.setView(pilotMarker.getLatLng(),19);}
 let gpsWatchId=null,gpsActive=false;
 function toggleGPS(){if(gpsActive)stopGPS();else startGPS();}
 function startGPS(){
@@ -142,7 +142,7 @@ function startGPS(){
       radiusCircle.setLatLng([lat,lon]);
       if(accuracyCircle)accuracyCircle.remove();
       accuracyCircle=L.circle([lat,lon],{radius:acc,color:'#1D6B37',fillColor:'#E8F5E9',fillOpacity:0.3,weight:1.5,dashArray:'4 3'}).addTo(map);
-      map.setView([lat,lon],18);
+      map.setView([lat,lon],19);
       document.getElementById('stat-lat').textContent=lat.toFixed(6)+'°';
       document.getElementById('stat-lon').textContent=lon.toFixed(6)+'°';
       document.getElementById('stat-acc').textContent='±'+acc+' m';
@@ -165,7 +165,7 @@ const frame=document.getElementById('map-frame'),overlay=document.getElementById
 function switchSource(name){currentSource=name;document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+name).classList.add('active');overlay.classList.remove('hidden');frame.src=SOURCES[name];document.getElementById('open-ext').href=SOURCES[name];clearTimeout(loadTimer);loadTimer=setTimeout(()=>overlay.classList.add('hidden'),8000);}
 function updateTrafficPosition(lat,lon){const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=10';SOURCES.adsbexchange=url;if(currentSource==='adsbexchange')document.getElementById('open-ext').href=url;}
 frame.addEventListener('load',()=>{clearTimeout(loadTimer);setTimeout(()=>overlay.classList.add('hidden'),1000);});
-try{const cfg=JSON.parse(localStorage.getItem('uas_config')||'{}');if(cfg.lat&&cfg.lon){const lat=parseFloat(cfg.lat),lon=parseFloat(cfg.lon);if(!isNaN(lat)&&!isNaN(lon)){pilotMarker.setLatLng([lat,lon]);radiusCircle.setLatLng([lat,lon]);map.setView([lat,lon],18);const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=9';SOURCES.adsbexchange=url;frame.src=url;document.getElementById('open-ext').href=url;}}}catch(e){}
+try{const cfg=JSON.parse(localStorage.getItem('uas_config')||'{}');if(cfg.lat&&cfg.lon){const lat=parseFloat(cfg.lat),lon=parseFloat(cfg.lon);if(!isNaN(lat)&&!isNaN(lon)){pilotMarker.setLatLng([lat,lon]);radiusCircle.setLatLng([lat,lon]);map.setView([lat,lon],19);const url='https://globe.adsbexchange.com/?lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&zoom=9';SOURCES.adsbexchange=url;frame.src=url;document.getElementById('open-ext').href=url;}}}catch(e){}
 loadTimer=setTimeout(()=>overlay.classList.add('hidden'),8000);
 window.addEventListener('beforeunload',()=>{if(gpsWatchId!==null)navigator.geolocation.clearWatch(gpsWatchId);});
 </script>
