@@ -33,9 +33,9 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .sep-text{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;box-shadow:0 4px 20px rgba(12,68,124,.08);}
 .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
-.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:17px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;}
+.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:24px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:8px;}
 .inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
-.inp::placeholder{font-family:-apple-system,sans-serif;font-size:14px;font-weight:400;color:var(--muted);}
+.inp::placeholder{font-family:-apple-system,sans-serif;font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0;}
 .btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
 .btn-go:active{opacity:.82;}
 .btn-free{width:100%;margin-top:8px;background:none;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;}
@@ -102,13 +102,14 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
     </div>
   </div>
   <div class="card" id="form-card">
-    <label class="lbl">Cle de licence</label>
-    <input class="inp" id="key" type="password"
-      placeholder="Entrez votre cle"
+    <label class="lbl">Code d activation</label>
+    <input class="inp" id="key" type="number"
+      placeholder="••••••"
       autocomplete="off"
       autocorrect="off"
       autocapitalize="off"
-      spellcheck="false">
+      spellcheck="false"
+      inputmode="numeric">
     <button class="btn-go" id="btn" onclick="activate()">🔓 Activer</button>
     <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
     <div class="msg" id="msg"></div>
@@ -126,45 +127,41 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
   <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
 <script>
-// ═══ HASH DU MOT DE PASSE CREATEUR ═══
-// Pour changer : aller sur https://emn178.github.io/online-tools/sha256.html
-// Taper le nouveau mot de passe EN MAJUSCULES, copier le hash ici
-var CREATEUR_HASH ='704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';;
+// Pour changer le code : aller sur la console Safari, taper :
+// crypto.subtle.digest('SHA-256',new TextEncoder().encode('VOTRECODE')).then(b=>alert(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+// Copier le hash et remplacer CREATEUR_HASH ci-dessous
 
-var V = {
-  // Createur — remplacer CREATEUR_HASH par le nouveau hash pour changer le mot de passe
-  [CREATEUR_HASH]: {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
-  // Standard
-  '8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564': {plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'},
-  // Pro
-  '39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f': {plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'},
-  // VIP
-  '93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5': {plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'}
-};
+var CREATEUR_HASH = '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';
+
+var V = {};
+V[CREATEUR_HASH] = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null};
+V['8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564'] = {plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'};
+V['39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f'] = {plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'};
+V['93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5'] = {plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'};
 
 var LK = 'uas_license';
 
 async function sha256(s) {
-  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s.toUpperCase()));
+  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(b)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
 }
 
 async function activate() {
   var key = document.getElementById('key').value.trim();
-  if (!key) { show('Entrez votre cle', 'err'); return; }
+  if (!key) { show('Entrez votre code', 'err'); return; }
   var btn = document.getElementById('btn');
   btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
   var hash = await sha256(key);
   var lic = V[hash];
   if (!lic) {
-    show('Cle invalide', 'err');
+    show('Code invalide', 'err');
     btn.innerHTML = '🔓 Activer';
     btn.disabled = false;
     return;
   }
   if (lic.expires && new Date(lic.expires) < new Date()) {
-    show('Cle expiree', 'err');
+    show('Code expire', 'err');
     btn.innerHTML = '🔓 Activer';
     btn.disabled = false;
     return;
