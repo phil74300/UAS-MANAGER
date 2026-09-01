@@ -10,7 +10,7 @@
 :root{--navy:#0C447C;--blue:#185FA5;--green:#1D6B37;--amber:#BA7517;--red:#8B2020;--purple:#5C35A0;--bg:#F0F4FA;--surface:#fff;--text:#0D1220;--muted:#5A6478;--border:#D0DCF0;}
 @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--muted:#7A8BAA;--border:#253050;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);padding:24px 16px;}
+html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);padding:24px 16px;}
 .wrap{width:100%;max-width:360px;margin:0 auto;}
 .logo{text-align:center;margin-bottom:24px;padding-top:env(safe-area-inset-top);}
 .logo span{font-size:56px;display:block;margin-bottom:10px;}
@@ -20,7 +20,7 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
 .plans-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;text-align:center;}
 .plan-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
 .plan-icon{font-size:28px;flex-shrink:0;}
-.plan-info{flex:1;min-width:0;}
+.plan-info{flex:1;}
 .plan-name{font-size:15px;font-weight:800;color:var(--text);}
 .plan-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3;}
 .plan-price{text-align:right;flex-shrink:0;}
@@ -33,10 +33,10 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
 .sep-text{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;box-shadow:0 4px 20px rgba(12,68,124,.08);}
 .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
-.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:17px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;letter-spacing:2px;text-transform:uppercase;text-align:center;transition:border-color .15s;}
+.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:17px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;}
 .inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
-.inp::placeholder{font-family:-apple-system,sans-serif;letter-spacing:0;font-size:14px;font-weight:400;text-transform:none;color:var(--muted);}
-.btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .15s;}
+.inp::placeholder{font-family:-apple-system,sans-serif;font-size:14px;font-weight:400;color:var(--muted);}
+.btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
 .btn-go:active{opacity:.82;}
 .btn-free{width:100%;margin-top:8px;background:none;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;}
 .msg{display:none;margin-top:12px;padding:12px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;}
@@ -103,11 +103,12 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
   </div>
   <div class="card" id="form-card">
     <label class="lbl">Cle de licence</label>
-    <input class="inp" id="key" type="text"
+    <input class="inp" id="key" type="password"
       placeholder="Entrez votre cle"
-      autocomplete="off" autocorrect="off"
-      autocapitalize="characters" spellcheck="false"
-      maxlength="30">
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false">
     <button class="btn-go" id="btn" onclick="activate()">🔓 Activer</button>
     <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
     <div class="msg" id="msg"></div>
@@ -125,12 +126,19 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
   <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
 <script>
+// ═══ HASH DU MOT DE PASSE CREATEUR ═══
+// Pour changer : aller sur https://emn178.github.io/online-tools/sha256.html
+// Taper le nouveau mot de passe EN MAJUSCULES, copier le hash ici
+var CREATEUR_HASH = 'b06834c436b68b1fae1d5d52bc715de6c5c5c2cec8a6cfa3d062eb73441192e8';
+
 var V = {
-  '3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
-  '691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
-  'b06834c436b68b1fae1d5d52bc715de6c5c5c2cec8a6cfa3d062eb73441192e8': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
+  // Createur — remplacer CREATEUR_HASH par le nouveau hash pour changer le mot de passe
+  [CREATEUR_HASH]: {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
+  // Standard
   '8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564': {plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'},
+  // Pro
   '39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f': {plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'},
+  // VIP
   '93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5': {plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'}
 };
 
@@ -138,12 +146,12 @@ var LK = 'uas_license';
 
 async function sha256(s) {
   var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s.toUpperCase()));
-  return Array.from(new Uint8Array(b)).map(function(x) { return x.toString(16).padStart(2,'0'); }).join('');
+  return Array.from(new Uint8Array(b)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
 }
 
 async function activate() {
   var key = document.getElementById('key').value.trim();
-  if (!key) { show('Entrez votre cle de licence', 'err'); return; }
+  if (!key) { show('Entrez votre cle', 'err'); return; }
   var btn = document.getElementById('btn');
   btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
@@ -161,7 +169,7 @@ async function activate() {
     btn.disabled = false;
     return;
   }
-  localStorage.setItem(LK, JSON.stringify({hash:hash, plan:lic.plan, label:lic.label, expires:lic.expires, at:new Date().toISOString()}));
+  localStorage.setItem(LK, JSON.stringify({hash:hash,plan:lic.plan,label:lic.label,expires:lic.expires,at:new Date().toISOString()}));
   showOk(lic);
 }
 
@@ -174,7 +182,9 @@ function showOk(lic) {
   b.textContent = lic.label;
   b.style.background = lic.bg;
   b.style.color = lic.color;
-  document.getElementById('ok-sub').textContent = lic.plan === 'personal' ? 'Bienvenue Philippe. Acces complet.' : 'Licence activee avec succes.';
+  document.getElementById('ok-sub').textContent = lic.plan === 'personal'
+    ? 'Bienvenue Philippe. Acces complet sans restriction.'
+    : 'Licence activee avec succes.';
 }
 
 function goFree() { localStorage.removeItem(LK); location.href = 'index.html'; }
@@ -184,12 +194,8 @@ function show(msg, type) {
   var el = document.getElementById('msg');
   el.textContent = msg;
   el.className = 'msg ' + (type === 'err' ? 'err' : 'ok');
-  setTimeout(function() { el.className = 'msg'; }, 4000);
+  setTimeout(function(){ el.className = 'msg'; }, 4000);
 }
-
-document.getElementById('key').addEventListener('input', function() {
-  this.value = this.value.toUpperCase();
-});
 
 document.getElementById('key').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') activate();
