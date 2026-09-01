@@ -592,7 +592,7 @@ window.addEventListener('storage',e=>{
         .then(function(buf) {
           var h = Array.from(new Uint8Array(buf))
             .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-          var MH = ['3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e','691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df','ca2a5ef74a9f6f8911a5913612841bb1a8087eb7f5978bb0b81ca803ac73da42'];
+         var CH = ['704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c'];
           if (MH.indexOf(h) >= 0) {
             window.location.href = 'keygen.html';
           } else {
