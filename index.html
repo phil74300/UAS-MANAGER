@@ -576,15 +576,9 @@ window.addEventListener('storage',e=>{
     }, 400);
   }
 
-  function openKeygen() {
-  window.location.href = 'keygen.html';
-}
-    var isCreator = false;
-    try {
-      var l = JSON.parse(localStorage.getItem('uas_license') || '{}');
-      var CH = ['704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c'];
-      isCreator = CH.indexOf(l.hash) >= 0;
-    } catch(e) {}
+    function openKeygen() {
+    window.location.href = 'keygen.html';
+  }
 
     if (isCreator) {
       window.location.href = 'keygen.html';
