@@ -19,7 +19,7 @@
   #header::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
 
   /* Barre top : titre + bouton config */
-  .header-topbar{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;padding:18px 18px 0;}
+  .header-topbar{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 18px) 18px 0;}
   .header-titles{}
   .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:.5px;margin-bottom:8px;}
   .header-topbar h1{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.1;}
