@@ -592,7 +592,7 @@ window.addEventListener('storage',e=>{
         .then(function(buf) {
           var h = Array.from(new Uint8Array(buf))
             .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-         var CH = ['704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c'];
+        var MH = ['704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c'];
           if (MH.indexOf(h) >= 0) {
             window.location.href = 'keygen.html';
           } else {
