@@ -58,7 +58,7 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
   <div class="logo">
     <span>🛸</span>
     <h1>UAS Manager</h1>
-    <p>© 2026 Philippe CONTE · Tous droits réservés</p>
+    <p>2026 Philippe CONTE - Tous droits reserves</p>
   </div>
   <div id="plans-section">
     <div class="plans-title">Choisissez votre plan</div>
@@ -66,7 +66,7 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
       <div class="plan-icon">⭐</div>
       <div class="plan-info">
         <div class="plan-name">Standard</div>
-        <div class="plan-desc">Carnet de vol · Maintenance · REX · Bilans · Formations · Alertes · Planificateur</div>
+        <div class="plan-desc">Carnet de vol - Maintenance - REX - Bilans - Formations - Alertes - Planificateur</div>
       </div>
       <div class="plan-price">
         <div class="amount">4,99€</div>
@@ -77,7 +77,7 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
       <div class="plan-icon">🏆</div>
       <div class="plan-info">
         <div class="plan-name">Pro <span class="badge-pop">POPULAIRE</span></div>
-        <div class="plan-desc">Tout Standard + Statistiques · Clients · Rapports PDF · Replay DJI · Logs</div>
+        <div class="plan-desc">Tout Standard + Statistiques - Clients - Rapports PDF - Replay DJI - Logs</div>
       </div>
       <div class="plan-price">
         <div class="amount">9,99€</div>
@@ -88,7 +88,7 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
       <div class="plan-icon">💎</div>
       <div class="plan-info">
         <div class="plan-name">VIP</div>
-        <div class="plan-desc">Tout Pro + accès prioritaire aux nouvelles fonctionnalités</div>
+        <div class="plan-desc">Tout Pro + acces prioritaire aux nouvelles fonctionnalites</div>
       </div>
       <div class="plan-price">
         <div class="amount">19,99€</div>
@@ -97,115 +97,113 @@ html,body{min-height:100%;min-height:-webkit-fill-available;font-family:-apple-s
     </div>
     <div class="sep">
       <div class="sep-line"></div>
-      <div class="sep-text">Vous avez déjà une clé ?</div>
+      <div class="sep-text">Vous avez deja une cle ?</div>
       <div class="sep-line"></div>
     </div>
   </div>
   <div class="card" id="form-card">
-    <label class="lbl">Clé de licence</label>
+    <label class="lbl">Cle de licence</label>
     <input class="inp" id="key" type="text"
-      placeholder="Entrez votre clé"
+      placeholder="Entrez votre cle"
       autocomplete="off" autocorrect="off"
       autocapitalize="characters" spellcheck="false"
       maxlength="30">
     <button class="btn-go" id="btn" onclick="activate()">🔓 Activer</button>
-    <button class="btn-free" onclick="goFree()">Continuer gratuitement →</button>
+    <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
     <div class="msg" id="msg"></div>
   </div>
   <div class="card success" id="ok-card">
     <div class="s-icon">✅</div>
-    <div class="s-title">Activé !</div>
+    <div class="s-title">Active !</div>
     <div class="s-badge" id="ok-badge"></div>
     <div class="s-sub" id="ok-sub"></div>
-    <button class="btn-open" onclick="location.href='index.html'">🚀 Ouvrir l'application</button>
+    <button class="btn-open" onclick="location.href='index.html'">🚀 Ouvrir l application</button>
     <div style="margin-top:12px;">
       <button onclick="reset()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit;">Changer de licence</button>
     </div>
   </div>
-  <div class="footer">
-    Contact : contephil74@gmail.com
-  </div>
+  <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
 <script>
 var V = {
-  '3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e':{plan:'personal',label:'👤 Créateur',bg:'#E6F1FB',color:'#185FA5',expires:null},
-  '691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df':{plan:'personal',label:'👤 Créateur',bg:'#E6F1FB',color:'#185FA5',expires:null},
- 'b06834c436b68b1fae1d5d52bc715de6c5c5c2cec8a6cfa3d062eb73441192e8':{plan:'personal',
-  '8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564':{plan:'standard',label:'⭐ Standard — 4,99€/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'},
-  '39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f':{plan:'pro',label:'🏆 Pro — 9,99€/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'},
-  '93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5':{plan:'vip',label:'💎 VIP — 19,99€/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'}
+  '3640b2f1ba5c9d5afd4c238ad403e6c71aa37df3d5936f01a1ffdd4ae582071e': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
+  '691fc5c6b8f02ee694e082d4ce9ca679f3da82aedfa4b5b1280948a1fecc04df': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
+  'b06834c436b68b1fae1d5d52bc715de6c5c5c2cec8a6cfa3d062eb73441192e8': {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null},
+  '8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564': {plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'},
+  '39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f': {plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'},
+  '93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5': {plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'}
 };
 
 var LK = 'uas_license';
 
-async function sha256(s){
-  var b = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s.toUpperCase()));
-  return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+async function sha256(s) {
+  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s.toUpperCase()));
+  return Array.from(new Uint8Array(b)).map(function(x) { return x.toString(16).padStart(2,'0'); }).join('');
 }
 
-async function activate(){
+async function activate() {
   var key = document.getElementById('key').value.trim();
-  if(!key){ show('Entrez votre clé de licence','err'); return; }
+  if (!key) { show('Entrez votre cle de licence', 'err'); return; }
   var btn = document.getElementById('btn');
-  btn.innerHTML = '<span class="spin">⏳</span>';
+  btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
   var hash = await sha256(key);
   var lic = V[hash];
-  if(!lic){
-    show('❌ Clé invalide','err');
-    btn.innerHTML = '🔓 Activer'; btn.disabled = false;
+  if (!lic) {
+    show('Cle invalide', 'err');
+    btn.innerHTML = '🔓 Activer';
+    btn.disabled = false;
     return;
   }
-  if(lic.expires && new Date(lic.expires) < new Date()){
-    show('⏰ Clé expirée','err');
-    btn.innerHTML = '🔓 Activer'; btn.disabled = false;
+  if (lic.expires && new Date(lic.expires) < new Date()) {
+    show('Cle expiree', 'err');
+    btn.innerHTML = '🔓 Activer';
+    btn.disabled = false;
     return;
   }
-  localStorage.setItem(LK, JSON.stringify({hash:hash,plan:lic.plan,label:lic.label,expires:lic.expires,at:new Date().toISOString()}));
+  localStorage.setItem(LK, JSON.stringify({hash:hash, plan:lic.plan, label:lic.label, expires:lic.expires, at:new Date().toISOString()}));
   showOk(lic);
 }
 
-function showOk(lic){
-  document.getElementById('form-card').style.display='none';
-  document.getElementById('plans-section').style.display='none';
-  var c=document.getElementById('ok-card');
-  c.style.display='block';
-  var b=document.getElementById('ok-badge');
-  b.textContent=lic.label;
-  b.style.background=lic.bg;
-  b.style.color=lic.color;
-  document.getElementById('ok-sub').textContent=lic.plan==='personal'
-    ?'Bienvenue Philippe. Accès complet sans restriction.'
-    :'Licence activée avec succès.'+(lic.expires?' Valide jusqu\'au '+new Date(lic.expires).toLocaleDateString('fr-FR')+'.':'');
+function showOk(lic) {
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('plans-section').style.display = 'none';
+  var c = document.getElementById('ok-card');
+  c.style.display = 'block';
+  var b = document.getElementById('ok-badge');
+  b.textContent = lic.label;
+  b.style.background = lic.bg;
+  b.style.color = lic.color;
+  document.getElementById('ok-sub').textContent = lic.plan === 'personal' ? 'Bienvenue Philippe. Acces complet.' : 'Licence activee avec succes.';
 }
 
-function goFree(){ localStorage.removeItem(LK); location.href='index.html'; }
-function reset(){ localStorage.removeItem(LK); location.reload(); }
+function goFree() { localStorage.removeItem(LK); location.href = 'index.html'; }
+function reset() { localStorage.removeItem(LK); location.reload(); }
 
-function show(msg,type){
-  var el=document.getElementById('msg');
-  el.textContent=msg;
-  el.className='msg '+(type==='err'?'err':'ok');
-  setTimeout(function(){el.className='msg';},4000);
+function show(msg, type) {
+  var el = document.getElementById('msg');
+  el.textContent = msg;
+  el.className = 'msg ' + (type === 'err' ? 'err' : 'ok');
+  setTimeout(function() { el.className = 'msg'; }, 4000);
 }
 
-document.getElementById('key').addEventListener('input',function(){
-  this.value=this.value.toUpperCase();
+document.getElementById('key').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
 });
 
-document.getElementById('key').addEventListener('keydown',function(e){
-  if(e.key==='Enter') activate();
+document.getElementById('key').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') activate();
 });
 
-(function(){
-  var r=localStorage.getItem(LK);
-  if(!r) return;
-  try{
-    var l=JSON.parse(r);
-    if(!l.hash||!V[l.hash]) return;
-    if(l.expires&&new Date(l.expires)<new Date()) return;
+(function() {
+  var r = localStorage.getItem(LK);
+  if (!r) return;
+  try {
+    var l = JSON.parse(r);
+    if (!l.hash || !V[l.hash]) return;
+    if (l.expires && new Date(l.expires) < new Date()) return;
     showOk(V[l.hash]);
-  }catch(e){}
+  } catch(e) {}
 })();
 </script>
 </body>
