@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>UAS Manager — Activation</title>
 <style>
-:root{--navy:#0C447C;--blue:#185FA5;--green:#1D6B37;--amber:#BA7517;--red:#8B2020;--purple:#5C35A0;--bg:#F0F4FA;--surface:#fff;--text:#0D1220;--muted:#5A6478;--border:#D0DCF0;}
+:root{--navy:#0C447C;--blue:#185FA5;--green:#1D6B37;--amber:#BA7517;--red:#8B2020;--bg:#F0F4FA;--surface:#fff;--text:#0D1220;--muted:#5A6478;--border:#D0DCF0;}
 @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--muted:#7A8BAA;--border:#253050;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);padding:24px 16px;}
@@ -33,7 +33,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .sep-text{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;box-shadow:0 4px 20px rgba(12,68,124,.08);}
 .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
-.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:16px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:3px;}
+.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:16px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:2px;}
 .inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
 .inp::placeholder{font-size:14px;font-weight:400;letter-spacing:0;color:var(--muted);}
 .btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
@@ -96,7 +96,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
       autocorrect="off"
       autocapitalize="none"
       spellcheck="false">
-    <button class="btn-go" id="btn" onclick="activate()">🔓 Activer</button>
+    <button class="btn-go" id="btn" onclick="doActivate()">🔓 Activer</button>
     <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
     <div class="msg" id="msg"></div>
   </div>
@@ -112,68 +112,68 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
   </div>
   <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
-<script>
-// ═══════════════════════════════════════════════════
-//  LICENCES VALIDES
-//  Pour ajouter une licence :
-//  1. Generer la cle dans keygen.html
-//  2. Copier le hash affiche
-//  3. Ajouter une ligne ci-dessous :
-//     'HASH': {plan:'standard', label:'Standard 4,99/mois', bg:'#FAEEDA', color:'#BA7517'},
-//  Plans disponibles : standard / pro / vip / personal
-// ═══════════════════════════════════════════════════
-var LICENCES = {
-
-  // ── CREATEUR (Philippe CONTE) ──────────────────
-  '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c':
-    {plan:'personal', label:'Createur', bg:'#E6F1FB', color:'#185FA5'},
-
-  // ── LICENCES STANDARD ─────────────────────────
-  // Ajouter ici les hashes Standard
-  // '9db9a10204849b26fdef0258710de3e2395fb7c3840ed1759be5b6064e5e9cfd': {plan:'standard', label:'Standard 4,99/mois', bg:'#FAEEDA', color:'#BA7517'},
-
-  // ── LICENCES PRO ──────────────────────────────
-  // Ajouter ici les hashes Pro
-  // 'HASH_ICI': {plan:'pro', label:'Pro 9,99/mois', bg:'#E8F5E9', color:'#1D6B37'},
-
-  // ── LICENCES VIP ──────────────────────────────
-  // Ajouter ici les hashes VIP
-  // 'HASH_ICI': {plan:'vip', label:'VIP 19,99/mois', bg:'#EDE7F6', color:'#5C35A0'},
-
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const firebaseConfig = {
+  apiKey: "AIzaSyDvES6e-Mndu-KrIMEwMg61JHaIgJxyqfA",
+  authDomain: "uas-manager.firebaseapp.com",
+  projectId: "uas-manager",
+  storageBucket: "uas-manager.firebasestorage.app",
+  messagingSenderId: "286179773482",
+  appId: "1:286179773482:web:4403b9f799a1c180cc4753"
 };
-// ═══════════════════════════════════════════════════
-
-var LK = 'uas_license';
-
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const CREATEUR_HASH = '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';
+const LK = 'uas_license';
+const PLAN_MAP = {
+  std:{plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517'},
+  pro:{plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37'},
+  vip:{plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0'}
+};
 async function sha256(s) {
-  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
 }
-
-async function activate() {
-  var key = document.getElementById('key').value.trim();
-  if (!key) { show('Entrez votre code', 'err'); return; }
-  var btn = document.getElementById('btn');
+window.doActivate = async function() {
+  const key = document.getElementById('key').value.trim();
+  if (!key) { show('Entrez votre code','err'); return; }
+  const btn = document.getElementById('btn');
   btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
-  var hash = await sha256(key);
-  var lic = LICENCES[hash];
-  if (!lic) {
-    show('Code invalide', 'err');
+  const hash = await sha256(key);
+  if (hash === CREATEUR_HASH) {
+    const lic = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5'};
+    localStorage.setItem(LK, JSON.stringify({hash,plan:lic.plan,label:lic.label,at:new Date().toISOString()}));
+    showOk(lic); return;
+  }
+  try {
+    const q = query(collection(db,'licences'), where('hash','==',hash), where('revoked','==',false));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const data = snap.docs[0].data();
+      const lic = PLAN_MAP[data.plan];
+      if (lic) {
+        localStorage.setItem(LK, JSON.stringify({hash,plan:lic.plan,label:lic.label,at:new Date().toISOString()}));
+        showOk(lic); return;
+      }
+    }
+    show('Code invalide','err');
     btn.innerHTML = '🔓 Activer';
     btn.disabled = false;
-    return;
+  } catch(e) {
+    show('Erreur connexion','err');
+    btn.innerHTML = '🔓 Activer';
+    btn.disabled = false;
   }
-  localStorage.setItem(LK, JSON.stringify({hash:hash, plan:lic.plan, label:lic.label, at:new Date().toISOString()}));
-  showOk(lic);
-}
-
+};
 function showOk(lic) {
   document.getElementById('form-card').style.display = 'none';
   document.getElementById('plans-section').style.display = 'none';
-  var c = document.getElementById('ok-card');
+  const c = document.getElementById('ok-card');
   c.style.display = 'block';
-  var b = document.getElementById('ok-badge');
+  const b = document.getElementById('ok-badge');
   b.textContent = lic.label;
   b.style.background = lic.bg;
   b.style.color = lic.color;
@@ -181,28 +181,33 @@ function showOk(lic) {
     ? 'Bienvenue Philippe. Acces complet sans restriction.'
     : 'Licence activee avec succes.';
 }
-
-function goFree() { localStorage.removeItem(LK); location.href = 'index.html'; }
-function reset() { localStorage.removeItem(LK); location.reload(); }
-
+window.goFree = function() { localStorage.removeItem(LK); location.href = 'index.html'; };
+window.reset = function() { localStorage.removeItem(LK); location.reload(); };
 function show(msg, type) {
-  var el = document.getElementById('msg');
+  const el = document.getElementById('msg');
   el.textContent = msg;
-  el.className = 'msg ' + (type === 'err' ? 'err' : 'ok');
-  setTimeout(function(){ el.className = 'msg'; }, 4000);
+  el.className = 'msg '+(type==='err'?'err':'ok');
+  setTimeout(()=>{ el.className='msg'; }, 4000);
 }
-
-document.getElementById('key').addEventListener('keydown', function(e){
-  if (e.key === 'Enter') activate();
+document.getElementById('key').addEventListener('keydown', e=>{
+  if (e.key === 'Enter') window.doActivate();
 });
-
-(function(){
-  var r = localStorage.getItem(LK);
+(async function(){
+  const r = localStorage.getItem(LK);
   if (!r) return;
   try {
-    var l = JSON.parse(r);
-    if (!l.hash || !LICENCES[l.hash]) return;
-    showOk(LICENCES[l.hash]);
+    const l = JSON.parse(r);
+    if (!l.hash) return;
+    if (l.hash === CREATEUR_HASH) {
+      showOk({plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5'}); return;
+    }
+    const q = query(collection(db,'licences'), where('hash','==',l.hash), where('revoked','==',false));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const data = snap.docs[0].data();
+      const lic = PLAN_MAP[data.plan];
+      if (lic) showOk(lic);
+    }
   } catch(e) {}
 })();
 </script>
