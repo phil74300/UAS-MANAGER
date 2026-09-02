@@ -505,7 +505,12 @@ function applyLockBadges(){
 }
 
 document.addEventListener('DOMContentLoaded', applyLockBadges);
-
+function logout() {
+  if (confirm('Se deconnecter ?')) {
+    localStorage.removeItem('uas_license');
+    location.href = 'activation.html';
+  }
+}
 loadConfig();
 window.addEventListener('storage',e=>{
   if(e.key==='uas_config'||e.key==='uas_config_updated') loadConfig();
