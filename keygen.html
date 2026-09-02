@@ -4,117 +4,132 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UAS Manager — Activation</title>
+<title>UAS Manager — Generateur</title>
 <style>
 :root{--navy:#0C447C;--blue:#185FA5;--green:#1D6B37;--amber:#BA7517;--red:#8B2020;--bg:#F0F4FA;--surface:#fff;--text:#0D1220;--muted:#5A6478;--border:#D0DCF0;}
 @media(prefers-color-scheme:dark){:root{--bg:#0D1220;--surface:#161E30;--text:#E8EEF8;--muted:#7A8BAA;--border:#253050;}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);padding:24px 16px;}
-.wrap{width:100%;max-width:360px;margin:0 auto;}
-.logo{text-align:center;margin-bottom:24px;padding-top:env(safe-area-inset-top);}
-.logo span{font-size:56px;display:block;margin-bottom:10px;}
-.logo h1{font-size:22px;font-weight:900;color:var(--navy);}
-@media(prefers-color-scheme:dark){.logo h1{color:#7EB8F7;}}
-.logo p{font-size:11px;color:var(--muted);margin-top:4px;}
-.plans-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;text-align:center;}
-.plan-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
-.plan-icon{font-size:28px;flex-shrink:0;}
-.plan-info{flex:1;}
-.plan-name{font-size:15px;font-weight:800;color:var(--text);}
-.plan-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3;}
-.plan-price{text-align:right;flex-shrink:0;}
-.plan-price .amount{font-size:18px;font-weight:900;color:var(--navy);}
-@media(prefers-color-scheme:dark){.plan-price .amount{color:#7EB8F7;}}
-.plan-price .per{font-size:10px;color:var(--muted);font-weight:600;}
-.badge-pop{display:inline-block;background:#185FA5;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;}
-.sep{display:flex;align-items:center;gap:10px;margin:16px 0;}
-.sep-line{flex:1;height:1px;background:var(--border);}
-.sep-text{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;box-shadow:0 4px 20px rgba(12,68,124,.08);}
-.lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
-.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:16px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:2px;}
-.inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
-.inp::placeholder{font-size:14px;font-weight:400;letter-spacing:0;color:var(--muted);}
-.btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
-.btn-go:active{opacity:.82;}
-.btn-free{width:100%;margin-top:8px;background:none;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;}
-.msg{display:none;margin-top:12px;padding:12px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;}
-.ok{background:#E8F5E9;color:#1D6B37;display:block;}
-.err{background:#FDECEC;color:#8B2020;display:block;}
-.success{display:none;text-align:center;padding:10px 0;}
-.s-icon{font-size:56px;margin-bottom:12px;}
-.s-title{font-size:20px;font-weight:900;color:var(--green);margin-bottom:8px;}
-.s-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:14px;}
-.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
-.btn-open{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
-.footer{text-align:center;margin-top:16px;font-size:10px;color:var(--muted);padding-bottom:env(safe-area-inset-bottom);}
+html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 22px;width:100%;max-width:320px;text-align:center;box-shadow:0 4px 20px rgba(12,68,124,.1);}
+.auth-icon{font-size:48px;margin-bottom:12px;}
+.auth-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px;}
+@media(prefers-color-scheme:dark){.auth-title{color:#7EB8F7;}}
+.auth-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+.auth-inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:28px;font-weight:700;padding:12px;font-family:'SF Mono',monospace;letter-spacing:8px;text-align:center;margin-bottom:10px;}
+.auth-inp:focus{outline:none;border-color:var(--blue);}
+.auth-inp::placeholder{font-family:-apple-system,sans-serif;letter-spacing:0;font-size:13px;font-weight:400;color:var(--muted);}
+.auth-btn{width:100%;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.auth-err{margin-top:10px;padding:9px;border-radius:8px;background:#FDECEC;color:#8B2020;font-size:12px;font-weight:600;display:none;}
+#main{display:none;}
+#hdr{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 14px;padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top));position:sticky;top:0;z-index:100;}
+#hdr h1{font-size:16px;font-weight:800;color:#fff;}
+.back{background:rgba(255,255,255,.14);border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;}
+#content{max-width:560px;margin:0 auto;padding:16px 14px 40px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(12,68,124,.08);margin-bottom:12px;}
+.card-hdr{background:#F8FAFD;border-bottom:1px solid var(--border);padding:11px 14px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+@media(prefers-color-scheme:dark){.card-hdr{background:#1C2840;}}
+.card-body{padding:14px;}
+.plan-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:14px;}
+.plan-btn{border:2px solid var(--border);border-radius:11px;padding:13px 10px;text-align:center;cursor:pointer;background:var(--bg);font-family:inherit;}
+.plan-btn.sel{border-width:2.5px;}
+.sel-std{border-color:#BA7517;background:#FAEEDA;}
+.sel-pro{border-color:#1D6B37;background:#E8F5E9;}
+.sel-vip{border-color:#5C35A0;background:#EDE7F6;}
+.pb-icon{font-size:22px;margin-bottom:4px;}
+.pb-name{font-size:12px;font-weight:700;color:var(--text);}
+.pb-price{font-size:10px;color:var(--muted);margin-top:2px;}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.field input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:9px 11px;font-family:inherit;}
+.field input:focus{outline:none;border-color:var(--blue);}
+.btn-gen{width:100%;background:linear-gradient(135deg,var(--green),#2a9e52);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:4px;}
+#result{display:none;margin-top:14px;}
+.key-display{background:var(--bg);border:2px solid var(--green);border-radius:11px;padding:16px;text-align:center;font-family:'SF Mono',monospace;font-size:16px;font-weight:800;color:var(--green);letter-spacing:2px;margin-bottom:10px;word-break:break-all;}
+.btn-copy{width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.btn-email{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);font-family:inherit;}
+.lic-row{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.lic-row:last-child{border-bottom:none;}
+.lic-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.lic-info{flex:1;min-width:0;}
+.lic-key{font-size:12px;font-weight:700;font-family:'SF Mono',monospace;word-break:break-all;}
+.lic-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.lic-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+.lic-btn{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:4px 8px;font-size:10px;cursor:pointer;color:var(--text);font-family:inherit;white-space:nowrap;}
+.lic-btn.del{color:var(--red);border-color:var(--red);}
+.lic-btn.rev{color:var(--amber);border-color:var(--amber);}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;}
+.stat-v{font-size:22px;font-weight:800;color:var(--navy);}
+@media(prefers-color-scheme:dark){.stat-v{color:#7EB8F7;}}
+.stat-l{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600;}
+.empty{text-align:center;padding:24px;font-size:13px;color:var(--muted);}
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--green);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:500;transition:transform .25s;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.amber{background:var(--amber);}
+#toast.red{background:var(--red);}
 .spin{display:inline-block;animation:rot .7s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="logo">
-    <span>🛸</span>
-    <h1>UAS Manager</h1>
-    <p>2026 Philippe CONTE - Tous droits reserves</p>
+<div id="auth">
+  <div class="auth-box">
+    <div class="auth-icon">🔐</div>
+    <div class="auth-title">Acces reserve</div>
+    <div class="auth-sub">Generateur de licences<br>Reserve a Philippe CONTE</div>
+    <input class="auth-inp" id="auth-key" type="tel" inputmode="numeric" placeholder="Code admin">
+    <button class="auth-btn" onclick="checkAuth()">Acceder</button>
+    <div class="auth-err" id="auth-err">Code incorrect</div>
   </div>
-  <div id="plans-section">
-    <div class="plans-title">Choisissez votre plan</div>
-    <div class="plan-card">
-      <div class="plan-icon">⭐</div>
-      <div class="plan-info">
-        <div class="plan-name">Standard</div>
-        <div class="plan-desc">Carnet de vol - Maintenance - REX - Bilans - Formations - Alertes - Planificateur</div>
-      </div>
-      <div class="plan-price"><div class="amount">4,99€</div><div class="per">/mois</div></div>
-    </div>
-    <div class="plan-card">
-      <div class="plan-icon">🏆</div>
-      <div class="plan-info">
-        <div class="plan-name">Pro <span class="badge-pop">POPULAIRE</span></div>
-        <div class="plan-desc">Tout Standard + Statistiques - Clients - Rapports PDF - Replay DJI - Logs</div>
-      </div>
-      <div class="plan-price"><div class="amount">9,99€</div><div class="per">/mois</div></div>
-    </div>
-    <div class="plan-card">
-      <div class="plan-icon">💎</div>
-      <div class="plan-info">
-        <div class="plan-name">VIP</div>
-        <div class="plan-desc">Tout Pro + acces prioritaire aux nouvelles fonctionnalites</div>
-      </div>
-      <div class="plan-price"><div class="amount">19,99€</div><div class="per">/mois</div></div>
-    </div>
-    <div class="sep"><div class="sep-line"></div><div class="sep-text">Vous avez deja un code ?</div><div class="sep-line"></div></div>
-  </div>
-  <div class="card" id="form-card">
-    <label class="lbl">Code de licence</label>
-    <input class="inp" id="key" type="text"
-      placeholder="Collez votre code ici"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="none"
-      spellcheck="false">
-    <button class="btn-go" id="btn" onclick="doActivate()">🔓 Activer</button>
-    <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
-    <div class="msg" id="msg"></div>
-  </div>
-  <div class="card success" id="ok-card">
-    <div class="s-icon">✅</div>
-    <div class="s-title">Active !</div>
-    <div class="s-badge" id="ok-badge"></div>
-    <div class="s-sub" id="ok-sub"></div>
-    <button class="btn-open" onclick="location.href='index.html'">🚀 Ouvrir l application</button>
-    <div style="margin-top:12px;">
-      <button onclick="reset()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit;">Changer de licence</button>
-    </div>
-  </div>
-  <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
+<div id="main">
+  <div id="hdr">
+    <h1>Generateur de licences</h1>
+    <a class="back" href="index.html">Accueil</a>
+  </div>
+  <div id="content">
+    <div class="card">
+      <div class="card-hdr">Nouvelle licence</div>
+      <div class="card-body">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Plan</div>
+        <div class="plan-row">
+          <div class="plan-btn sel sel-std" id="p-std" onclick="selPlan('std')">
+            <div class="pb-icon">⭐</div><div class="pb-name">Standard</div><div class="pb-price">4,99/mois</div>
+          </div>
+          <div class="plan-btn" id="p-pro" onclick="selPlan('pro')">
+            <div class="pb-icon">🏆</div><div class="pb-name">Pro</div><div class="pb-price">9,99/mois</div>
+          </div>
+          <div class="plan-btn" id="p-vip" onclick="selPlan('vip')">
+            <div class="pb-icon">💎</div><div class="pb-name">VIP</div><div class="pb-price">19,99/mois</div>
+          </div>
+        </div>
+        <div class="field"><label>Nom du client</label><input id="c-nom" placeholder="Ex: Dupont Jean"></div>
+        <div class="field"><label>Email</label><input type="email" id="c-email" placeholder="client@email.com"></div>
+        <button class="btn-gen" onclick="genKey()">Generer la cle</button>
+        <div id="result">
+          <div class="key-display" id="key-display"></div>
+          <button class="btn-copy" onclick="copyKey()">Copier la cle</button>
+          <button class="btn-email" onclick="sendEmail()">Envoyer par email</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr">
+        <span>Licences emises</span>
+        <button onclick="loadLicenses()" style="background:none;border:none;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;">Actualiser</button>
+      </div>
+      <div class="card-body">
+        <div class="stats" id="stats"></div>
+        <div id="lic-list"><div class="empty">Chargement...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const firebaseConfig = {
   apiKey: "AIzaSyDvES6e-Mndu-KrIMEwMg61JHaIgJxyqfA",
   authDomain: "uas-manager.firebaseapp.com",
@@ -126,90 +141,154 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const CREATEUR_HASH = '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';
-const LK = 'uas_license';
-const PLAN_MAP = {
-  std:{plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517'},
-  pro:{plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37'},
-  vip:{plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0'}
+const PLAN_INFO = {
+  std:{prefix:'STD',name:'Standard',icon:'⭐',bg:'#FAEEDA',color:'#BA7517',price:'4,99/mois'},
+  pro:{prefix:'PRO',name:'Pro',icon:'🏆',bg:'#E8F5E9',color:'#1D6B37',price:'9,99/mois'},
+  vip:{prefix:'VIP',name:'VIP',icon:'💎',bg:'#EDE7F6',color:'#5C35A0',price:'19,99/mois'}
 };
-async function sha256(s) {
-  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+let selPlanVal='std', lastKey='', licenses=[];
+async function sha256(s){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-window.doActivate = async function() {
-  const key = document.getElementById('key').value.trim();
-  if (!key) { show('Entrez votre code','err'); return; }
-  const btn = document.getElementById('btn');
-  btn.innerHTML = '<span class="spin">...</span>';
-  btn.disabled = true;
-  const hash = await sha256(key);
-  if (hash === CREATEUR_HASH) {
-    const lic = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5'};
-    localStorage.setItem(LK, JSON.stringify({hash,plan:lic.plan,label:lic.label,at:new Date().toISOString()}));
-    showOk(lic); return;
-  }
-  try {
-    const q = query(collection(db,'licences'), where('hash','==',hash), where('revoked','==',false));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const data = snap.docs[0].data();
-      const lic = PLAN_MAP[data.plan];
-      if (lic) {
-        localStorage.setItem(LK, JSON.stringify({hash,plan:lic.plan,label:lic.label,at:new Date().toISOString()}));
-        showOk(lic); return;
-      }
-    }
-    show('Code invalide','err');
-    btn.innerHTML = '🔓 Activer';
-    btn.disabled = false;
-  } catch(e) {
-    show('Erreur connexion','err');
-    btn.innerHTML = '🔓 Activer';
-    btn.disabled = false;
+window.checkAuth=async function(){
+  const key=document.getElementById('auth-key').value.trim();
+  if(!key)return;
+  const hash=await sha256(key);
+  if(hash===CREATEUR_HASH){
+    document.getElementById('auth').style.display='none';
+    document.getElementById('main').style.display='block';
+    loadLicenses();
+  }else{
+    const err=document.getElementById('auth-err');
+    err.style.display='block';
+    setTimeout(()=>{err.style.display='none';},3000);
   }
 };
-function showOk(lic) {
-  document.getElementById('form-card').style.display = 'none';
-  document.getElementById('plans-section').style.display = 'none';
-  const c = document.getElementById('ok-card');
-  c.style.display = 'block';
-  const b = document.getElementById('ok-badge');
-  b.textContent = lic.label;
-  b.style.background = lic.bg;
-  b.style.color = lic.color;
-  document.getElementById('ok-sub').textContent = lic.plan === 'personal'
-    ? 'Bienvenue Philippe. Acces complet sans restriction.'
-    : 'Licence activee avec succes.';
+document.getElementById('auth-key').addEventListener('keydown',e=>{if(e.key==='Enter')window.checkAuth();});
+window.selPlan=function(p){
+  selPlanVal=p;
+  ['std','pro','vip'].forEach(k=>{
+    document.getElementById('p-'+k).className='plan-btn'+(k===p?' sel sel-'+k:'');
+  });
+};
+const alpha='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+function randChars(n){
+  let r='';
+  for(let i=0;i<n;i++){
+    const arr=new Uint8Array(1);
+    crypto.getRandomValues(arr);
+    r+=alpha[arr[0]%alpha.length];
+  }
+  return r;
 }
-window.goFree = function() { localStorage.removeItem(LK); location.href = 'index.html'; };
-window.reset = function() { localStorage.removeItem(LK); location.reload(); };
-function show(msg, type) {
-  const el = document.getElementById('msg');
-  el.textContent = msg;
-  el.className = 'msg '+(type==='err'?'err':'ok');
-  setTimeout(()=>{ el.className='msg'; }, 4000);
+window.genKey=async function(){
+  const nom=document.getElementById('c-nom').value.trim();
+  if(!nom){toast('Entrez le nom du client','amber');return;}
+  const plan=PLAN_INFO[selPlanVal];
+  const rand=randChars(12);
+  const key=plan.prefix+rand;
+  const hash=await sha256(key);
+  lastKey=key;
+  try{
+    await addDoc(collection(db,'licences'),{
+      key,hash,
+      plan:selPlanVal,planName:plan.name,
+      nom,email:document.getElementById('c-email').value.trim(),
+      date:new Date().toISOString().slice(0,10),
+      revoked:false,
+      createdAt:new Date()
+    });
+    document.getElementById('key-display').textContent=key;
+    document.getElementById('result').style.display='block';
+    loadLicenses();
+    toast('Cle generee et enregistree');
+  }catch(e){toast('Erreur : '+e.message,'red');}
+};
+window.copyKey=function(){
+  navigator.clipboard.writeText(lastKey).then(()=>toast('Copie : '+lastKey)).catch(()=>{
+    const el=document.getElementById('key-display');
+    const range=document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+};
+window.sendEmail=function(){
+  if(!lastKey)return;
+  const plan=PLAN_INFO[selPlanVal];
+  const nom=document.getElementById('c-nom').value.trim();
+  const email=document.getElementById('c-email').value.trim();
+  if(!email){toast('Email manquant','amber');return;}
+  const subj=encodeURIComponent('Votre licence UAS Manager '+plan.name);
+  const body=encodeURIComponent('Bonjour '+nom+',\n\nVotre code de licence UAS Manager :\n\n'+lastKey+'\n\nPlan : '+plan.name+' ('+plan.price+')\n\nActivation :\n1. Ouvrez UAS Manager\n2. Allez dans Activation\n3. Collez le code\n4. Appuyez sur Activer\n\nCordialement,\nPhilippe CONTE\ncontephil74@gmail.com');
+  window.open('mailto:'+email+'?subject='+subj+'&body='+body);
+};
+window.loadLicenses=async function(){
+  try{
+    const q=query(collection(db,'licences'),orderBy('createdAt','desc'));
+    const snap=await getDocs(q);
+    licenses=[];
+    snap.forEach(d=>{licenses.push({id:d.id,...d.data()});});
+    renderList();
+  }catch(e){
+    document.getElementById('lic-list').innerHTML='<div class="empty">Erreur : '+e.message+'</div>';
+  }
+};
+window.revokeLicense=async function(id){
+  const l=licenses.find(x=>x.id===id);
+  if(!l)return;
+  await updateDoc(doc(db,'licences',id),{revoked:!l.revoked});
+  toast(l.revoked?'Reactivee':'Revoquee',l.revoked?'':'amber');
+  window.loadLicenses();
+};
+window.deleteLicense=async function(id){
+  if(!confirm('Supprimer ?'))return;
+  await deleteDoc(doc(db,'licences',id));
+  toast('Supprimee','red');
+  window.loadLicenses();
+};
+window.copyLic=function(key){
+  navigator.clipboard.writeText(key).then(()=>toast('Copie : '+key));
+};
+function renderList(){
+  const counts={std:0,pro:0,vip:0};
+  licenses.forEach(l=>{if(counts[l.plan]!==undefined&&!l.revoked)counts[l.plan]++;});
+  const mrr=counts.std*4.99+counts.pro*9.99+counts.vip*19.99;
+  const revoked=licenses.filter(l=>l.revoked).length;
+  document.getElementById('stats').innerHTML=
+    '<div class="stat"><div class="stat-v">'+licenses.length+'</div><div class="stat-l">Total</div></div>'+
+    '<div class="stat"><div class="stat-v" style="color:#1D6B37;">'+(licenses.length-revoked)+'</div><div class="stat-l">Actives</div></div>'+
+    '<div class="stat"><div class="stat-v" style="color:#8B2020;">'+revoked+'</div><div class="stat-l">Revoquees</div></div>'+
+    '<div class="stat"><div class="stat-v" style="color:#BA7517;">'+mrr.toFixed(0)+'</div><div class="stat-l">MRR</div></div>';
+  const el=document.getElementById('lic-list');
+  if(!licenses.length){el.innerHTML='<div class="empty">Aucune licence</div>';return;}
+  el.innerHTML=licenses.map(l=>{
+    const p=PLAN_INFO[l.plan]||PLAN_INFO.std;
+    const op=l.revoked?'opacity:0.5;':'';
+    return '<div class="lic-row" style="'+op+'">'+
+      '<div class="lic-badge" style="background:'+p.bg+';color:'+p.color+';">'+p.icon+' '+p.name+'</div>'+
+      '<div class="lic-info">'+
+        '<div class="lic-key">'+l.key+'</div>'+
+        '<div class="lic-meta">'+l.nom+(l.email?' · '+l.email:'')+' · '+l.date+(l.revoked?' · REVOQUEE':'')+'</div>'+
+      '</div>'+
+      '<div class="lic-actions">'+
+        '<button class="lic-btn" onclick="copyLic(\''+l.key+'\')">Copier</button>'+
+        '<button class="lic-btn rev" onclick="revokeLicense(\''+l.id+'\')">'+(l.revoked?'Reactiver':'Revoquer')+'</button>'+
+        '<button class="lic-btn del" onclick="deleteLicense(\''+l.id+'\')">Supprimer</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
-document.getElementById('key').addEventListener('keydown', e=>{
-  if (e.key === 'Enter') window.doActivate();
-});
-(async function(){
-  const r = localStorage.getItem(LK);
-  if (!r) return;
-  try {
-    const l = JSON.parse(r);
-    if (!l.hash) return;
-    if (l.hash === CREATEUR_HASH) {
-      showOk({plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5'}); return;
-    }
-    const q = query(collection(db,'licences'), where('hash','==',l.hash), where('revoked','==',false));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const data = snap.docs[0].data();
-      const lic = PLAN_MAP[data.plan];
-      if (lic) showOk(lic);
-    }
-  } catch(e) {}
-})();
+let toastTimer;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='show'+(type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{el.className='';},3000);
+}
+window.toast=toast;
 </script>
 </body>
 </html>
