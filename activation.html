@@ -113,14 +113,37 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
   <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
 <script>
-var CREATEUR_HASH = '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';
-var LK = 'uas_license';
-var STORE = 'uas_keygen_licenses';
-var PLAN_MAP = {
-  std:{plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2099-12-31'},
-  pro:{plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2099-12-31'},
-  vip:{plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2099-12-31'}
+// ═══════════════════════════════════════════════════
+//  LICENCES VALIDES
+//  Pour ajouter une licence :
+//  1. Generer la cle dans keygen.html
+//  2. Copier le hash affiche
+//  3. Ajouter une ligne ci-dessous :
+//     'HASH': {plan:'standard', label:'Standard 4,99/mois', bg:'#FAEEDA', color:'#BA7517'},
+//  Plans disponibles : standard / pro / vip / personal
+// ═══════════════════════════════════════════════════
+var LICENCES = {
+
+  // ── CREATEUR (Philippe CONTE) ──────────────────
+  '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c':
+    {plan:'personal', label:'Createur', bg:'#E6F1FB', color:'#185FA5'},
+
+  // ── LICENCES STANDARD ─────────────────────────
+  // Ajouter ici les hashes Standard
+  // 'HASH_ICI': {plan:'standard', label:'Standard 4,99/mois', bg:'#FAEEDA', color:'#BA7517'},
+
+  // ── LICENCES PRO ──────────────────────────────
+  // Ajouter ici les hashes Pro
+  // 'HASH_ICI': {plan:'pro', label:'Pro 9,99/mois', bg:'#E8F5E9', color:'#1D6B37'},
+
+  // ── LICENCES VIP ──────────────────────────────
+  // Ajouter ici les hashes VIP
+  // 'HASH_ICI': {plan:'vip', label:'VIP 19,99/mois', bg:'#EDE7F6', color:'#5C35A0'},
+
 };
+// ═══════════════════════════════════════════════════
+
+var LK = 'uas_license';
 
 async function sha256(s) {
   var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -134,24 +157,14 @@ async function activate() {
   btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
   var hash = await sha256(key);
-  var lic = null;
-  if (hash === CREATEUR_HASH) {
-    lic = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null};
-  }
-  if (!lic) {
-    try {
-      var licenses = JSON.parse(localStorage.getItem(STORE) || '[]');
-      var found = licenses.find(function(l){ return l.hash === hash && !l.revoked; });
-      if (found) lic = PLAN_MAP[found.plan];
-    } catch(e) {}
-  }
+  var lic = LICENCES[hash];
   if (!lic) {
     show('Code invalide', 'err');
     btn.innerHTML = '🔓 Activer';
     btn.disabled = false;
     return;
   }
-  localStorage.setItem(LK, JSON.stringify({hash:hash,plan:lic.plan,label:lic.label,expires:lic.expires,at:new Date().toISOString()}));
+  localStorage.setItem(LK, JSON.stringify({hash:hash, plan:lic.plan, label:lic.label, at:new Date().toISOString()}));
   showOk(lic);
 }
 
@@ -188,14 +201,8 @@ document.getElementById('key').addEventListener('keydown', function(e){
   if (!r) return;
   try {
     var l = JSON.parse(r);
-    if (!l.hash) return;
-    if (l.hash === CREATEUR_HASH) {
-      showOk({plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null});
-      return;
-    }
-    var licenses = JSON.parse(localStorage.getItem(STORE) || '[]');
-    var found = licenses.find(function(x){ return x.hash === l.hash && !x.revoked; });
-    if (found) showOk(PLAN_MAP[found.plan]);
+    if (!l.hash || !LICENCES[l.hash]) return;
+    showOk(LICENCES[l.hash]);
   } catch(e) {}
 })();
 </script>
