@@ -33,9 +33,9 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .sep-text{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;box-shadow:0 4px 20px rgba(12,68,124,.08);}
 .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
-.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:17px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:2px;}
+.inp{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:11px;color:var(--text);font-size:16px;font-weight:800;padding:14px 12px;font-family:'SF Mono','Courier New',monospace;text-align:center;transition:border-color .15s;letter-spacing:3px;}
 .inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1);}
-.inp::placeholder{font-family:-apple-system,sans-serif;font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0;}
+.inp::placeholder{font-size:14px;font-weight:400;letter-spacing:0;color:var(--muted);}
 .btn-go{width:100%;margin-top:14px;background:linear-gradient(135deg,#0C447C,#185FA5);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
 .btn-go:active{opacity:.82;}
 .btn-free{width:100%;margin-top:8px;background:none;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;}
@@ -48,7 +48,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
 .s-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:14px;}
 .s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
 .btn-open{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;}
-.footer{text-align:center;margin-top:16px;font-size:10px;color:var(--muted);line-height:1.8;padding-bottom:env(safe-area-inset-bottom);}
+.footer{text-align:center;margin-top:16px;font-size:10px;color:var(--muted);padding-bottom:env(safe-area-inset-bottom);}
 .spin{display:inline-block;animation:rot .7s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg);}}
 </style>
@@ -68,10 +68,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
         <div class="plan-name">Standard</div>
         <div class="plan-desc">Carnet de vol - Maintenance - REX - Bilans - Formations - Alertes - Planificateur</div>
       </div>
-      <div class="plan-price">
-        <div class="amount">4,99€</div>
-        <div class="per">/mois</div>
-      </div>
+      <div class="plan-price"><div class="amount">4,99€</div><div class="per">/mois</div></div>
     </div>
     <div class="plan-card">
       <div class="plan-icon">🏆</div>
@@ -79,10 +76,7 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
         <div class="plan-name">Pro <span class="badge-pop">POPULAIRE</span></div>
         <div class="plan-desc">Tout Standard + Statistiques - Clients - Rapports PDF - Replay DJI - Logs</div>
       </div>
-      <div class="plan-price">
-        <div class="amount">9,99€</div>
-        <div class="per">/mois</div>
-      </div>
+      <div class="plan-price"><div class="amount">9,99€</div><div class="per">/mois</div></div>
     </div>
     <div class="plan-card">
       <div class="plan-icon">💎</div>
@@ -90,24 +84,17 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
         <div class="plan-name">VIP</div>
         <div class="plan-desc">Tout Pro + acces prioritaire aux nouvelles fonctionnalites</div>
       </div>
-      <div class="plan-price">
-        <div class="amount">19,99€</div>
-        <div class="per">/mois</div>
-      </div>
+      <div class="plan-price"><div class="amount">19,99€</div><div class="per">/mois</div></div>
     </div>
-    <div class="sep">
-      <div class="sep-line"></div>
-      <div class="sep-text">Vous avez deja une cle ?</div>
-      <div class="sep-line"></div>
-    </div>
+    <div class="sep"><div class="sep-line"></div><div class="sep-text">Vous avez deja un code ?</div><div class="sep-line"></div></div>
   </div>
   <div class="card" id="form-card">
-    <label class="lbl">Cle de licence</label>
+    <label class="lbl">Code de licence</label>
     <input class="inp" id="key" type="text"
-      placeholder="Ex: STD-XXXX-XXXX"
+      placeholder="Collez votre code ici"
       autocomplete="off"
       autocorrect="off"
-      autocapitalize="off"
+      autocapitalize="none"
       spellcheck="false">
     <button class="btn-go" id="btn" onclick="activate()">🔓 Activer</button>
     <button class="btn-free" onclick="goFree()">Continuer gratuitement</button>
@@ -126,61 +113,45 @@ html,body{min-height:100%;font-family:-apple-system,sans-serif;background:var(--
   <div class="footer">Contact : contephil74@gmail.com</div>
 </div>
 <script>
-// ═══ POUR CHANGER LE MOT DE PASSE CREATEUR ═══
-// 1. Aller sur la console Safari
-// 2. Taper : crypto.subtle.digest('SHA-256',new TextEncoder().encode('VOTRECODE')).then(b=>alert(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
-// 3. Copier le hash et remplacer CREATEUR_HASH ci-dessous
 var CREATEUR_HASH = '704245adeb96ef3b3a907b3e23059eca21a128b974d3c5fc978865bdd20cfc7c';
-
-var V = {};
-V[CREATEUR_HASH] = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null};
-V['8d9f21806a142c95bc2178fb24ef1303c61d2d90db86f70a03b6a872bd187564'] = {plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2027-12-31'};
-V['39a70680bb1b674520eb751640eace8d389c16bb5923ab4c8d59b97e9f624a6f'] = {plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2027-12-31'};
-V['93c6145368a6f7a6c06a710efa55969bbd784d3aa282ba0524d00afe7850d8e5'] = {plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2027-12-31'};
-
 var LK = 'uas_license';
+var STORE = 'uas_keygen_licenses';
+var PLAN_MAP = {
+  std:{plan:'standard',label:'Standard 4,99/mois',bg:'#FAEEDA',color:'#BA7517',expires:'2099-12-31'},
+  pro:{plan:'pro',label:'Pro 9,99/mois',bg:'#E8F5E9',color:'#1D6B37',expires:'2099-12-31'},
+  vip:{plan:'vip',label:'VIP 19,99/mois',bg:'#EDE7F6',color:'#5C35A0',expires:'2099-12-31'}
+};
 
 async function sha256(s) {
   var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(b)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
-}
-
-async function sha256upper(s) {
-  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s.toUpperCase()));
-  return Array.from(new Uint8Array(b)).map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+  return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
 }
 
 async function activate() {
   var key = document.getElementById('key').value.trim();
-  if (!key) { show('Entrez votre cle', 'err'); return; }
+  if (!key) { show('Entrez votre code', 'err'); return; }
   var btn = document.getElementById('btn');
   btn.innerHTML = '<span class="spin">...</span>';
   btn.disabled = true;
-
-  // Essai 1 : hash sans toUpperCase (code numerique createur)
-  var hash1 = await sha256(key);
-  var lic = V[hash1];
-
-  // Essai 2 : hash avec toUpperCase (cles STD/PRO/VIP generees)
-  if (!lic) {
-    var hash2 = await sha256upper(key);
-    lic = V[hash2];
-    if (lic) hash1 = hash2;
+  var hash = await sha256(key);
+  var lic = null;
+  if (hash === CREATEUR_HASH) {
+    lic = {plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null};
   }
-
   if (!lic) {
-    show('Cle invalide', 'err');
+    try {
+      var licenses = JSON.parse(localStorage.getItem(STORE) || '[]');
+      var found = licenses.find(function(l){ return l.hash === hash && !l.revoked; });
+      if (found) lic = PLAN_MAP[found.plan];
+    } catch(e) {}
+  }
+  if (!lic) {
+    show('Code invalide', 'err');
     btn.innerHTML = '🔓 Activer';
     btn.disabled = false;
     return;
   }
-  if (lic.expires && new Date(lic.expires) < new Date()) {
-    show('Cle expiree', 'err');
-    btn.innerHTML = '🔓 Activer';
-    btn.disabled = false;
-    return;
-  }
-  localStorage.setItem(LK, JSON.stringify({hash:hash1,plan:lic.plan,label:lic.label,expires:lic.expires,at:new Date().toISOString()}));
+  localStorage.setItem(LK, JSON.stringify({hash:hash,plan:lic.plan,label:lic.label,expires:lic.expires,at:new Date().toISOString()}));
   showOk(lic);
 }
 
@@ -208,18 +179,23 @@ function show(msg, type) {
   setTimeout(function(){ el.className = 'msg'; }, 4000);
 }
 
-document.getElementById('key').addEventListener('keydown', function(e) {
+document.getElementById('key').addEventListener('keydown', function(e){
   if (e.key === 'Enter') activate();
 });
 
-(function() {
+(function(){
   var r = localStorage.getItem(LK);
   if (!r) return;
   try {
     var l = JSON.parse(r);
-    if (!l.hash || !V[l.hash]) return;
-    if (l.expires && new Date(l.expires) < new Date()) return;
-    showOk(V[l.hash]);
+    if (!l.hash) return;
+    if (l.hash === CREATEUR_HASH) {
+      showOk({plan:'personal',label:'Createur',bg:'#E6F1FB',color:'#185FA5',expires:null});
+      return;
+    }
+    var licenses = JSON.parse(localStorage.getItem(STORE) || '[]');
+    var found = licenses.find(function(x){ return x.hash === l.hash && !x.revoked; });
+    if (found) showOk(PLAN_MAP[found.plan]);
   } catch(e) {}
 })();
 </script>
